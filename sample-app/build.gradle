@@ -1,12 +1,15 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0'
     id 'java'
     id 'application'
 }
 
-group 'cz.mormegil'
-version '1.0.0'
-mainClassName = "Main"
+group = 'cz.mormegil'
+version = '1.0.0'
+
+application {
+    mainClass = "Main"
+}
 
 repositories {
     mavenCentral()

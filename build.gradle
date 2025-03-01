@@ -8,42 +8,46 @@
  */
 
 plugins {
-    id 'application'
     id 'java-library'
     id 'maven-publish'
     id 'signing'
     id 'biz.aQute.bnd.builder'
 }
 
-ext {
-    artifactId = "lazysodium-java"
-    groupId = "cz.mormegil"
-    version = '5.1.5.1'
-    description = "Lazysodium (Java) makes it effortless for Java " +
-            "developers to get started with Libsodium's cryptography."
-}
+def mavenProps = [
+    artifactId: "lazysodium-java",
+    groupId: "cz.mormegil",
+    version: '5.1.5.1',
+    description: "Lazysodium (Java) makes it effortless for Java " +
+        "developers to get started with Libsodium's cryptography."
+]
 
 repositories {
     mavenCentral()
 }
 
+group = mavenProps.groupId
+version = mavenProps.version
 
-group project.ext.groupId
-version = project.ext.version
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-mainClassName = "com.goterl.lazysodium.LazySodium"
+    manifest {
+        attributes('Automatic-Module-Name': 'com.goterl.lazysodium')
+    }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
+    withSourcesJar()
+    withJavadocJar()
+}
 
 // Dependencies
 dependencies {
     implementation 'net.java.dev.jna:jna:5.12.1'
     implementation 'com.goterl:resource-loader:2.0.2'
     implementation 'org.slf4j:slf4j-api:2.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 // Tasks
@@ -54,26 +58,10 @@ signing {
     sign publishing.publications
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-
-tasks.named('jar') {
-    manifest {
-        attributes('Automatic-Module-Name': 'com.goterl.lazysodium')
-    }
-}
 
 
 task signPom(type: Sign) {
-    sign project.file("$buildDir/publications/mavenJava/pom-default.xml")
+    sign file(layout.buildDirectory.file("publications/mavenJava/pom-default.xml"))
 
     // The signing plugin does not seem to notice
     // it when the publications folder with the
@@ -88,7 +76,7 @@ artifacts {
 }
 
 void loadProps() {
-    File secretPropsFile = project.rootProject.file('local.properties')
+    File secretPropsFile = rootProject.file('local.properties')
     if (secretPropsFile.exists()) {
         Properties p = new Properties()
         new FileInputStream(secretPropsFile).withCloseable { is ->
@@ -102,16 +90,6 @@ void loadProps() {
 
 loadProps()
 
-// Return an empty string if a property
-// cannot be found
-String getProp(String propName) {
-    if (ext.hasProperty(propName) != null) {
-        return ext[propName]
-    } else {
-        return ""
-    }
-}
-
 String getSonatypeUserName() {
     return findProperty("ossrhUsername")
 }
@@ -122,8 +100,8 @@ String getSonatypePassword() {
 
 Closure createPomClosure = {
     def root = asNode()
-    root.appendNode('description', project.ext.description)
-    root.appendNode('name', project.ext.artifactId)
+    root.appendNode('description', mavenProps.description)
+    root.appendNode('name', mavenProps.artifactId)
     root.appendNode('url', 'https://github.com/mormegil-cz/lazysodium-java')
 
     def scm = root.appendNode('scm')
@@ -149,9 +127,9 @@ publishing {
     publications {
         snapshot(MavenPublication) {
             from components.java
-            groupId project.ext.groupId
-            artifactId project.ext.artifactId
-            version project.ext.version + "-SNAPSHOT"
+            groupId = mavenProps.groupId
+            artifactId = mavenProps.artifactId
+            version = mavenProps.version + "-SNAPSHOT"
             artifact sourcesJar
             artifact javadocJar
 
@@ -159,9 +137,9 @@ publishing {
         }
         release(MavenPublication) {
             from components.java
-            groupId project.ext.groupId
-            artifactId project.ext.artifactId
-            version project.ext.version
+            groupId = mavenProps.groupId
+            artifactId = mavenProps.artifactId
+            version = mavenProps.version
             artifact sourcesJar
             artifact javadocJar
 
@@ -174,16 +152,16 @@ publishing {
             name = "release"
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username getSonatypeUserName()
-                password getSonatypePassword()
+                username = getSonatypeUserName()
+                password = getSonatypePassword()
             }
         }
         maven {
             name = "snapshot"
             url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             credentials {
-                username getSonatypeUserName()
-                password getSonatypePassword()
+                username = getSonatypeUserName()
+                password = getSonatypePassword()
             }
         }
     }
@@ -195,6 +173,8 @@ tasks.withType(Javadoc) {
 }
 
 tasks.withType(Test) {
+    useJUnitPlatform()
+
     // a collection to track failedTests
     ext.failedTests = []
 
