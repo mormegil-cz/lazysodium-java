@@ -4,7 +4,7 @@ plugins {
     id 'application'
 }
 
-group 'com.goterl'
+group 'cz.mormegil'
 version '1.0.0'
 mainClassName = "Main"
 
@@ -16,5 +16,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "net.java.dev.jna:jna:5.5.0"
-    implementation 'com.goterl:lazysodium-java:5.1.0'
+    implementation 'cz.mormegil:lazysodium-java:5.1.5.1'
 }

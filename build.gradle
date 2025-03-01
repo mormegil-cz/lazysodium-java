@@ -18,8 +18,8 @@ plugins {
 
 ext {
     artifactId = "lazysodium-java"
-    groupId = "com.goterl"
-    version = '5.1.5'
+    groupId = "cz.mormegil"
+    version = '5.1.5.1'
     description = "Lazysodium (Java) makes it effortless for Java " +
             "developers to get started with Libsodium's cryptography."
 }
@@ -133,21 +133,25 @@ Closure createPomClosure = {
     def root = asNode()
     root.appendNode('description', project.ext.description)
     root.appendNode('name', project.ext.artifactId)
-    root.appendNode('url', 'https://github.com/terl/lazysodium-java')
+    root.appendNode('url', 'https://github.com/mormegil-cz/lazysodium-java')
 
     def scm = root.appendNode('scm')
-    scm.appendNode("connection", "scm:git:git://github.com/terl/lazysodium-java.git")
-    scm.appendNode("developerConnection", "scm:git:ssh://github.com/terl/lazysodium-java")
-    scm.appendNode("url", "http://github.com/terl/lazysodium-java")
+    scm.appendNode("connection", "scm:git:git://github.com/mormegil-cz/lazysodium-java.git")
+    scm.appendNode("developerConnection", "scm:git:ssh://github.com/mormegil-cz/lazysodium-java")
+    scm.appendNode("url", "https://github.com/mormegil-cz/lazysodium-java")
 
     def license = root.appendNode('licenses').appendNode('license')
     license.appendNode('name', 'Mozilla Public License, Version 2.0')
-    license.appendNode('url', 'http://www.mozilla.org/MPL/2.0/index.txt')
+    license.appendNode('url', 'https://www.mozilla.org/MPL/2.0/index.txt')
     license.appendNode('distribution', 'repo')
 
-    def developer = root.appendNode('developers').appendNode('developer')
-    developer.appendNode('name', 'Terl Tech Ltd')
-    developer.appendNode('email', 'hello@terl.co')
+    def developers = root.appendNode('developers')
+    def developer1 = developers.appendNode('developer')
+    developer1.appendNode('name', 'Terl Tech Ltd')
+    developer1.appendNode('email', 'hello@terl.co')
+    def developer2 = developers.appendNode('developer')
+    developer2.appendNode('name', 'mormegil-cz')
+    developer2.appendNode('email', 'mormegil@centrum.cz')
 }
 
 publishing {
