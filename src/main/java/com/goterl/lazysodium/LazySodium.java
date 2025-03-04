@@ -941,7 +941,7 @@ public abstract class LazySodium implements
         }
         boolean res = cryptoBoxBeforeNm(sharedKey, publicKey, secretKey);
         if (!res) {
-            throw new SodiumException("Unable to encrypt using shared secret key.");
+            throw new SodiumException("Unable to generate shared secret key.");
         }
         return messageEncoder.encode(sharedKey);
     }
