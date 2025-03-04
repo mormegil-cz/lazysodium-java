@@ -9,7 +9,7 @@
 buildscript {
     repositories {
         maven {
-            url 'https://bndtools.jfrog.io/bndtools/libs-snapshot'
+            url = 'https://bndtools.jfrog.io/bndtools/libs-snapshot'
         }
     }
     dependencies {

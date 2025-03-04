@@ -8,51 +8,46 @@
  */
 
 plugins {
-    id 'application'
     id 'java-library'
-    id 'maven'
     id 'maven-publish'
     id 'signing'
     id 'biz.aQute.bnd.builder'
 }
 
-ext {
-    artifactId = "lazysodium-java"
-    groupId = "com.goterl"
-    version = '5.1.5'
-    description = "Lazysodium (Java) makes it effortless for Java " +
-            "developers to get started with Libsodium's cryptography."
-}
+def mavenProps = [
+    artifactId: "lazysodium-java",
+    groupId: "cz.mormegil",
+    version: '5.1.5.1',
+    description: "Lazysodium (Java) makes it effortless for Java " +
+        "developers to get started with Libsodium's cryptography."
+]
 
 repositories {
     mavenCentral()
 }
 
+group = mavenProps.groupId
+version = mavenProps.version
 
-group project.ext.groupId
-version = project.ext.version
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-mainClassName = "com.goterl.lazysodium.LazySodium"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-sourceSets {
-    main {
-        resources {
-            srcDirs "src/main/resources"
-        }
+    manifest {
+        attributes('Automatic-Module-Name': 'com.goterl.lazysodium')
     }
-}
 
+    withSourcesJar()
+    withJavadocJar()
+}
 
 // Dependencies
 dependencies {
     implementation 'net.java.dev.jna:jna:5.12.1'
     implementation 'com.goterl:resource-loader:2.0.2'
     implementation 'org.slf4j:slf4j-api:2.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 // Tasks
@@ -63,26 +58,10 @@ signing {
     sign publishing.publications
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-
-tasks.named('jar') {
-    manifest {
-        attributes('Automatic-Module-Name': 'com.goterl.lazysodium')
-    }
-}
 
 
 task signPom(type: Sign) {
-    sign project.file("$buildDir/publications/mavenJava/pom-default.xml")
+    sign file(layout.buildDirectory.file("publications/mavenJava/pom-default.xml"))
 
     // The signing plugin does not seem to notice
     // it when the publications folder with the
@@ -97,7 +76,7 @@ artifacts {
 }
 
 void loadProps() {
-    File secretPropsFile = project.rootProject.file('local.properties')
+    File secretPropsFile = rootProject.file('local.properties')
     if (secretPropsFile.exists()) {
         Properties p = new Properties()
         new FileInputStream(secretPropsFile).withCloseable { is ->
@@ -111,16 +90,6 @@ void loadProps() {
 
 loadProps()
 
-// Return an empty string if a property
-// cannot be found
-String getProp(String propName) {
-    if (ext.hasProperty(propName) != null) {
-        return ext[propName]
-    } else {
-        return ""
-    }
-}
-
 String getSonatypeUserName() {
     return findProperty("ossrhUsername")
 }
@@ -131,32 +100,36 @@ String getSonatypePassword() {
 
 Closure createPomClosure = {
     def root = asNode()
-    root.appendNode('description', project.ext.description)
-    root.appendNode('name', project.ext.artifactId)
-    root.appendNode('url', 'https://github.com/terl/lazysodium-java')
+    root.appendNode('description', mavenProps.description)
+    root.appendNode('name', mavenProps.artifactId)
+    root.appendNode('url', 'https://github.com/mormegil-cz/lazysodium-java')
 
     def scm = root.appendNode('scm')
-    scm.appendNode("connection", "scm:git:git://github.com/terl/lazysodium-java.git")
-    scm.appendNode("developerConnection", "scm:git:ssh://github.com/terl/lazysodium-java")
-    scm.appendNode("url", "http://github.com/terl/lazysodium-java")
+    scm.appendNode("connection", "scm:git:git://github.com/mormegil-cz/lazysodium-java.git")
+    scm.appendNode("developerConnection", "scm:git:ssh://github.com/mormegil-cz/lazysodium-java")
+    scm.appendNode("url", "https://github.com/mormegil-cz/lazysodium-java")
 
     def license = root.appendNode('licenses').appendNode('license')
     license.appendNode('name', 'Mozilla Public License, Version 2.0')
-    license.appendNode('url', 'http://www.mozilla.org/MPL/2.0/index.txt')
+    license.appendNode('url', 'https://www.mozilla.org/MPL/2.0/index.txt')
     license.appendNode('distribution', 'repo')
 
-    def developer = root.appendNode('developers').appendNode('developer')
-    developer.appendNode('name', 'Terl Tech Ltd')
-    developer.appendNode('email', 'hello@terl.co')
+    def developers = root.appendNode('developers')
+    def developer1 = developers.appendNode('developer')
+    developer1.appendNode('name', 'Terl Tech Ltd')
+    developer1.appendNode('email', 'hello@terl.co')
+    def developer2 = developers.appendNode('developer')
+    developer2.appendNode('name', 'mormegil-cz')
+    developer2.appendNode('email', 'mormegil@centrum.cz')
 }
 
 publishing {
     publications {
         snapshot(MavenPublication) {
             from components.java
-            groupId project.ext.groupId
-            artifactId project.ext.artifactId
-            version project.ext.version + "-SNAPSHOT"
+            groupId = mavenProps.groupId
+            artifactId = mavenProps.artifactId
+            version = mavenProps.version + "-SNAPSHOT"
             artifact sourcesJar
             artifact javadocJar
 
@@ -164,9 +137,9 @@ publishing {
         }
         release(MavenPublication) {
             from components.java
-            groupId project.ext.groupId
-            artifactId project.ext.artifactId
-            version project.ext.version
+            groupId = mavenProps.groupId
+            artifactId = mavenProps.artifactId
+            version = mavenProps.version
             artifact sourcesJar
             artifact javadocJar
 
@@ -179,16 +152,16 @@ publishing {
             name = "release"
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username getSonatypeUserName()
-                password getSonatypePassword()
+                username = getSonatypeUserName()
+                password = getSonatypePassword()
             }
         }
         maven {
             name = "snapshot"
             url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             credentials {
-                username getSonatypeUserName()
-                password getSonatypePassword()
+                username = getSonatypeUserName()
+                password = getSonatypePassword()
             }
         }
     }
@@ -200,6 +173,8 @@ tasks.withType(Javadoc) {
 }
 
 tasks.withType(Test) {
+    useJUnitPlatform()
+
     // a collection to track failedTests
     ext.failedTests = []
 

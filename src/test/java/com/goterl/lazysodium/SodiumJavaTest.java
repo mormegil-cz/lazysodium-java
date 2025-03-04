@@ -8,7 +8,7 @@
 
 package com.goterl.lazysodium;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -21,7 +21,7 @@ public class SodiumJavaTest {
     //  - Loading is a no-op if libsodium has already been loaded by another test (say, from resources)
     // It is supposed to work with 'sodium', 'libsodium.so' (platform dependent) and
     // '/usr/lib/x86_64-linux-gnu/libsodium.so'
-    @Ignore
+    @Disabled
     public void canLoadWithSystemLibrary() {
         SodiumJava sodium = new SodiumJava("sodium");
         int initResult = sodium.sodium_init();
