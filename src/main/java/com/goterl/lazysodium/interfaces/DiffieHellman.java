@@ -42,11 +42,11 @@ public interface DiffieHellman {
         /**
          * Generate a shared key from another user's public key
          * and a secret key.
-         * @param publicKey Another user's public key.
          * @param secretKey A secret key.
+         * @param publicKey Another user's public key.
          * @return Shared secret key.
          */
-        Key cryptoScalarMult(Key publicKey, Key secretKey);
+        Key cryptoScalarMult(Key secretKey, Key publicKey);
 
     }
 
