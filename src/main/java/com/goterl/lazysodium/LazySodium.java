@@ -48,8 +48,6 @@ public abstract class LazySodium implements
     protected final Charset charset;
     protected final MessageEncoder messageEncoder;
 
-    public static Base64Facade base64Facade;
-
     public LazySodium() {
         this(StandardCharsets.UTF_8, new HexMessageEncoder());
     }
@@ -2103,7 +2101,7 @@ public abstract class LazySodium implements
     }
 
     @Override
-    public Key cryptoGenericHashKeygen(int size) throws SodiumException {
+    public Key cryptoGenericHashKeygen(int size) {
         byte[] key = randomBytesBuf(size);
         cryptoGenericHashKeygen(key);
         return Key.fromBytes(key);
