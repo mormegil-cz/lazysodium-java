@@ -406,19 +406,15 @@ public abstract class LazySodium implements
                                 long opsLimit,
                                 NativeLong memLimit,
                                 PwHash.Alg alg) {
+        PwHash.Checker.checkHash(outputHash);
         PwHash.Checker.checkPassword(password);
         PwHash.Checker.checkSalt(salt);
         PwHash.Checker.checkOpsLimit(opsLimit);
         PwHash.Checker.checkMemLimit(memLimit);
 
+        BaseChecker.checkArrayLength("hash bytes", outputHash, outputHashLen);
         BaseChecker.checkArrayLength("password bytes", password, passwordLen);
 
-        if (outputHashLen < 0 || outputHashLen > outputHash.length) {
-            throw new IllegalArgumentException("outputHashLen out of bounds: " + outputHashLen);
-        }
-        if (passwordLen < 0 || passwordLen > password.length) {
-            throw new IllegalArgumentException("passwordLen out of bounds: " + passwordLen);
-        }
         int res = getSodium().crypto_pwhash(outputHash,
                 outputHashLen,
                 password,
@@ -464,6 +460,7 @@ public abstract class LazySodium implements
             throws SodiumException {
         byte[] passwordBytes = bytes(password);
         PwHash.Checker.checkPassword(passwordBytes);
+        PwHash.Checker.checkBetween("lengthOfHash", lengthOfHash, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
         PwHash.Checker.checkSalt(salt);
         PwHash.Checker.checkOpsLimit(opsLimit);
         PwHash.Checker.checkMemLimit(memLimit);

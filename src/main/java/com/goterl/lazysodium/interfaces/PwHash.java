@@ -70,6 +70,10 @@ public interface PwHash {
 
 
     class Checker extends BaseChecker {
+        public static void checkHash(byte[] hash) {
+            checkBetween("hash length", hash.length, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
+        }
+
         public static void checkPassword(byte[] password) {
             checkBetween("password length", password.length, PwHash.PASSWD_MIN, PwHash.PASSWD_MAX);
         }
