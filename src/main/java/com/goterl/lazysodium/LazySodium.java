@@ -134,15 +134,29 @@ public abstract class LazySodium implements
         return new String(hexChars);
     }
 
-    // The following is from https://stackoverflow.com/a/140861/3526705
     private static byte[] hexToBytes(String s) {
         int len = s.length();
+        if (len % 2 != 0) {
+            throw new IllegalArgumentException("Hexadecimal string length must be even");
+        }
         byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = (byte)(hexDigit(s.charAt(2 * i)) << 4 | hexDigit(s.charAt(2 * i + 1)));
         }
         return data;
+    }
+
+    private static byte hexDigit(char c) {
+        if (c >= '0' && c <= '9') {
+            return (byte)(c - '0');
+        }
+        if (c >= 'A' && c <= 'F') {
+            return (byte)(c - 'A' + 10);
+        }
+        if (c >= 'a' && c <= 'f') {
+            return (byte)(c - 'a' + 10);
+        }
+        throw new IllegalArgumentException("Illegal hexadecimal character " + (byte)(c));
     }
 
 
