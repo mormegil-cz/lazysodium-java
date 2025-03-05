@@ -48,8 +48,6 @@ public abstract class LazySodium implements
     protected final Charset charset;
     protected final MessageEncoder messageEncoder;
 
-    public static Base64Facade base64Facade;
-
     public LazySodium() {
         this(StandardCharsets.UTF_8, new HexMessageEncoder());
     }
