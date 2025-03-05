@@ -2101,7 +2101,7 @@ public abstract class LazySodium implements
     }
 
     @Override
-    public Key cryptoGenericHashKeygen(int size) throws SodiumException {
+    public Key cryptoGenericHashKeygen(int size) {
         byte[] key = randomBytesBuf(size);
         cryptoGenericHashKeygen(key);
         return Key.fromBytes(key);
