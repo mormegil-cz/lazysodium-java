@@ -12,6 +12,8 @@ import com.goterl.lazysodium.exceptions.SodiumException;
 import com.goterl.lazysodium.utils.Key;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ShortHashTest extends BaseTest {
@@ -22,7 +24,7 @@ public class ShortHashTest extends BaseTest {
         String hashThis = "This should get hashed";
 
         Key key = lazySodium.cryptoShortHashKeygen();
-        String hash = lazySodium.cryptoShortHash(hashThis, key);
+        String hash = lazySodium.cryptoShortHash(lazySodium.toHexStr(hashThis.getBytes(StandardCharsets.UTF_8)), key);
 
         assertNotNull(hash);
     }
