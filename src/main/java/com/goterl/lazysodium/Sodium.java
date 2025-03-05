@@ -694,7 +694,7 @@ public class Sodium {
 
     public native int crypto_shorthash(byte[] out, byte[] in, long inLen, byte[] key);
 
-    public native int crypto_shorthash_keygen(byte[] key);
+    public native void crypto_shorthash_keygen(byte[] key);
 
 
 

@@ -48,7 +48,7 @@ public interface Base {
 
 
     /**
-     * Convert a string to directly bytes.
+     * Convert a string to bytes using the configured charset.
      * @param s The String to convert to a byte array.
      * @return A byte array from {@code s}.
      */
