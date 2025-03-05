@@ -25,6 +25,12 @@ public class BaseChecker {
         checkBetween(name, num.longValue(), min.longValue(), max.longValue());
     }
 
+    public static void checkAtLeast(String name, long num, long min) {
+        if (num < min) {
+            throw new IllegalArgumentException("Provided " + name + " is below minimum bound.");
+        }
+    }
+
     public static boolean isBetween(long num, long min, long max) {
         return min <= num && num <= max;
     }
@@ -54,6 +60,16 @@ public class BaseChecker {
         checkArrayLength(name, array.length, length);
     }
 
+    public static void checkOptionalArrayLength(String name, byte[] array, long length) {
+        if (array == null) {
+            if (length != 0) {
+                throw new IllegalArgumentException("Provided non-zero length for null " + name);
+            }
+        } else {
+            checkArrayLength(name, array.length, length);
+        }
+    }
+
     private static void checkArrayLength(String name, int arrayLength, long length) {
         if (length > arrayLength) {
             throw new IllegalArgumentException("Provided " + name + " array length is larger than array");
@@ -63,4 +79,15 @@ public class BaseChecker {
         }
     }
 
+    public static void checkOptionalOutPointer(String name, byte[] refArray) {
+        if (refArray != null && refArray.length == 0) {
+            throw new IllegalArgumentException("Provided " + name + " must be either null or non-empty");
+        }
+    }
+
+    public static void checkOptionalOutPointer(String name, long[] refArray) {
+        if (refArray != null && refArray.length == 0) {
+            throw new IllegalArgumentException("Provided " + name + " must be either null or non-empty");
+        }
+    }
 }
