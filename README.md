@@ -29,16 +29,16 @@ repositories {
 
 // Project level dependencies section
 dependencies {
-    implementation "com.goterl:lazysodium-java:VERSION_NUMBER"
+    implementation "cz.mormegil:lazysodium-java:VERSION_NUMBER"
     implementation "net.java.dev.jna:jna:JNA_NUMBER"
 }
 ```
 
 Substitute `VERSION_NUMBER` for the version in this box:
 
-![Maven Central](https://img.shields.io/maven-central/v/com.goterl/lazysodium-java?color=%23fff&label=Maven%20Central)
+![Maven Central](https://img.shields.io/maven-central/v/cz.mormegil/lazysodium-java?color=%23fff&label=Maven%20Central)
 
-Substitute `JNA_NUMBER` for the [latest version of JNA](https://github.com/java-native-access/jna/releases).
+Substitute `JNA_NUMBER` for the [latest version of JNA](https://github.com/java-native-access/jna/tags).
 
 ## Documentation
 
