@@ -10,7 +10,9 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Key;
+import com.sun.jna.NativeLong;
 
 public interface ShortHash {
 
@@ -22,6 +24,16 @@ public interface ShortHash {
         BYTES = SIPHASH24_BYTES,
         KEYBYTES = SIPHASH24_KEYBYTES;
 
+
+    class Checker extends BaseChecker {
+        public static void checkHash(byte[] hash) {
+            checkEqual("hash length", hash.length, BYTES);
+        }
+
+        public static void checkKey(byte[] key) {
+            checkEqual("key length", key.length, KEYBYTES);
+        }
+    }
 
 
     interface Native {
@@ -50,7 +62,7 @@ public interface ShortHash {
 
         /**
          * Generate a 64-bit key for short-input hashing.
-         * @return Key in string format.
+         * @return Key.
          */
         Key cryptoShortHashKeygen();
 
@@ -58,9 +70,25 @@ public interface ShortHash {
          * Hash a short message using a key.
          * @param in The short message to hash.
          * @param key The key generated via {@link #cryptoShortHashKeygen()}.
-         * @return Your message hashed of size {@link #BYTES}.
+         * @return Your message hashed of size {@link #BYTES}, as hexadecimal string.
          */
-        String cryptoShortHash(String in, Key key) throws SodiumException;
+        String cryptoShortHash(byte[] in, Key key) throws SodiumException;
+
+        /**
+         * Hash a short string using a key.
+         * @param in The short message to hash.
+         * @param key The key generated via {@link #cryptoShortHashKeygen()}.
+         * @return Your message hashed of size {@link #BYTES}, as hexadecimal string.
+         */
+        String cryptoShortHashStr(String in, Key key) throws SodiumException;
+
+        /**
+         * Hash a short hexadecimal string using a key.
+         * @param hexIn The short message to hash, represented as hexadecimal string.
+         * @param key The key generated via {@link #cryptoShortHashKeygen()}.
+         * @return Your message hashed of size {@link #BYTES}, as hexadecimal string.
+         */
+        String cryptoShortHashHex(String hexIn, Key key) throws SodiumException;
 
 
     }

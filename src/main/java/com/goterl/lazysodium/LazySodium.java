@@ -2020,22 +2020,23 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoShortHash(byte[] out, byte[] in, long inLen, byte[] key) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
+        ShortHash.Checker.checkHash(out);
+        ShortHash.Checker.checkKey(key);
         return successful(getSodium().crypto_shorthash(out, in, inLen, key));
     }
 
     @Override
     public void cryptoShortHashKeygen(byte[] k) {
+        ShortHash.Checker.checkKey(k);
         getSodium().crypto_shorthash_keygen(k);
     }
 
     @Override
-    public String cryptoShortHash(String in, Key key) throws SodiumException {
-        byte[] inBytes = hexToBytes(in);
+    public String cryptoShortHash(byte[] inBytes, Key key) throws SodiumException {
         byte[] keyBytes = key.getAsBytes();
-        byte[] out = randomBytesBuf(ShortHash.BYTES);
+        ShortHash.Checker.checkKey(keyBytes);
+        byte[] out = new byte[ShortHash.BYTES];
         if (getSodium().crypto_shorthash(out, inBytes, inBytes.length, keyBytes) != 0) {
             throw new SodiumException("Failed short-input hashing.");
         }
@@ -2043,8 +2044,18 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public String cryptoShortHashStr(String in, Key key) throws SodiumException {
+        return cryptoShortHash(bytes(in), key);
+    }
+
+    @Override
+    public String cryptoShortHashHex(String hexIn, Key key) throws SodiumException {
+        return cryptoShortHash(hexToBytes(hexIn), key);
+    }
+
+    @Override
     public Key cryptoShortHashKeygen() {
-        byte[] key = randomBytesBuf(ShortHash.SIPHASH24_KEYBYTES);
+        byte[] key = randomBytesBuf(ShortHash.KEYBYTES);
         getSodium().crypto_shorthash_keygen(key);
         return Key.fromBytes(key);
     }
