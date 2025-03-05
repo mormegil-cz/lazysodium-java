@@ -26,6 +26,7 @@ public class KeyDerivationTest extends BaseTest {
     static final byte[] SHORT_CONTEXT = new byte[]{0, 1, 2, 3, 4, 5};
     static final byte[] VALID_KEY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
     static final byte[] OUT_VALID_KEY_VALID_CONTEXT_1 = new byte[]{61, -17, -126, -25, -14, 29, 2, -83, 89, -120, 37, -35, 102, -11, -77, -59};
+    static final String CONTEXT_STR = "Examples";
     private KeyDerivation.Native keyDerivation;
     private KeyDerivation.Lazy keyDerivationLazy;
 
@@ -38,8 +39,7 @@ public class KeyDerivationTest extends BaseTest {
     @Test
     public void keygen() throws SodiumException {
         byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES];
-        String contextStr = "Examples";
-        byte[] context = lazySodium.bytes(contextStr);
+        byte[] context = lazySodium.bytes(CONTEXT_STR);
         // Create a master key
         keyDerivation.cryptoKdfKeygen(masterKey);
 
@@ -57,7 +57,7 @@ public class KeyDerivationTest extends BaseTest {
         Key skStr2 = keyDerivationLazy.cryptoKdfDeriveFromKey(
                 KeyDerivation.BYTES_MAX,
                 1L,
-                contextStr,
+                CONTEXT_STR,
                 Key.fromBytes(masterKey)
         );
 
@@ -143,6 +143,8 @@ public class KeyDerivationTest extends BaseTest {
 
     @Test
     public void doesntAllowShortSubKey() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN - 1, 1, CONTEXT_STR, Key.fromBytes(VALID_KEY)));
+
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = new byte[KeyDerivation.BYTES_MIN - 1];
             keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);
@@ -151,6 +153,8 @@ public class KeyDerivationTest extends BaseTest {
 
     @Test
     public void doesntAllowLongSubKey() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MAX + 1, 1, CONTEXT_STR, Key.fromBytes(VALID_KEY)));
+
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = new byte[KeyDerivation.BYTES_MAX + 1];
             keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);

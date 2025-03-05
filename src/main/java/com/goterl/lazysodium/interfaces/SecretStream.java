@@ -44,8 +44,26 @@ public interface SecretStream {
 
     class Checker extends BaseChecker {
 
-        public static boolean headerCheck(int headerSize) {
-            return headerSize == HEADERBYTES;
+        public static void checkHeader(byte[] header) {
+            checkEqual("secret stream header length", HEADERBYTES, header.length);
+        }
+
+        public static void checkKey(byte[] key) {
+            checkEqual("secret stream key length", KEYBYTES, key.length);
+        }
+
+        public static void checkPush(byte[] message, long messageLen, byte[] cipher) {
+            checkArrayLength("message bytes", message, messageLen);
+            if (cipher.length < messageLen + ABYTES) {
+                throw new IllegalArgumentException("Cipher array too small for messageLen + header");
+            }
+        }
+
+        public static void checkPull(byte[] cipher, long cipherLen, byte[] message) {
+            checkArrayLength("message bytes", cipher, cipherLen);
+            if (message.length < cipherLen - ABYTES) {
+                throw new IllegalArgumentException("Message array too small for cipherLen - header");
+            }
         }
 
     }
@@ -77,7 +95,7 @@ public interface SecretStream {
          * Encrypt a {@code message}.
          * @param state State as initialised in cryptoSecretStreamInitPush.
          * @param cipher The resulting cipher of size {@link #ABYTES} + {@code messageLen}.
-         * @param cipherAddr The cipher address will be stored here if not null.
+         * @param cipherLen The length of the resulting cipher will be stored here if not null.
          * @param message The message to encrypt.
          * @param messageLen The message length.
          * @param additionalData Additional data.
@@ -88,7 +106,7 @@ public interface SecretStream {
         boolean cryptoSecretStreamPush(
                 State state,
                 byte[] cipher,
-                long[] cipherAddr,
+                long[] cipherLen,
                 byte[] message,
                 long messageLen,
                 byte[] additionalData,
@@ -101,7 +119,7 @@ public interface SecretStream {
          * but without additional data.
          * @param state State.
          * @param cipher The resulting cipher of size {@link #ABYTES} + {@code messageLen}.
-         * @param cipherAddr The cipher address will be stored here if not null.
+         * @param cipherLen The length of the resulting cipher will be stored here if not null.
          * @param message The message to encrypt.
          * @param messageLen The message length.
          * @param tag The tag.
@@ -110,7 +128,7 @@ public interface SecretStream {
         boolean cryptoSecretStreamPush(
                 State state,
                 byte[] cipher,
-                long[] cipherAddr,
+                long[] cipherLen,
                 byte[] message,
                 long messageLen,
                 byte tag
@@ -153,8 +171,8 @@ public interface SecretStream {
          * Decrypt a message.
          * @param state The state as put into cryptoSecretStreamInitPull.
          * @param message The message of size {@code cipherLen} - {@link #ABYTES}.
-         * @param messageAddress The place to store the message.
-         * @param tag The tag.
+         * @param messageLen The length of the resulting message will be stored here if not null.
+         * @param tag The received tag will be stored here if not null.
          * @param cipher The resulting encrypted message.
          * @param cipherLen The cipher length.
          * @param additionalData Any authenticated data.
@@ -164,7 +182,7 @@ public interface SecretStream {
         boolean cryptoSecretStreamPull(
                 State state,
                 byte[] message,
-                long[] messageAddress,
+                long[] messageLen,
                 byte[] tag,
                 byte[] cipher,
                 long cipherLen,
@@ -176,7 +194,7 @@ public interface SecretStream {
          * Decrypt a message without additional data.
          * @param state The state as put into cryptoSecretStreamInitPull.
          * @param message The message of size {@code cipherLen} - {@link #ABYTES}.
-         * @param tag The tag.
+         * @param tag The received tag will be stored here if not null.
          * @param cipher The resulting encrypted message.
          * @param cipherLen The cipher length.
          * @return True if successful decryption.

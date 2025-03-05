@@ -10,6 +10,7 @@ package com.goterl.lazysodium;
 
 import com.goterl.lazysodium.interfaces.AEAD;
 import com.goterl.lazysodium.interfaces.MessageEncoder;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.DetachedDecrypt;
 import com.goterl.lazysodium.utils.DetachedEncrypt;
 import com.goterl.lazysodium.utils.HexMessageEncoder;
@@ -17,6 +18,8 @@ import com.goterl.lazysodium.utils.Key;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.AEADBadTagException;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,6 +40,22 @@ public class AEADTest extends BaseTest {
         String decrypted = lazySodium.decrypt(cipher, null, nPub, key, AEAD.Method.CHACHA20_POLY1305);
 
         assertEquals(decrypted, PASSWORD);
+    }
+
+    @Test
+    public void encryptChachaBadAdditionalDataLen() {
+        Key key = lazySodium.keygen(AEAD.Method.CHACHA20_POLY1305);
+        byte[] nPub = lazySodium.nonce(AEAD.CHACHA20POLY1305_NPUBBYTES);
+        byte[] passwordBytes = PASSWORD.getBytes(StandardCharsets.UTF_8);
+        byte[] cipherBytes = new byte[passwordBytes.length + AEAD.CHACHA20POLY1305_ABYTES];
+
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, null, passwordBytes, -1, null, 0,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, null, passwordBytes, passwordBytes.length + 1, null, 0,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(new byte[cipherBytes.length - 1], null, passwordBytes, passwordBytes.length, null, 0,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, null, passwordBytes, passwordBytes.length, null, -1,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, null, passwordBytes, passwordBytes.length, null, 1,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, null, passwordBytes, passwordBytes.length, new byte[1], 2,  null, nPub, key.getAsBytes()));
+        assertThrows(IllegalArgumentException.class, () -> lazySodium.cryptoAeadChaCha20Poly1305Encrypt(cipherBytes, new long[0], passwordBytes, passwordBytes.length, null, 0,  null, nPub, key.getAsBytes()));
     }
 
     @Test
