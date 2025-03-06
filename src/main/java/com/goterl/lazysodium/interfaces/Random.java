@@ -9,12 +9,25 @@
 package com.goterl.lazysodium.interfaces;
 
 
+import com.goterl.lazysodium.utils.BaseChecker;
+import com.goterl.lazysodium.utils.Constants;
 
 public interface Random {
+    long BYTES_MAX = Constants.UNSIGNED_INT;
+    int SEEDBYTES = 32;
+
+    class RandomChecker extends BaseChecker {
+        private RandomChecker() {
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkEqual("seed length", seed.length, SEEDBYTES);
+        }
+    }
 
     /**
      * Return a unsigned int byte 0 and 0xffffffff included.
-     * @return A random byte.
+     * @return A random integer.
      */
     long randomBytesRandom();
 
@@ -23,10 +36,17 @@ public interface Random {
      * Unlike randombytes_random() % upper_bound, it guarantees a uniform distribution
      * of the possible output values even when upper_bound is not a power of 2. Note
      * that an upper_bound less than 2 leaves only a single element to be chosen, namely 0.
-     * @param upperBound
+     * @param upperBound Upper bound (exclusive)
      * @return A uniformly random unsigned int.
      */
     long randomBytesUniform(int upperBound);
+
+    /**
+     * Fill a buffer with random bytes.
+     * @param buff Buffer to fill.
+     * @param size The number of bytes in the array to fill with random bytes.
+     */
+    void randomBytesBuf(byte[] buff, int size);
 
     /**
      * Get a random number of bytes.
@@ -36,13 +56,20 @@ public interface Random {
     byte[] randomBytesBuf(int size);
 
     /**
+     * Fill a buffer with deterministically random bytes given a seed.
+     * @param buff Buffer to fill
+     * @param size The number of bytes in the array to fill with random bytes.
+     * @param seed Seed to provide.
+     */
+    void randomBytesDeterministic(byte[] buff, int size, byte[] seed);
+
+    /**
      * Get deterministically random bytes given a seed.
      * @param size Size of byte array to return.
      * @param seed Seed to provide.
      * @return Deterministically random byte array.
      */
     byte[] randomBytesDeterministic(int size, byte[] seed);
-
 
     /**
      * Get a random number of bytes to use in a nonce.

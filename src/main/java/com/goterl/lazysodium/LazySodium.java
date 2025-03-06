@@ -10,7 +10,6 @@ package com.goterl.lazysodium;
 
 import com.goterl.lazysodium.exceptions.SodiumException;
 import com.goterl.lazysodium.interfaces.*;
-import com.goterl.lazysodium.interfaces.Ristretto255.Checker;
 import com.goterl.lazysodium.interfaces.Ristretto255.RistrettoPoint;
 import com.goterl.lazysodium.utils.*;
 import com.sun.jna.NativeLong;
@@ -18,8 +17,8 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-import java.math.BigInteger;
 import javax.crypto.AEADBadTagException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -141,7 +140,7 @@ public abstract class LazySodium implements
         }
         byte[] data = new byte[len / 2];
         for (int i = 0; i < data.length; ++i) {
-            data[i] = (byte)(hexDigit(s.charAt(2 * i)) << 4 | hexDigit(s.charAt(2 * i + 1)));
+            data[i] = (byte)((hexDigit(s.charAt(2 * i)) & 0xFF) << 4 | (hexDigit(s.charAt(2 * i + 1)) & 0xFF));
         }
         return data;
     }
@@ -170,6 +169,12 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public void randomBytesBuf(byte[] buff, int size) {
+        BaseChecker.checkArrayLength("buff", buff, size);
+        getSodium().randombytes_buf(buff, size);
+    }
+
+    @Override
     public byte[] randomBytesBuf(int size) {
         byte[] bs = new byte[size];
         getSodium().randombytes_buf(bs, size);
@@ -187,7 +192,15 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public void randomBytesDeterministic(byte[] buff, int size, byte[] seed) {
+        BaseChecker.checkArrayLength("buff", buff, size);
+        RandomChecker.checkSeed(seed);
+        getSodium().randombytes_buf_deterministic(buff, size, seed);
+    }
+
+    @Override
     public byte[] randomBytesDeterministic(int size, byte[] seed) {
+        RandomChecker.checkSeed(seed);
         byte[] bs = new byte[size];
         getSodium().randombytes_buf_deterministic(bs, size, seed);
         return bs;
@@ -2634,116 +2647,116 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoCoreRistretto255Random(byte[] point) {
-        Checker.ensurePointFits(point);
+        Ristretto255.Checker.ensurePointFits(point);
 
         getSodium().crypto_core_ristretto255_random(point);
     }
 
     @Override
     public boolean cryptoCoreRistretto255FromHash(byte[] point, byte[] hash) {
-        Checker.ensurePointFits(point);
-        Checker.checkHash(hash);
+        Ristretto255.Checker.ensurePointFits(point);
+        Ristretto255.Checker.checkHash(hash);
 
         return successful(getSodium().crypto_core_ristretto255_from_hash(point, hash));
     }
 
     @Override
     public boolean cryptoScalarmultRistretto255(byte[] result, byte[] n, byte[] point) {
-        Checker.ensurePointFits(result);
-        Checker.checkPoint(point);
-        Checker.checkScalar(n);
+        Ristretto255.Checker.ensurePointFits(result);
+        Ristretto255.Checker.checkPoint(point);
+        Ristretto255.Checker.checkScalar(n);
 
         return successful(getSodium().crypto_scalarmult_ristretto255(result, n, point));
     }
 
     @Override
     public boolean cryptoScalarmultRistretto255Base(byte[] result, byte[] n) {
-        Checker.ensurePointFits(result);
-        Checker.checkScalar(n);
+        Ristretto255.Checker.ensurePointFits(result);
+        Ristretto255.Checker.checkScalar(n);
 
         return successful(getSodium().crypto_scalarmult_ristretto255_base(result, n));
     }
 
     @Override
     public boolean cryptoCoreRistretto255Add(byte[] result, byte[] p, byte[] q) {
-        Checker.ensurePointFits(result);
-        Checker.checkPoint(p);
-        Checker.checkPoint(q);
+        Ristretto255.Checker.ensurePointFits(result);
+        Ristretto255.Checker.checkPoint(p);
+        Ristretto255.Checker.checkPoint(q);
 
         return successful(getSodium().crypto_core_ristretto255_add(result, p, q));
     }
 
     @Override
     public boolean cryptoCoreRistretto255Sub(byte[] result, byte[] p, byte[] q) {
-        Checker.ensurePointFits(result);
-        Checker.checkPoint(p);
-        Checker.checkPoint(q);
+        Ristretto255.Checker.ensurePointFits(result);
+        Ristretto255.Checker.checkPoint(p);
+        Ristretto255.Checker.checkPoint(q);
 
         return successful(getSodium().crypto_core_ristretto255_sub(result, p, q));
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarRandom(byte[] scalar) {
-        Checker.ensureScalarFits(scalar);
+        Ristretto255.Checker.ensureScalarFits(scalar);
 
         getSodium().crypto_core_ristretto255_scalar_random(scalar);
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarReduce(byte[] result, byte[] scalar) {
-        Checker.ensureScalarFits(result);
-        Checker.checkNonReducedScalar(scalar);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkNonReducedScalar(scalar);
 
         getSodium().crypto_core_ristretto255_scalar_reduce(result, scalar);
     }
 
     @Override
     public boolean cryptoCoreRistretto255ScalarInvert(byte[] result, byte[] scalar) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(scalar);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(scalar);
 
         return successful(getSodium().crypto_core_ristretto255_scalar_invert(result, scalar));
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarNegate(byte[] result, byte[] scalar) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(scalar);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(scalar);
 
         getSodium().crypto_core_ristretto255_scalar_negate(result, scalar);
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarComplement(byte[] result, byte[] scalar) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(scalar);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(scalar);
 
         getSodium().crypto_core_ristretto255_scalar_complement(result, scalar);
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarAdd(byte[] result, byte[] x, byte[] y) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(x);
-        Checker.checkScalar(y);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(x);
+        Ristretto255.Checker.checkScalar(y);
 
         getSodium().crypto_core_ristretto255_scalar_add(result, x, y);
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarSub(byte[] result, byte[] x, byte[] y) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(x);
-        Checker.checkScalar(y);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(x);
+        Ristretto255.Checker.checkScalar(y);
 
         getSodium().crypto_core_ristretto255_scalar_sub(result, x, y);
     }
 
     @Override
     public void cryptoCoreRistretto255ScalarMul(byte[] result, byte[] x, byte[] y) {
-        Checker.ensureScalarFits(result);
-        Checker.checkScalar(x);
-        Checker.checkScalar(y);
+        Ristretto255.Checker.ensureScalarFits(result);
+        Ristretto255.Checker.checkScalar(x);
+        Ristretto255.Checker.checkScalar(y);
 
         getSodium().crypto_core_ristretto255_scalar_mul(result, x, y);
     }
