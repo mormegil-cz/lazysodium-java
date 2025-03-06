@@ -285,27 +285,17 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoKdfKeygen(byte[] masterKey) {
-        if (masterKey.length != KeyDerivation.MASTER_KEY_BYTES) {
-            throw new IllegalArgumentException("Master key length is wrong: " + masterKey.length);
-        }
+        KeyDerivation.Checker.checkMasterKey(masterKey);
         getSodium().crypto_kdf_keygen(masterKey);
     }
 
     @Override
-    public int cryptoKdfDeriveFromKey(byte[] subKey, int subKeyLen, long subKeyId, byte[] context, byte[] masterKey) {
-        if (subKeyLen < KeyDerivation.BYTES_MIN || KeyDerivation.BYTES_MAX < subKeyLen) {
-            throw new IllegalArgumentException("Sub Key Length is out of bounds: " + subKeyLen);
-        }
-        if (subKey.length < subKeyLen) {
-            throw new IllegalArgumentException("Sub Key array is less than specified size");
-        }
-        if (masterKey.length != KeyDerivation.MASTER_KEY_BYTES) {
-            throw new IllegalArgumentException("Master key length is wrong: " + masterKey.length);
-        }
-        if (context.length != KeyDerivation.CONTEXT_BYTES) {
-            throw new IllegalArgumentException("Context length is wrong: " + context.length);
-        }
-        return getSodium().crypto_kdf_derive_from_key(subKey, subKeyLen, subKeyId, context, masterKey);
+    public boolean cryptoKdfDeriveFromKey(byte[] subKey, int subKeyLen, long subKeyId, byte[] context, byte[] masterKey) {
+        KeyDerivation.Checker.checkSubKeyLength(subKeyLen);
+        BaseChecker.checkArrayLength("subKey", subKey, subKeyLen);
+        KeyDerivation.Checker.checkMasterKey(masterKey);
+        KeyDerivation.Checker.checkContext(context);
+        return successful(getSodium().crypto_kdf_derive_from_key(subKey, subKeyLen, subKeyId, context, masterKey));
     }
 
     @Override
@@ -319,15 +309,11 @@ public abstract class LazySodium implements
     public Key cryptoKdfDeriveFromKey(int lengthOfSubKey, long subKeyId, String context, Key masterKey)
             throws SodiumException {
         KeyDerivation.Checker.checkSubKeyLength(lengthOfSubKey);
-        if (!KeyDerivation.Checker.masterKeyIsCorrect(masterKey.getAsBytes().length)) {
-            throw new SodiumException("Master key is not the correct length.");
-        }
-        if (!KeyDerivation.Checker.contextIsCorrect(bytes(context).length)) {
-            throw new SodiumException("Context is not the correct length.");
-        }
+        KeyDerivation.Checker.checkMasterKey(masterKey.getAsBytes());
+        byte[] contextAsBytes = bytes(context);
+        KeyDerivation.Checker.checkContext(contextAsBytes);
 
         byte[] subKey = new byte[lengthOfSubKey];
-        byte[] contextAsBytes = bytes(context);
         byte[] masterKeyAsBytes = masterKey.getAsBytes();
         int res = getSodium().crypto_kdf_derive_from_key(
                 subKey,
@@ -338,7 +324,7 @@ public abstract class LazySodium implements
         );
 
         if (!successful(res)) {
-            throw new SodiumException("Failed kdfDeriveFromKey.");
+            throw new SodiumException("Failed cryptoKdfDeriveFromKey.");
         }
         return Key.fromBytes(subKey);
     }

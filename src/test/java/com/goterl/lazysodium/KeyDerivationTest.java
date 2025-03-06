@@ -26,13 +26,14 @@ public class KeyDerivationTest extends BaseTest {
     static final byte[] SHORT_CONTEXT = new byte[]{0, 1, 2, 3, 4, 5};
     static final byte[] VALID_KEY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
     static final byte[] OUT_VALID_KEY_VALID_CONTEXT_1 = new byte[]{61, -17, -126, -25, -14, 29, 2, -83, 89, -120, 37, -35, 102, -11, -77, -59};
+    static final byte[] OUT_VALID_KEY_VALID_CONTEXT_FROM_STR = new byte[]{22, 22, -99, -58, -54, 63, 107, -65, -24, -66, -70, -123, -87, 120, 70, -9};
     static final String CONTEXT_STR = "Examples";
-    private KeyDerivation.Native keyDerivation;
+    private KeyDerivation.Native keyDerivationNative;
     private KeyDerivation.Lazy keyDerivationLazy;
 
     @BeforeAll
     public void before() {
-        keyDerivation = lazySodium;
+        keyDerivationNative = lazySodium;
         keyDerivationLazy = lazySodium;
     }
 
@@ -41,14 +42,15 @@ public class KeyDerivationTest extends BaseTest {
         byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES];
         byte[] context = lazySodium.bytes(CONTEXT_STR);
         // Create a master key
-        keyDerivation.cryptoKdfKeygen(masterKey);
+        keyDerivationNative.cryptoKdfKeygen(masterKey);
 
         // Create subkey number 1 with the max bytes
         byte[] subKey = new byte[KeyDerivation.BYTES_MAX];
-        keyDerivation.cryptoKdfDeriveFromKey(
+        boolean success = keyDerivationNative.cryptoKdfDeriveFromKey(
                 subKey, subKey.length, 1L,
                 context, masterKey
         );
+        assertTrue(success);
 
         String skStr = lazySodium.toHexStr(subKey);
 
@@ -65,32 +67,44 @@ public class KeyDerivationTest extends BaseTest {
     }
 
     @Test
-    public void doesRawGen() {
+    public void doesNativeGen() {
         byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES];
-        keyDerivation.cryptoKdfKeygen(masterKey);
+        keyDerivationNative.cryptoKdfKeygen(masterKey);
     }
 
     @Test
-    public void doesRawGenSubEachTime() {
+    public void doesLazyGen() {
+        final Key key = keyDerivationLazy.cryptoKdfKeygen();
+        assertEquals(KeyDerivation.MASTER_KEY_BYTES, key.getAsBytes().length);
+    }
+
+    @Test
+    public void doesRawGenSubNative() {
         byte[] out = new byte[KeyDerivation.BYTES_MIN];
-        int result = keyDerivation.cryptoKdfDeriveFromKey(out, KeyDerivation.BYTES_MIN, 1L, VALID_CONTEXT, VALID_KEY);
-        assertEquals(0, result);
+        boolean result = keyDerivationNative.cryptoKdfDeriveFromKey(out, KeyDerivation.BYTES_MIN, 1L, VALID_CONTEXT, VALID_KEY);
+        assertTrue(result);
         assertArrayEquals(OUT_VALID_KEY_VALID_CONTEXT_1, out);
+    }
+
+    @Test
+    public void doesRawGenSubLazy() throws SodiumException {
+        Key key = keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN, 1L, CONTEXT_STR, Key.fromBytes(VALID_KEY));
+        assertArrayEquals(OUT_VALID_KEY_VALID_CONTEXT_FROM_STR, key.getAsBytes());
     }
 
     @Test
     public void doesntGenerateShortKeys() {
         assertThrows(IllegalArgumentException.class, () -> {
-            byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES - 5];
-            keyDerivation.cryptoKdfKeygen(masterKey);
+            byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES - 1];
+            keyDerivationNative.cryptoKdfKeygen(masterKey);
         });
     }
 
     @Test
     public void doesntGenerateLongKeys() {
         assertThrows(IllegalArgumentException.class, () -> {
-            byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES + 5];
-            keyDerivation.cryptoKdfKeygen(masterKey);
+            byte[] masterKey = new byte[KeyDerivation.MASTER_KEY_BYTES + 1];
+            keyDerivationNative.cryptoKdfKeygen(masterKey);
         });
     }
 
@@ -103,41 +117,49 @@ public class KeyDerivationTest extends BaseTest {
         return masterKey;
     }
 
-    private byte[] makeValidOut() {
+    private static byte[] makeValidOut() {
         return new byte[KeyDerivation.BYTES_MAX];
     }
 
     @Test
     public void doesntAllowShortKeys() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN, 1L, CONTEXT_STR, Key.fromBytes(new byte[KeyDerivation.MASTER_KEY_BYTES - 1])));
+
         assertThrows(IllegalArgumentException.class, () -> {
-            byte[] masterKey = generateKeyOfAnyLength(KeyDerivation.MASTER_KEY_BYTES - 5);
+            byte[] masterKey = generateKeyOfAnyLength(KeyDerivation.MASTER_KEY_BYTES - 1);
             byte[] out = makeValidOut();
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, masterKey);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, masterKey);
         });
     }
 
     @Test
     public void doesntAllowLongKeys() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN, 1L, CONTEXT_STR, Key.fromBytes(new byte[KeyDerivation.MASTER_KEY_BYTES + 1])));
+
         assertThrows(IllegalArgumentException.class, () -> {
-            byte[] masterKey = generateKeyOfAnyLength(KeyDerivation.MASTER_KEY_BYTES + 5);
+            byte[] masterKey = generateKeyOfAnyLength(KeyDerivation.MASTER_KEY_BYTES + 1);
             byte[] out = makeValidOut();
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, masterKey);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, masterKey);
         });
     }
 
     @Test
     public void doesntAllowShortContext() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN, 1L, "Short!!", Key.fromBytes(VALID_KEY)));
+
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = makeValidOut();
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, SHORT_CONTEXT, VALID_KEY);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, SHORT_CONTEXT, VALID_KEY);
         });
     }
 
     @Test
     public void doesntAllowLongContext() {
+        assertThrows(IllegalArgumentException.class, () -> keyDerivationLazy.cryptoKdfDeriveFromKey(KeyDerivation.BYTES_MIN, 1L, "Too long!", Key.fromBytes(VALID_KEY)));
+
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = makeValidOut();
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, LONG_CONTEXT, VALID_KEY);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, LONG_CONTEXT, VALID_KEY);
         });
     }
 
@@ -147,7 +169,7 @@ public class KeyDerivationTest extends BaseTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = new byte[KeyDerivation.BYTES_MIN - 1];
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);
         });
     }
 
@@ -157,7 +179,7 @@ public class KeyDerivationTest extends BaseTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = new byte[KeyDerivation.BYTES_MAX + 1];
-            keyDerivation.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, out.length, 1L, VALID_CONTEXT, VALID_KEY);
         });
     }
 
@@ -165,7 +187,7 @@ public class KeyDerivationTest extends BaseTest {
     public void doesntAllowSubKeyShorterThanSpecified() {
         assertThrows(IllegalArgumentException.class, () -> {
             byte[] out = new byte[KeyDerivation.BYTES_MAX - 1];
-            keyDerivation.cryptoKdfDeriveFromKey(out, KeyDerivation.BYTES_MAX, 1L, VALID_CONTEXT, VALID_KEY);
+            keyDerivationNative.cryptoKdfDeriveFromKey(out, KeyDerivation.BYTES_MAX, 1L, VALID_CONTEXT, VALID_KEY);
         });
     }
 }

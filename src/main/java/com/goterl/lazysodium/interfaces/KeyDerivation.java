@@ -38,9 +38,9 @@ public interface KeyDerivation {
          * @param subKeyId ID of subkey.
          * @param context The context of the subkey. Must be {@link KeyDerivation#CONTEXT_BYTES}.
          * @param masterKey The generated master key from {@link #cryptoKdfKeygen(byte[])}. Must be {@link KeyDerivation#MASTER_KEY_BYTES}.
-         * @return 0 on success, -1 otherwise.
+         * @return True if successful
          */
-        int cryptoKdfDeriveFromKey(byte[] subKey, int subKeyLen, long subKeyId, byte[] context, byte[] masterKey);
+        boolean cryptoKdfDeriveFromKey(byte[] subKey, int subKeyLen, long subKeyId, byte[] context, byte[] masterKey);
     }
 
     interface Lazy {
@@ -70,13 +70,19 @@ public interface KeyDerivation {
     }
 
     class Checker extends BaseChecker {
+        private Checker() {
+        }
 
-        public static boolean masterKeyIsCorrect(long masterKeyLen) {
-            return masterKeyLen == KeyDerivation.MASTER_KEY_BYTES;
+        public static void checkMasterKey(byte[] key) {
+            checkEqual("master key length", key.length, MASTER_KEY_BYTES);
         }
 
         public static void checkSubKeyLength(int subkeyLen) {
             checkBetween("subkey length", subkeyLen, BYTES_MIN, BYTES_MAX);
+        }
+
+        public static void checkContext(byte[] context) {
+            checkEqual("context length", context.length, CONTEXT_BYTES);
         }
 
         public static boolean contextIsCorrect(int length) {
