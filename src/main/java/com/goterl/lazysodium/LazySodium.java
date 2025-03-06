@@ -473,24 +473,28 @@ public abstract class LazySodium implements
                                    int passwordLen,
                                    long opsLimit,
                                    NativeLong memLimit) {
-        if (passwordLen < 0 || passwordLen > password.length) {
-            throw new IllegalArgumentException("passwordLen out of bounds: " + passwordLen);
-        }
+        PwHash.Checker.checkHashStrOutput(outputStr);
+        BaseChecker.checkArrayLength("password", password, passwordLen);
+        PwHash.Checker.checkOpsLimit(opsLimit);
+        PwHash.Checker.checkMemLimit(memLimit);
+
         int res = getSodium().crypto_pwhash_str(outputStr, password, passwordLen, opsLimit, memLimit);
         return successful(res);
     }
 
     @Override
     public boolean cryptoPwHashStrVerify(byte[] hash, byte[] password, int passwordLen) {
-        if (passwordLen < 0 || passwordLen > password.length) {
-            throw new IllegalArgumentException("passwordLen out of bounds: " + passwordLen);
-        }
+        PwHash.Checker.checkHashStrInput(hash);
+        BaseChecker.checkArrayLength("password", password, passwordLen);
         return successful(getSodium().crypto_pwhash_str_verify(hash, password, passwordLen));
     }
 
     @Override
-    public boolean cryptoPwHashStrNeedsRehash(byte[] hash, long opsLimit, NativeLong memLimit) {
-        return successful(getSodium().crypto_pwhash_str_needs_rehash(hash, opsLimit, memLimit));
+    public PwHash.NeedsRehashResult cryptoPwHashStrNeedsRehash(byte[] hash, long opsLimit, NativeLong memLimit) {
+        PwHash.Checker.checkHashStrInput(hash);
+        PwHash.Checker.checkOpsLimit(opsLimit);
+        PwHash.Checker.checkMemLimit(memLimit);
+        return PwHash.NeedsRehashResult.valueOf(getSodium().crypto_pwhash_str_needs_rehash(hash, opsLimit, memLimit));
     }
 
 
@@ -501,7 +505,7 @@ public abstract class LazySodium implements
             throws SodiumException {
         byte[] passwordBytes = bytes(password);
         PwHash.Checker.checkPassword(passwordBytes);
-        PwHash.Checker.checkBetween("lengthOfHash", lengthOfHash, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
+        PwHash.Checker.checkLengthOfHash(lengthOfHash);
         PwHash.Checker.checkSalt(salt);
         PwHash.Checker.checkOpsLimit(opsLimit);
         PwHash.Checker.checkMemLimit(memLimit);
@@ -517,9 +521,27 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public String cryptoPwHashString(String password, long opsLimit, NativeLong memLimit) throws SodiumException {
+        byte[] hash = new byte[PwHash.STR_BYTES];
+        byte[] passwordBytes = bytes(password);
+        PwHash.Checker.checkPassword(passwordBytes);
+        PwHash.Checker.checkOpsLimit(opsLimit);
+        PwHash.Checker.checkMemLimit(memLimit);
+        boolean res = cryptoPwHashStr(hash, passwordBytes, passwordBytes.length, opsLimit, memLimit);
+        if (!res) {
+            throw new SodiumException("Password hashing failed.");
+        }
+        return decodeAsciiz(hash);
+    }
+
+    @Override
+    @Deprecated
     public String cryptoPwHashStr(String password, long opsLimit, NativeLong memLimit) throws SodiumException {
         byte[] hash = new byte[PwHash.STR_BYTES];
         byte[] passwordBytes = bytes(password);
+        PwHash.Checker.checkPassword(passwordBytes);
+        PwHash.Checker.checkOpsLimit(opsLimit);
+        PwHash.Checker.checkMemLimit(memLimit);
         boolean res = cryptoPwHashStr(hash, passwordBytes, passwordBytes.length, opsLimit, memLimit);
         if (!res) {
             throw new SodiumException("Password hashing failed.");
@@ -528,6 +550,7 @@ public abstract class LazySodium implements
     }
 
     @Override
+    @Deprecated
     public String cryptoPwHashStrRemoveNulls(String password, long opsLimit, NativeLong memLimit) throws SodiumException {
         byte[] hash = new byte[PwHash.STR_BYTES];
         byte[] passwordBytes = bytes(password);
@@ -541,6 +564,15 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public boolean cryptoPwHashStringVerify(String hash, String password) {
+        byte[] hashBytes = encodeToAsciiz(hash);
+        byte[] passwordBytes = bytes(password);
+
+        return cryptoPwHashStrVerify(hashBytes, passwordBytes, passwordBytes.length);
+    }
+
+    @Override
+    @Deprecated
     public boolean cryptoPwHashStrVerify(String hash, String password) {
         byte[] hashBytes = messageEncoder.decode(hash);
         byte[] passwordBytes = bytes(password);
@@ -557,6 +589,13 @@ public abstract class LazySodium implements
 
 
         return cryptoPwHashStrVerify(hashBytes, passwordBytes, passwordBytes.length);
+    }
+
+    @Override
+    public PwHash.NeedsRehashResult cryptoPwHashStringNeedsRehash(String hash, long opsLimit, NativeLong memLimit) {
+        byte[] hashBytes = encodeToAsciiz(hash);
+
+        return cryptoPwHashStrNeedsRehash(hashBytes, opsLimit, memLimit);
     }
 
 
@@ -3362,6 +3401,27 @@ public abstract class LazySodium implements
         return trimmed;
     }
 
+    static byte[] encodeToAsciiz(String str) {
+        byte[] bytes = str.getBytes(StandardCharsets.US_ASCII);
+        byte[] bytesWithZero = new byte[bytes.length + 1];
+        System.arraycopy(bytes, 0, bytesWithZero, 0, bytes.length);
+        return bytesWithZero;
+    }
+
+    static String decodeAsciiz(byte[] bytes) throws SodiumException {
+        int zeroPos = -1;
+        for (int i = 0; i < bytes.length; ++i) {
+            if (bytes[i] == 0) {
+                zeroPos = i;
+                break;
+            }
+        }
+        if (zeroPos < 0) {
+            // this should not happen for results from sodium, so...?
+            throw new SodiumException("Zero terminator missing in presumably ASCIIZ data");
+        }
+        return new String(bytes, 0, zeroPos, StandardCharsets.US_ASCII);
+    }
 
     public abstract Sodium getSodium();
 
