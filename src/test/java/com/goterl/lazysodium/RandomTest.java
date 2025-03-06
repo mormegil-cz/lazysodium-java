@@ -91,14 +91,4 @@ public class RandomTest extends BaseTest {
         assertEquals(50, buf.length);
         assertTrue(countZeros(buf) < 30);
     }
-
-    private static int countZeros(byte[] buff) {
-        int zeroes = 0;
-        for (byte b : buff) {
-            if (b == 0) {
-                ++zeroes;
-            }
-        }
-        return zeroes;
-    }
 }

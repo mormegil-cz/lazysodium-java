@@ -50,6 +50,7 @@ public abstract class LazySodium implements
     public LazySodium() {
         this(StandardCharsets.UTF_8, new HexMessageEncoder());
     }
+
     public LazySodium(Charset charset) {
         this(charset, new HexMessageEncoder());
     }
@@ -140,22 +141,22 @@ public abstract class LazySodium implements
         }
         byte[] data = new byte[len / 2];
         for (int i = 0; i < data.length; ++i) {
-            data[i] = (byte)((hexDigit(s.charAt(2 * i)) & 0xFF) << 4 | (hexDigit(s.charAt(2 * i + 1)) & 0xFF));
+            data[i] = (byte) ((hexDigit(s.charAt(2 * i)) & 0xFF) << 4 | (hexDigit(s.charAt(2 * i + 1)) & 0xFF));
         }
         return data;
     }
 
     private static byte hexDigit(char c) {
         if (c >= '0' && c <= '9') {
-            return (byte)(c - '0');
+            return (byte) (c - '0');
         }
         if (c >= 'A' && c <= 'F') {
-            return (byte)(c - 'A' + 10);
+            return (byte) (c - 'A' + 10);
         }
         if (c >= 'a' && c <= 'f') {
-            return (byte)(c - 'a' + 10);
+            return (byte) (c - 'a' + 10);
         }
-        throw new IllegalArgumentException("Illegal hexadecimal character " + (byte)(c));
+        throw new IllegalArgumentException("Illegal hexadecimal character " + (byte) (c));
     }
 
 
@@ -336,21 +337,36 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoKxKeypair(byte[] publicKey, byte[] secretKey) {
+        KeyExchange.Checker.checkPublicKey(publicKey);
+        KeyExchange.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_kx_keypair(publicKey, secretKey));
     }
 
     @Override
     public boolean cryptoKxSeedKeypair(byte[] publicKey, byte[] secretKey, byte[] seed) {
+        KeyExchange.Checker.checkPublicKey(publicKey);
+        KeyExchange.Checker.checkSecretKey(secretKey);
+        KeyExchange.Checker.checkSeed(seed);
         return successful(getSodium().crypto_kx_seed_keypair(publicKey, secretKey, seed));
     }
 
     @Override
     public boolean cryptoKxClientSessionKeys(byte[] rx, byte[] tx, byte[] clientPk, byte[] clientSk, byte[] serverPk) {
+        KeyExchange.Checker.checkSessionKey(rx);
+        KeyExchange.Checker.checkSessionKey(tx);
+        KeyExchange.Checker.checkPublicKey(clientPk);
+        KeyExchange.Checker.checkSecretKey(clientSk);
+        KeyExchange.Checker.checkPublicKey(serverPk);
         return successful(getSodium().crypto_kx_client_session_keys(rx, tx, clientPk, clientSk, serverPk));
     }
 
     @Override
     public boolean cryptoKxServerSessionKeys(byte[] rx, byte[] tx, byte[] serverPk, byte[] serverSk, byte[] clientPk) {
+        KeyExchange.Checker.checkSessionKey(rx);
+        KeyExchange.Checker.checkSessionKey(tx);
+        KeyExchange.Checker.checkPublicKey(serverPk);
+        KeyExchange.Checker.checkSecretKey(serverSk);
+        KeyExchange.Checker.checkPublicKey(clientPk);
         return successful(getSodium().crypto_kx_server_session_keys(rx, tx, serverPk, serverSk, clientPk));
     }
 
@@ -358,21 +374,26 @@ public abstract class LazySodium implements
     // -- Lazy functions
 
     @Override
-    public KeyPair cryptoKxKeypair() {
-        byte[] secretKey = randomBytesBuf(KeyExchange.SECRETKEYBYTES);
-        byte[] publicKey = randomBytesBuf(KeyExchange.PUBLICKEYBYTES);
+    public KeyPair cryptoKxKeypair() throws SodiumException {
+        byte[] secretKey = new byte[KeyExchange.SECRETKEYBYTES];
+        byte[] publicKey = new byte[KeyExchange.PUBLICKEYBYTES];
 
-        getSodium().crypto_kx_keypair(publicKey, secretKey);
+        if (!successful(getSodium().crypto_kx_keypair(publicKey, secretKey))) {
+            throw new SodiumException("Failed to generate keypair");
+        }
 
         return new KeyPair(Key.fromBytes(publicKey), Key.fromBytes(secretKey));
     }
 
     @Override
-    public KeyPair cryptoKxKeypair(byte[] seed) {
-        byte[] secretKey = randomBytesBuf(KeyExchange.SECRETKEYBYTES);
-        byte[] publicKey = randomBytesBuf(KeyExchange.PUBLICKEYBYTES);
+    public KeyPair cryptoKxKeypair(byte[] seed) throws SodiumException {
+        KeyExchange.Checker.checkSeed(seed);
+        byte[] secretKey = new byte[KeyExchange.SECRETKEYBYTES];
+        byte[] publicKey = new byte[KeyExchange.PUBLICKEYBYTES];
 
-        getSodium().crypto_kx_seed_keypair(publicKey, secretKey, seed);
+        if (!successful(getSodium().crypto_kx_seed_keypair(publicKey, secretKey, seed))) {
+            throw new SodiumException("Failed to generate keypair");
+        }
 
         return new KeyPair(Key.fromBytes(publicKey), Key.fromBytes(secretKey));
     }
@@ -790,6 +811,7 @@ public abstract class LazySodium implements
 
 
     // -------------------------------------------|
+
     //// CRYPTO BOX
     //// -------------------------------------------|
 
@@ -2635,7 +2657,7 @@ public abstract class LazySodium implements
     @Override
     public boolean cryptoCoreRistretto255IsValidPoint(byte[] point) {
         return point.length == Ristretto255.RISTRETTO255_BYTES
-                   && getSodium().crypto_core_ristretto255_is_valid_point(point) == 1;
+                && getSodium().crypto_core_ristretto255_is_valid_point(point) == 1;
     }
 
     @Override
@@ -2797,7 +2819,7 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoScalarmultRistretto255(BigInteger n, RistrettoPoint point)
-        throws SodiumException {
+            throws SodiumException {
         if (n == null || point == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -2807,7 +2829,7 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoScalarmultRistretto255(String nEnc, RistrettoPoint point)
-        throws SodiumException {
+            throws SodiumException {
         if (nEnc == null || point == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -2817,13 +2839,13 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoScalarmultRistretto255(byte[] n, RistrettoPoint point)
-        throws SodiumException {
+            throws SodiumException {
 
         byte[] result = Ristretto255.pointBuffer();
 
         if (!cryptoScalarmultRistretto255(result, n, point.toBytes())) {
             throw new SodiumException(
-                "Scalar multiplication failed. The resulting point was the identity element.");
+                    "Scalar multiplication failed. The resulting point was the identity element.");
         }
 
         return RistrettoPoint.fromBytes(this, result);
@@ -2839,7 +2861,7 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoScalarmultRistretto255Base(String nEnc)
-        throws SodiumException {
+            throws SodiumException {
         if (nEnc == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -2853,7 +2875,7 @@ public abstract class LazySodium implements
 
         if (!cryptoScalarmultRistretto255Base(result, n)) {
             throw new SodiumException(
-                "Scalar multiplication failed. n was 0.");
+                    "Scalar multiplication failed. n was 0.");
         }
 
         return RistrettoPoint.fromBytes(this, result);
@@ -2861,7 +2883,7 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoCoreRistretto255Add(RistrettoPoint p, RistrettoPoint q)
-        throws SodiumException {
+            throws SodiumException {
         if (p == null || q == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -2876,7 +2898,7 @@ public abstract class LazySodium implements
 
     @Override
     public RistrettoPoint cryptoCoreRistretto255Sub(RistrettoPoint p, RistrettoPoint q)
-        throws SodiumException {
+            throws SodiumException {
 
         if (p == null || q == null) {
             throw new IllegalArgumentException("null arguments are invalid");
@@ -2926,7 +2948,7 @@ public abstract class LazySodium implements
 
     @Override
     public BigInteger cryptoCoreRistretto255ScalarInvert(BigInteger scalar)
-        throws SodiumException {
+            throws SodiumException {
         if (scalar == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -2936,7 +2958,7 @@ public abstract class LazySodium implements
 
     @Override
     public BigInteger cryptoCoreRistretto255ScalarInvert(String scalarEnc)
-        throws SodiumException {
+            throws SodiumException {
         if (scalarEnc == null) {
             throw new IllegalArgumentException("null arguments are invalid");
         }
@@ -3014,7 +3036,7 @@ public abstract class LazySodium implements
         }
 
         return cryptoCoreRistretto255ScalarAdd(
-            Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
+                Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
     }
 
     @Override
@@ -3095,7 +3117,7 @@ public abstract class LazySodium implements
         }
 
         return cryptoCoreRistretto255ScalarSub(
-            Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
+                Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
     }
 
     @Override
@@ -3176,7 +3198,7 @@ public abstract class LazySodium implements
         }
 
         return cryptoCoreRistretto255ScalarMul(
-            Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
+                Ristretto255.scalarToBytes(x), Ristretto255.scalarToBytes(y));
     }
 
     @Override
@@ -3345,6 +3367,7 @@ public abstract class LazySodium implements
 
 
     // --
+
     //// -------------------------------------------|
     //// MAIN
     //// -------------------------------------------|

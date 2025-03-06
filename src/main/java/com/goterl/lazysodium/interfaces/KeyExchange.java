@@ -10,6 +10,7 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Key;
 import com.goterl.lazysodium.utils.KeyPair;
 import com.goterl.lazysodium.utils.SessionPair;
@@ -22,6 +23,23 @@ public interface KeyExchange {
     int SEEDBYTES = 32;
     String PRIMITIVE = "x25519blake2b";
 
+    class Checker extends BaseChecker {
+        public static void checkPublicKey(byte[] key) {
+            checkEqual("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkEqual("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSessionKey(byte[] key) {
+            checkEqual("session key length", key.length, SESSIONKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkEqual("seed length", seed.length, SEEDBYTES);
+        }
+    }
 
     interface Native {
 
@@ -97,7 +115,7 @@ public interface KeyExchange {
          * Generate a public and secret key.
          * @return A KeyPair containing a public and secret key.
          */
-        KeyPair cryptoKxKeypair();
+        KeyPair cryptoKxKeypair() throws SodiumException;
 
         /**
          * Deterministically generate a public and secret key.
@@ -106,7 +124,7 @@ public interface KeyExchange {
          * @param seed A random seed of size {@link #SEEDBYTES}.
          * @return The generated key pair.
          */
-        KeyPair cryptoKxKeypair(byte[] seed);
+        KeyPair cryptoKxKeypair(byte[] seed) throws SodiumException;
 
         /**
          * Generate a client's session keys. This should
