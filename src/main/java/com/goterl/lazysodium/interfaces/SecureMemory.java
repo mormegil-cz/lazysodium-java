@@ -21,9 +21,8 @@ public interface SecureMemory {
          * even if optimizations are being applied to the code.
          * @param pnt The byte array to zero out.
          * @param len How many bytes to zero out.
-         * @return True if zeroed
          */
-        boolean sodiumMemZero(byte[] pnt, int len);
+        void sodiumMemZero(byte[] pnt, int len);
 
         /**
          * Locks at least len bytes of memory from the array.

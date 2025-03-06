@@ -227,27 +227,34 @@ public abstract class LazySodium implements
     //// -------------------------------------------|
 
     @Override
-    public boolean sodiumMemZero(byte[] pnt, int len) {
-        return successful(getSodium().sodium_memzero(pnt, len));
+    public void sodiumMemZero(byte[] pnt, int len) {
+        BaseChecker.checkArrayLength("pnt", pnt, len);
+        getSodium().sodium_memzero(pnt, len);
     }
 
     @Override
     public boolean sodiumMLock(byte[] array, int len) {
+        BaseChecker.checkArrayLength("array", array, len);
         return successful(getSodium().sodium_mlock(array, len));
     }
 
     @Override
     public boolean sodiumMUnlock(byte[] array, int len) {
+        BaseChecker.checkArrayLength("array", array, len);
         return successful(getSodium().sodium_munlock(array, len));
+
     }
 
     @Override
     public Pointer sodiumMalloc(int size) {
+        BaseChecker.checkAtLeast("size", size, 0);
         return getSodium().sodium_malloc(size);
     }
 
     @Override
     public Pointer sodiumAllocArray(int count, int size) {
+        BaseChecker.checkAtLeast("count", count, 0);
+        BaseChecker.checkAtLeast("size", size, 0);
         return getSodium().sodium_allocarray(count, size);
     }
 
