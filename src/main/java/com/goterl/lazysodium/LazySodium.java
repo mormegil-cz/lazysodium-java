@@ -453,8 +453,8 @@ public abstract class LazySodium implements
         PwHash.Checker.checkOpsLimit(opsLimit);
         PwHash.Checker.checkMemLimit(memLimit);
 
-        BaseChecker.checkArrayLength("hash bytes", outputHash, outputHashLen);
-        BaseChecker.checkArrayLength("password bytes", password, passwordLen);
+        BaseChecker.checkArrayLength("outputHash", outputHash, outputHashLen);
+        BaseChecker.checkArrayLength("password", password, passwordLen);
 
         int res = getSodium().crypto_pwhash(outputHash,
                 outputHashLen,
@@ -714,38 +714,51 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoSecretBoxKeygen(byte[] key) {
+        SecretBox.Checker.checkKey(key);
+
         getSodium().crypto_secretbox_keygen(key);
     }
 
     @Override
-    public boolean cryptoSecretBoxEasy(byte[] cipherText, byte[] message, long messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+    public boolean cryptoSecretBoxEasy(byte[] cipherText, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkEqual("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
+        SecretBox.Checker.checkNonce(nonce);
+        SecretBox.Checker.checkKey(key);
+
         return successful(getSodium().crypto_secretbox_easy(cipherText, message, messageLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoSecretBoxOpenEasy(byte[] message, byte[] cipherText, long cipherTextLen, byte[] nonce, byte[] key) {
-        if (cipherTextLen < 0 || cipherTextLen > cipherText.length) {
-            throw new IllegalArgumentException("cipherTextLen out of bounds: " + cipherTextLen);
-        }
+    public boolean cryptoSecretBoxOpenEasy(byte[] message, byte[] cipherText, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        SecretBox.Checker.checkCipherTextLength(cipherTextLen);
+        BaseChecker.checkAtLeast("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
+        SecretBox.Checker.checkNonce(nonce);
+        SecretBox.Checker.checkKey(key);
+
         return successful(getSodium().crypto_secretbox_open_easy(message, cipherText, cipherTextLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoSecretBoxDetached(byte[] cipherText, byte[] mac, byte[] message, long messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+    public boolean cryptoSecretBoxDetached(byte[] cipherText, byte[] mac, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkAtLeast("cipherText length", cipherText.length, messageLen);
+        BaseChecker.checkMac("mac length", mac.length, SecretBox.MACBYTES);
+        SecretBox.Checker.checkNonce(nonce);
+        SecretBox.Checker.checkKey(key);
+
         return successful(getSodium().crypto_secretbox_detached(cipherText, mac, message, messageLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoSecretBoxOpenDetached(byte[] message, byte[] cipherText, byte[] mac, long cipherTextLen, byte[] nonce, byte[] key) {
-        if (cipherTextLen < 0 || cipherTextLen > cipherText.length) {
-            throw new IllegalArgumentException("cipherTextLen out of bounds: " + cipherTextLen);
-        }
+    public boolean cryptoSecretBoxOpenDetached(byte[] message, byte[] cipherText, byte[] mac, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkMac("mac length", mac.length, SecretBox.MACBYTES);
+        BaseChecker.checkAtLeast("message length", message.length, cipherTextLen);
+        SecretBox.Checker.checkNonce(nonce);
+        SecretBox.Checker.checkKey(key);
+
         return successful(getSodium().crypto_secretbox_open_detached(message, cipherText, mac, cipherTextLen, nonce, key));
     }
 
@@ -776,8 +789,8 @@ public abstract class LazySodium implements
     public String cryptoSecretBoxOpenEasy(String cipher, byte[] nonce, Key key) throws SodiumException {
         byte[] keyBytes = key.getAsBytes();
         byte[] cipherBytes = messageEncoder.decode(cipher);
+        SecretBox.Checker.checkCipherTextLength(cipherBytes.length);
         byte[] messageBytes = new byte[cipherBytes.length - SecretBox.MACBYTES];
-
 
         if (!cryptoSecretBoxOpenEasy(messageBytes, cipherBytes, cipherBytes.length, nonce, keyBytes)) {
             throw new SodiumException("Could not decrypt message.");
@@ -806,7 +819,6 @@ public abstract class LazySodium implements
         byte[] cipherBytes = cipherAndMac.getCipher();
         byte[] macBytes = cipherAndMac.getMac();
         byte[] messageBytes = new byte[cipherBytes.length];
-
 
         if (!cryptoSecretBoxOpenDetached(messageBytes, cipherBytes, macBytes, cipherBytes.length, nonce, keyBytes)) {
             throw new SodiumException("Could not decrypt detached message.");
@@ -845,8 +857,7 @@ public abstract class LazySodium implements
     }
 
 
-    // -------------------------------------------|
-
+    //// -------------------------------------------|
     //// CRYPTO BOX
     //// -------------------------------------------|
 
@@ -1354,7 +1365,7 @@ public abstract class LazySodium implements
 
 
     //// -------------------------------------------|
-    //// SECRET SCREAM
+    //// SECRET STREAM
     //// -------------------------------------------|
 
     @Override
