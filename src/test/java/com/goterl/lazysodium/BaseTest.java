@@ -19,7 +19,17 @@ public class BaseTest {
 
     @BeforeAll
     public void doBeforeEverything() {
-        lazySodium = new LazySodiumJava(new SodiumJava(LibraryLoader.Mode.BUNDLED_ONLY));
+        lazySodium = SodiumHolder.lazySodium;
     }
 
+    /**
+     * Singleton, global holder for LazySodium instance, so that the library is not loaded multiple times, once for
+     * each test class
+     */
+    private static class SodiumHolder {
+        static final LazySodiumJava lazySodium = new LazySodiumJava(new SodiumJava(LibraryLoader.Mode.BUNDLED_ONLY));
+
+        private SodiumHolder() {
+        }
+    }
 }
