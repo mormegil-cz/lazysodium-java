@@ -43,17 +43,17 @@ public class LazySodiumJava extends LazySodium implements
     }
 
     @Override
-    public boolean cryptoPwHashScryptSalsa208Sha256(byte[] out, long outLen, byte[] password, long passwordLen, byte[] salt, long opsLimit, long memLimit) {
+    public boolean cryptoPwHashScryptSalsa208Sha256(byte[] out, int outLen, byte[] password, int passwordLen, byte[] salt, long opsLimit, long memLimit) {
         return successful(getSodium().crypto_pwhash_scryptsalsa208sha256(out, outLen, password, passwordLen, salt, opsLimit, memLimit));
     }
 
     @Override
-    public boolean cryptoPwHashScryptSalsa208Sha256Str(byte[] out, byte[] password, long passwordLen, long opsLimit, long memLimit) {
+    public boolean cryptoPwHashScryptSalsa208Sha256Str(byte[] out, byte[] password, int passwordLen, long opsLimit, long memLimit) {
         return successful(getSodium().crypto_pwhash_scryptsalsa208sha256_str(out, password, passwordLen, opsLimit, memLimit));
     }
 
     @Override
-    public boolean cryptoPwHashScryptSalsa208Sha256StrVerify(byte[] str, byte[] password, long passwordLen) {
+    public boolean cryptoPwHashScryptSalsa208Sha256StrVerify(byte[] str, byte[] password, int passwordLen) {
         return successful(getSodium().crypto_pwhash_scryptsalsa208sha256_str_verify(str, password, passwordLen));
     }
 
@@ -72,11 +72,11 @@ public class LazySodiumJava extends LazySodium implements
 
 
     @Override
-    public String cryptoPwHashScryptSalsa208Sha256(String password, long hashLen, byte[] salt, long opsLimit, long memLimit) throws SodiumException {
+    public String cryptoPwHashScryptSalsa208Sha256(String password, int hashLen, byte[] salt, long opsLimit, long memLimit) throws SodiumException {
         byte[] passwordBytes = bytes(password);
         Scrypt.Checker.checkAllScrypt(passwordBytes.length, salt.length, hashLen, opsLimit, memLimit);
 
-        byte[] hash = new byte[longToInt(hashLen)];
+        byte[] hash = new byte[hashLen];
         boolean res = cryptoPwHashScryptSalsa208Sha256(hash, hash.length, passwordBytes, passwordBytes.length, salt, opsLimit, memLimit);
 
         if (!res) {
@@ -98,7 +98,7 @@ public class LazySodiumJava extends LazySodium implements
             throw new SodiumException("The mem limit provided is not between the correct values.");
         }
 
-        byte[] hash = new byte[longToInt(Scrypt.SCRYPTSALSA208SHA256_STRBYTES)];
+        byte[] hash = new byte[(int) Scrypt.SCRYPTSALSA208SHA256_STRBYTES];
 
         boolean res = cryptoPwHashScryptSalsa208Sha256Str(hash, passwordBytes, passwordBytes.length, opsLimit, memLimit);
 
@@ -136,12 +136,12 @@ public class LazySodiumJava extends LazySodium implements
     }
 
     @Override
-    public boolean cryptoStreamSalsa2012(byte[] c, long cLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamSalsa2012(byte[] c, int cLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_salsa2012(c, cLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamSalsa2012Xor(byte[] cipher, byte[] message, long messageLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamSalsa2012Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_salsa2012_xor(cipher, message, messageLen, nonce, key));
     }
 
@@ -154,12 +154,12 @@ public class LazySodiumJava extends LazySodium implements
     }
 
     @Override
-    public boolean cryptoStreamSalsa208(byte[] c, long cLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamSalsa208(byte[] c, int cLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_salsa208(c, cLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamSalsa208Xor(byte[] cipher, byte[] message, long messageLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamSalsa208Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_salsa208_xor(cipher, message, messageLen, nonce, key));
     }
 
@@ -170,17 +170,17 @@ public class LazySodiumJava extends LazySodium implements
 
 
     @Override
-    public boolean cryptoStreamXChaCha20(byte[] c, long cLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamXChaCha20(byte[] c, int cLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_xchacha20(c, cLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamXChaCha20Xor(byte[] cipher, byte[] message, long messageLen, byte[] nonce, byte[] key) {
+    public boolean cryptoStreamXChaCha20Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
         return successful(getSodium().crypto_stream_xchacha20_xor(cipher, message, messageLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamXChaCha20Ic(byte[] cipher, byte[] message, long messageLen, byte[] nonce, long ic, byte[] key) {
+    public boolean cryptoStreamXChaCha20Ic(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
         return successful(getSodium().crypto_stream_xchacha20_xor_ic(cipher, message, messageLen, nonce, ic, key));
     }
 

@@ -77,7 +77,7 @@ public interface Box {
         boolean cryptoBoxEasy(
                 byte[] cipherText,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] publicKey,
                 byte[] secretKey
@@ -86,7 +86,7 @@ public interface Box {
         boolean cryptoBoxOpenEasy(
                 byte[] message,
                 byte[] cipherText,
-                long cipherTextLen,
+                int cipherTextLen,
                 byte[] nonce,
                 byte[] publicKey,
                 byte[] secretKey
@@ -95,7 +95,7 @@ public interface Box {
         boolean cryptoBoxDetached(byte[] cipherText,
                                        byte[] mac,
                                        byte[] message,
-                                       long messageLen,
+                                       int messageLen,
                                        byte[] nonce,
                                        byte[] publicKey,
                                        byte[] secretKey);
@@ -103,7 +103,7 @@ public interface Box {
         boolean cryptoBoxOpenDetached(byte[] message,
                                             byte[] cipherText,
                                             byte[] mac,
-                                            long cipherTextLen,
+                                            int cipherTextLen,
                                             byte[] nonce,
                                             byte[] publicKey,
                                             byte[] secretKey);
@@ -114,14 +114,14 @@ public interface Box {
         boolean cryptoBoxEasyAfterNm(
                 byte[] cipherText,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
 
         boolean cryptoBoxOpenEasyAfterNm(
                 byte[] message, byte[] cipher,
-                long cLen, byte[] nonce,
+                int cLen, byte[] nonce,
                 byte[] key
         );
 
@@ -129,7 +129,7 @@ public interface Box {
                 byte[] cipherText,
                 byte[] mac,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -137,17 +137,17 @@ public interface Box {
         boolean cryptoBoxOpenDetachedAfterNm(byte[] message,
                                             byte[] cipherText,
                                             byte[] mac,
-                                            long cipherTextLen,
+                                            int cipherTextLen,
                                             byte[] nonce,
                                             byte[] key);
 
 
 
-        boolean cryptoBoxSeal(byte[] cipher, byte[] message, long messageLen, byte[] publicKey);
+        boolean cryptoBoxSeal(byte[] cipher, byte[] message, int messageLen, byte[] publicKey);
 
         boolean cryptoBoxSealOpen(byte[] m,
                                     byte[] cipher,
-                                    long cipherLen,
+                                    int cipherLen,
                                     byte[] publicKey,
                                     byte[] secretKey);
 

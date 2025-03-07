@@ -10,6 +10,7 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.DetachedEncrypt;
 import com.goterl.lazysodium.utils.Key;
 
@@ -23,6 +24,27 @@ public interface SecretBox {
     int KEYBYTES = XSALSA20POLY1305_KEYBYTES,
         MACBYTES = XSALSA20POLY1305_MACBYTES,
         NONCEBYTES = XSALSA20POLY1305_NONCEBYTES;
+
+
+    class Checker extends BaseChecker {
+
+        public static void checkKey(byte[] key) {
+            checkEqual("key length", key.length, KEYBYTES);
+        }
+
+        public static void checkMac(byte[] mac) {
+            checkExpectedMemorySize("mac length", mac.length, MACBYTES);
+        }
+
+        public static void checkNonce(byte[] nonce) {
+            checkEqual("nonce length", nonce.length, NONCEBYTES);
+        }
+
+        public static void checkCipherTextLength(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
+        }
+
+    }
 
 
     interface Native {
@@ -48,7 +70,7 @@ public interface SecretBox {
          */
         boolean cryptoSecretBoxEasy(byte[] cipherText,
                                  byte[] message,
-                                 long messageLen,
+                                 int messageLen,
                                  byte[] nonce,
                                  byte[] key);
 
@@ -56,7 +78,7 @@ public interface SecretBox {
          * Decrypts and verifies a message using a key generated
          * by {@link #cryptoSecretBoxKeygen(byte[])}.
          * @param message The message will be put into here once decrypted.
-         * @param cipherText The cipher produced by {@link #cryptoSecretBoxEasy(byte[], byte[], long, byte[], byte[])}.
+         * @param cipherText The cipher produced by {@link #cryptoSecretBoxEasy(byte[], byte[], int, byte[], byte[])}.
          * @param cipherTextLen The cipher text length.
          * @param nonce This has to be the same nonce that was used when
          *              encrypting using {@code cryptoSecretBoxEasy}.
@@ -65,7 +87,7 @@ public interface SecretBox {
          */
         boolean cryptoSecretBoxOpenEasy(byte[] message,
                                       byte[] cipherText,
-                                      long cipherTextLen,
+                                      int cipherTextLen,
                                       byte[] nonce,
                                       byte[] key);
 
@@ -83,7 +105,7 @@ public interface SecretBox {
         boolean cryptoSecretBoxDetached(byte[] cipherText,
                                      byte[] mac,
                                      byte[] message,
-                                     long messageLen,
+                                     int messageLen,
                                      byte[] nonce,
                                      byte[] key);
 
@@ -101,7 +123,7 @@ public interface SecretBox {
         boolean cryptoSecretBoxOpenDetached(byte[] message,
                                           byte[] cipherText,
                                           byte[] mac,
-                                          long cipherTextLen,
+                                          int cipherTextLen,
                                           byte[] nonce,
                                           byte[] key);
 

@@ -47,7 +47,7 @@ public interface ShortHash {
          * @param key The key generated via {@link #cryptoShortHashKeygen(byte[])}.
          * @return true if success, false if fail.
          */
-        boolean cryptoShortHash(byte[] out, byte[] in, long inLen, byte[] key);
+        boolean cryptoShortHash(byte[] out, byte[] in, int inLen, byte[] key);
 
 
         /**

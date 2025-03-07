@@ -36,7 +36,7 @@ public interface StreamJava extends Stream {
 
         boolean cryptoStreamSalsa2012(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -44,7 +44,7 @@ public interface StreamJava extends Stream {
         boolean cryptoStreamSalsa2012Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -53,7 +53,7 @@ public interface StreamJava extends Stream {
 
         boolean cryptoStreamSalsa208(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -61,7 +61,7 @@ public interface StreamJava extends Stream {
         boolean cryptoStreamSalsa208Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -73,7 +73,7 @@ public interface StreamJava extends Stream {
 
         boolean cryptoStreamXChaCha20(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -81,7 +81,7 @@ public interface StreamJava extends Stream {
         boolean cryptoStreamXChaCha20Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -89,7 +89,7 @@ public interface StreamJava extends Stream {
         boolean cryptoStreamXChaCha20Ic(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 long ic,
                 byte[] key

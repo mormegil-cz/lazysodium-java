@@ -43,9 +43,9 @@ public interface Scrypt {
             return isBetween(memLimit, SCRYPTSALSA208SHA256_MEMLIMIT_MIN, SCRYPTSALSA208SHA256_MEMLIMIT_MAX);
         }
 
-        public static boolean checkAllScrypt(long passwordBytesLen,
-                                             long saltBytesLen,
-                                             long hashLen,
+        public static boolean checkAllScrypt(int passwordBytesLen,
+                                             int saltBytesLen,
+                                             int hashLen,
                                              long opsLimit,
                                              long memLimit)
                 throws SodiumException {
@@ -82,9 +82,9 @@ public interface Scrypt {
 
         boolean cryptoPwHashScryptSalsa208Sha256(
                 byte[] out,
-                long outLen,
+                int outLen,
                 byte[] password,
-                long passwordLen,
+                int passwordLen,
                 byte[] salt,
                 long opsLimit,
                 long memLimit
@@ -94,7 +94,7 @@ public interface Scrypt {
         boolean cryptoPwHashScryptSalsa208Sha256Str(
                 byte[] out,
                 byte[] password,
-                long passwordLen,
+                int passwordLen,
                 long opsLimit,
                 long memLimit
         );
@@ -102,7 +102,7 @@ public interface Scrypt {
         boolean cryptoPwHashScryptSalsa208Sha256StrVerify(
                 byte[] str,
                 byte[] password,
-                long passwordLen
+                int passwordLen
         );
 
         boolean cryptoPwHashScryptSalsa208Sha256Ll(
@@ -145,7 +145,7 @@ public interface Scrypt {
          */
         String cryptoPwHashScryptSalsa208Sha256(
                 String password,
-                long hashLen,
+                int hashLen,
                 byte[] salt,
                 long opsLimit,
                 long memLimit

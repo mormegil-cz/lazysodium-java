@@ -61,7 +61,7 @@ public interface Stream {
 
         boolean cryptoStreamChaCha20(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -69,7 +69,7 @@ public interface Stream {
         boolean cryptoStreamChaCha20Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -77,7 +77,7 @@ public interface Stream {
         boolean cryptoStreamChacha20XorIc(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 long ic,
                 byte[] key
@@ -89,7 +89,7 @@ public interface Stream {
 
         boolean cryptoStreamChaCha20Ietf(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -97,7 +97,7 @@ public interface Stream {
         boolean cryptoStreamChaCha20IetfXor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -105,7 +105,7 @@ public interface Stream {
         boolean cryptoStreamChacha20IetfXorIc(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 long ic,
                 byte[] key
@@ -117,7 +117,7 @@ public interface Stream {
 
         boolean cryptoStreamSalsa20(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -125,7 +125,7 @@ public interface Stream {
         boolean cryptoStreamSalsa20Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -133,7 +133,7 @@ public interface Stream {
         boolean cryptoStreamSalsa20XorIc(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 long ic,
                 byte[] key
@@ -145,7 +145,7 @@ public interface Stream {
 
         boolean cryptoStreamXSalsa20(
                 byte[] c,
-                long cLen,
+                int cLen,
                 byte[] nonce,
                 byte[] key
         );
@@ -153,7 +153,7 @@ public interface Stream {
         boolean cryptoStreamXSalsa20Xor(
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] nonce,
                 byte[] key
         );

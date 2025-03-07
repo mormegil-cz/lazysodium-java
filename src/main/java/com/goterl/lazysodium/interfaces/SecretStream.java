@@ -52,14 +52,14 @@ public interface SecretStream {
             checkEqual("secret stream key length", KEYBYTES, key.length);
         }
 
-        public static void checkPush(byte[] message, long messageLen, byte[] cipher) {
+        public static void checkPush(byte[] message, int messageLen, byte[] cipher) {
             checkArrayLength("message bytes", message, messageLen);
             if (cipher.length < messageLen + ABYTES) {
                 throw new IllegalArgumentException("Cipher array too small for messageLen + header");
             }
         }
 
-        public static void checkPull(byte[] cipher, long cipherLen, byte[] message) {
+        public static void checkPull(byte[] cipher, int cipherLen, byte[] message) {
             checkArrayLength("message bytes", cipher, cipherLen);
             if (message.length < cipherLen - ABYTES) {
                 throw new IllegalArgumentException("Message array too small for cipherLen - header");
@@ -108,9 +108,9 @@ public interface SecretStream {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte tag
         );
 
@@ -130,7 +130,7 @@ public interface SecretStream {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte tag
         );
 
@@ -148,7 +148,7 @@ public interface SecretStream {
                 State state,
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte tag
         );
 
@@ -185,9 +185,9 @@ public interface SecretStream {
                 long[] messageLen,
                 byte[] tag,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen
+                int additionalDataLen
         );
 
         /**
@@ -204,7 +204,7 @@ public interface SecretStream {
                 byte[] message,
                 byte[] tag,
                 byte[] cipher,
-                long cipherLen
+                int cipherLen
         );
 
 

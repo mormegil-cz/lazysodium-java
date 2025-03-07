@@ -34,16 +34,16 @@ public interface Hash {
 
     interface Native {
 
-        boolean cryptoHashSha256(byte[] out, byte[] in, long inLen);
+        boolean cryptoHashSha256(byte[] out, byte[] in, int inLen);
 
-        boolean cryptoHashSha512(byte[] out, byte[] in, long inLen);
+        boolean cryptoHashSha512(byte[] out, byte[] in, int inLen);
 
 
         boolean cryptoHashSha256Init(Hash.State256 state);
 
         boolean cryptoHashSha256Update(Hash.State256 state,
                                                     byte[] in,
-                                                    long inLen);
+                                                    int inLen);
 
         boolean cryptoHashSha256Final(Hash.State256 state, byte[] out);
 
@@ -52,7 +52,7 @@ public interface Hash {
 
         boolean cryptoHashSha512Update(Hash.State512 state,
                                        byte[] in,
-                                       long inLen);
+                                       int inLen);
 
         boolean cryptoHashSha512Final(Hash.State512 state, byte[] out);
 

@@ -59,7 +59,7 @@ public interface Sign {
          * @param chunkLength Message length.
          * @return True if this chunk was successfully signed.
          */
-        boolean cryptoSignUpdate(Sign.StateCryptoSign state, byte[] chunk, long chunkLength);
+        boolean cryptoSignUpdate(Sign.StateCryptoSign state, byte[] chunk, int chunkLength);
 
         /**
          * This function computes a signature for the previously supplied message,
@@ -115,7 +115,7 @@ public interface Sign {
         boolean cryptoSign(
                 byte[] signedMessage,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] secretKey
         );
 
@@ -130,14 +130,14 @@ public interface Sign {
         boolean cryptoSignOpen(
                 byte[] message,
                 byte[] signedMessage,
-                long signedMessageLen,
+                int signedMessageLen,
                 byte[] publicKey
         );
 
         /**
          * Returns a signature for a message. This
          * does not prepend the signature to the message.
-         * See {@link #cryptoSign(byte[], byte[], long, byte[])} for that.
+         * See {@link #cryptoSign(byte[], byte[], int, byte[])} for that.
          * @param signature The signature will be added to this byte array.
          * @param message The message to sign.
          * @param messageLen The message length.
@@ -147,7 +147,7 @@ public interface Sign {
         boolean cryptoSignDetached(
                 byte[] signature,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] secretKey
         );
 
@@ -159,7 +159,7 @@ public interface Sign {
          * @param messageLen The message length.
          * @param publicKey The public key that signed the message.
          * @return Returns true if the signature is valid for the message.
-         * @see #cryptoSignDetached(byte[], byte[], long, byte[])
+         * @see #cryptoSignDetached(byte[], byte[], int, byte[])
          */
         boolean cryptoSignVerifyDetached(byte[] signature, byte[] message, int messageLen, byte[] publicKey);
 

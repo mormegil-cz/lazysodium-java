@@ -70,9 +70,9 @@ public interface AEAD {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -83,9 +83,9 @@ public interface AEAD {
                 long[] messageLen,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -95,9 +95,9 @@ public interface AEAD {
                 byte[] mac,
                 long[] macLenAddress,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -107,10 +107,10 @@ public interface AEAD {
                 byte[] message,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] mac,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -126,9 +126,9 @@ public interface AEAD {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -139,9 +139,9 @@ public interface AEAD {
                 long[] messageLen,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -151,9 +151,9 @@ public interface AEAD {
                 byte[] mac,
                 long[] macLenAddress,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -163,10 +163,10 @@ public interface AEAD {
                 byte[] message,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] mac,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -182,9 +182,9 @@ public interface AEAD {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -195,9 +195,9 @@ public interface AEAD {
                 long[] messageLen,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -208,9 +208,9 @@ public interface AEAD {
                 byte[] mac,
                 long[] macLenAddress,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -220,10 +220,10 @@ public interface AEAD {
                 byte[] message,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] mac,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -237,9 +237,9 @@ public interface AEAD {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -250,9 +250,9 @@ public interface AEAD {
                 long[] messageLen,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );
@@ -263,9 +263,9 @@ public interface AEAD {
                 byte[] mac,
                 long[] macLenAddress,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nSec,
                 byte[] nPub,
                 byte[] key
@@ -275,10 +275,10 @@ public interface AEAD {
                 byte[] message,
                 byte[] nSec,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] mac,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte[] nPub,
                 byte[] key
         );

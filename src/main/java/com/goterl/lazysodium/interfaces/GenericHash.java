@@ -66,7 +66,7 @@ public interface GenericHash {
          */
         boolean cryptoGenericHash(
                 byte[] out, int outLen,
-                byte[] in, long inLen,
+                byte[] in, int inLen,
                 byte[] key, int keyLen
         );
 
@@ -81,11 +81,11 @@ public interface GenericHash {
          * @param in The text to hash.
          * @param inLen The size of in.
          * @return True if successfully hashed.
-         * @see #cryptoGenericHash(byte[], int, byte[], long, byte[], int)
+         * @see #cryptoGenericHash(byte[], int, byte[], int, byte[], int)
          */
         boolean cryptoGenericHash(
                 byte[] out, int outLen,
-                byte[] in, long inLen
+                byte[] in, int inLen
         );
 
 
@@ -97,7 +97,7 @@ public interface GenericHash {
          * @param keyLength Length of the key.
          * @param outLen The size of the hash array. Please
          *               see the param {@code out} in
-         *               {@link #cryptoGenericHash(byte[], int, byte[], long, byte[], int)}
+         *               {@link #cryptoGenericHash(byte[], int, byte[], int, byte[], int)}
          *               for more information.
          *
          * @return True if initialised.
@@ -113,7 +113,7 @@ public interface GenericHash {
          *              in memory for further hashing.
          * @param outLen The size of the hash array. Please
          *               see the param {@code out} in
-         *               {@link #cryptoGenericHash(byte[], int, byte[], long, byte[], int)}
+         *               {@link #cryptoGenericHash(byte[], int, byte[], int, byte[], int)}
          *               for more information.
          *
          * @return True if initialised.
@@ -129,7 +129,7 @@ public interface GenericHash {
          */
         boolean cryptoGenericHashUpdate(byte[] state,
                                      byte[] in,
-                                     long inLen);
+                                     int inLen);
 
         /**
          * Now that the hash has finalised, the hash can
@@ -173,7 +173,7 @@ public interface GenericHash {
         /**
          * Hash a string with a key, so later on you
          * can verify the hashed string with the key.
-         * If you're hashing a password please see {@link PwHash.Lazy#cryptoPwHashStr(String, long, NativeLong)}}
+         * If you're hashing a password please see {@link PwHash.Lazy#cryptoPwHashString(String, long, NativeLong)}}
          * instead.
          * @param in The string to hash.
          * @param key Can be null.

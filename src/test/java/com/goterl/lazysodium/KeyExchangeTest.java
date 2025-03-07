@@ -110,8 +110,8 @@ public class KeyExchangeTest extends BaseTest {
         // Generate the server keypair
         KeyPair serverKeys = keyExchangeLazy.cryptoKxKeypair();
 
-        SessionPair clientSession = keyExchangeLazy.cryptoKxClientSessionKeys(clientKeys, serverKeys);
-        SessionPair serverSession = keyExchangeLazy.cryptoKxServerSessionKeys(serverKeys, clientKeys);
+        SessionPair clientSession = keyExchangeLazy.cryptoKxClientSessionKeys(clientKeys, serverKeys.getPublicKey());
+        SessionPair serverSession = keyExchangeLazy.cryptoKxServerSessionKeys(serverKeys, clientKeys.getPublicKey());
 
         // The Rx of the client should equal the Tx of the server and vice versa
         assertEquals(clientSession.getRxString(), serverSession.getTxString());
