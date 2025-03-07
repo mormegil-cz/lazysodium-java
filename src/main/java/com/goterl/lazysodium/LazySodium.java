@@ -606,9 +606,8 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoHashSha256(byte[] out, byte[] in, long inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Hash.Checker.checkHashSha256(out);
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha256(out, in, inLen));
     }
 
@@ -619,22 +618,20 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoHashSha256Update(Hash.State256 state, byte[] in, long inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha256_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoHashSha256Final(Hash.State256 state, byte[] out) {
+        Hash.Checker.checkHashSha256(out);
         return successful(getSodium().crypto_hash_sha256_final(state, out));
     }
 
     @Override
     public boolean cryptoHashSha512(byte[] out, byte[] in, long inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Hash.Checker.checkHashSha512(out);
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha512(out, in, inLen));
     }
 
@@ -645,14 +642,13 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoHashSha512Update(Hash.State512 state, byte[] in, long inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha512_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoHashSha512Final(Hash.State512 state, byte[] out) {
+        Hash.Checker.checkHashSha512(out);
         return successful(getSodium().crypto_hash_sha512_final(state, out));
     }
 
