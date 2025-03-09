@@ -74,7 +74,7 @@ public interface KeyDerivation {
         }
 
         public static void checkMasterKey(byte[] key) {
-            checkEqual("master key length", key.length, MASTER_KEY_BYTES);
+            checkExpectedMemorySize("master key length", key.length, MASTER_KEY_BYTES);
         }
 
         public static void checkSubKeyLength(int subkeyLen) {

@@ -150,12 +150,27 @@ public interface KeyExchange {
          * @return Session keys.
          * @throws SodiumException Not provided the correct keys, or generation
          * of session keys failed.
+         * @deprecated Client should not have the whole server keypair including the secret key!
          */
+        @Deprecated(forRemoval = true)
         SessionPair cryptoKxClientSessionKeys(
                 KeyPair clientKeyPair,
                 KeyPair serverKeyPair
         ) throws SodiumException;
 
+        /**
+         * Generate a client's session keys. This should
+         * be performed on the client.
+         * @param clientKeyPair Provide the client's public and private key.
+         * @param serverPublicKey Provide the server's public key.
+         * @return Session keys.
+         * @throws SodiumException Not provided the correct keys, or generation
+         * of session keys failed.
+         */
+        SessionPair cryptoKxClientSessionKeys(
+                KeyPair clientKeyPair,
+                Key serverPublicKey
+        ) throws SodiumException;
 
         /**
          * Computes a pair of shared keys (server-side)
@@ -180,10 +195,26 @@ public interface KeyExchange {
          * @return Session keys.
          * @throws SodiumException Not provided the correct keys, or generation
          * of session keys failed.
+         * @deprecated Client should not have the whole server keypair including the secret key!
          */
+        @Deprecated(forRemoval = true)
         SessionPair cryptoKxServerSessionKeys(
                 KeyPair serverKeyPair,
                 KeyPair clientKeyPair
+        ) throws SodiumException;
+
+        /**
+         * Generate a server's session keys. This should
+         * be performed on the server.
+         * @param serverKeyPair Provide the server's public and private key.
+         * @param clientPublicKey Provide the client's public key.
+         * @return Session keys.
+         * @throws SodiumException Not provided the correct keys, or generation
+         * of session keys failed.
+         */
+        SessionPair cryptoKxServerSessionKeys(
+                KeyPair serverKeyPair,
+                Key clientPublicKey
         ) throws SodiumException;
     }
 

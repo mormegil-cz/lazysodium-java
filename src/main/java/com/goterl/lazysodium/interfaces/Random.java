@@ -21,7 +21,7 @@ public interface Random {
         }
 
         public static void checkSeed(byte[] seed) {
-            checkEqual("seed length", seed.length, SEEDBYTES);
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
         }
     }
 
