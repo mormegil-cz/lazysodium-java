@@ -16,7 +16,6 @@ import com.sun.jna.NativeLong;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.goterl.lazysodium.utils.Constants.UNSIGNED_INT;
 
@@ -88,7 +87,7 @@ public interface PwHash {
         }
 
         public static void checkSalt(byte[] salt) {
-            checkEqual("salt length", salt.length, SALTBYTES);
+            checkExpectedMemorySize("salt length", salt.length, SALTBYTES);
         }
 
         public static void checkOpsLimit(long opsLimit) {

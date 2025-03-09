@@ -24,11 +24,11 @@ public interface Hash {
 
     class Checker extends BaseChecker {
         public static void checkHashSha256(byte[] hash) {
-            checkEqual("hash length", hash.length, SHA256_BYTES);
+            checkExpectedMemorySize("hash length", hash.length, SHA256_BYTES);
         }
 
         public static void checkHashSha512(byte[] hash) {
-            checkEqual("hash length", hash.length, SHA512_BYTES);
+            checkExpectedMemorySize("hash length", hash.length, SHA512_BYTES);
         }
     }
 

@@ -391,10 +391,15 @@ public abstract class LazySodium implements
         return new KeyPair(Key.fromBytes(publicKey), Key.fromBytes(secretKey));
     }
 
-
     @Override
+    @Deprecated(forRemoval = true)
     public SessionPair cryptoKxClientSessionKeys(KeyPair clientKeyPair, KeyPair serverKeyPair) throws SodiumException {
         return cryptoKxClientSessionKeys(clientKeyPair.getPublicKey(), clientKeyPair.getSecretKey(), serverKeyPair.getPublicKey());
+    }
+
+    @Override
+    public SessionPair cryptoKxClientSessionKeys(KeyPair clientKeyPair, Key serverPublicKey) throws SodiumException {
+        return cryptoKxClientSessionKeys(clientKeyPair.getPublicKey(), clientKeyPair.getSecretKey(), serverPublicKey);
     }
 
     @Override
@@ -422,8 +427,14 @@ public abstract class LazySodium implements
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public SessionPair cryptoKxServerSessionKeys(KeyPair serverKeyPair, KeyPair clientKeyPair) throws SodiumException {
         return cryptoKxServerSessionKeys(serverKeyPair.getPublicKey(), serverKeyPair.getSecretKey(), clientKeyPair.getPublicKey());
+    }
+
+    @Override
+    public SessionPair cryptoKxServerSessionKeys(KeyPair serverKeyPair, Key clientPublicKey) throws SodiumException {
+        return cryptoKxServerSessionKeys(serverKeyPair.getPublicKey(), serverKeyPair.getSecretKey(), clientPublicKey);
     }
 
 
@@ -715,7 +726,7 @@ public abstract class LazySodium implements
     @Override
     public boolean cryptoSecretBoxEasy(byte[] cipherText, byte[] message, int messageLen, byte[] nonce, byte[] key) {
         BaseChecker.checkArrayLength("message", message, messageLen);
-        BaseChecker.checkEqual("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
+        BaseChecker.checkExpectedMemorySize("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
         SecretBox.Checker.checkNonce(nonce);
         SecretBox.Checker.checkKey(key);
 

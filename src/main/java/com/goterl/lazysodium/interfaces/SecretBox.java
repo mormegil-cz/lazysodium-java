@@ -29,7 +29,7 @@ public interface SecretBox {
     class Checker extends BaseChecker {
 
         public static void checkKey(byte[] key) {
-            checkEqual("key length", key.length, KEYBYTES);
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
         }
 
         public static void checkMac(byte[] mac) {
@@ -37,7 +37,7 @@ public interface SecretBox {
         }
 
         public static void checkNonce(byte[] nonce) {
-            checkEqual("nonce length", nonce.length, NONCEBYTES);
+            checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
         }
 
         public static void checkCipherTextLength(long cipherTextLen) {

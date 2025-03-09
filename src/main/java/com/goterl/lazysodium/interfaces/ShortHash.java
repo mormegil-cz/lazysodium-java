@@ -12,7 +12,6 @@ package com.goterl.lazysodium.interfaces;
 import com.goterl.lazysodium.exceptions.SodiumException;
 import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Key;
-import com.sun.jna.NativeLong;
 
 public interface ShortHash {
 
@@ -27,11 +26,11 @@ public interface ShortHash {
 
     class Checker extends BaseChecker {
         public static void checkHash(byte[] hash) {
-            checkEqual("hash length", hash.length, BYTES);
+            checkExpectedMemorySize("hash length", hash.length, BYTES);
         }
 
         public static void checkKey(byte[] key) {
-            checkEqual("key length", key.length, KEYBYTES);
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
         }
     }
 

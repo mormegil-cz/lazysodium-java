@@ -74,7 +74,7 @@ public interface KeyDerivation {
         }
 
         public static void checkMasterKey(byte[] key) {
-            checkEqual("master key length", key.length, MASTER_KEY_BYTES);
+            checkExpectedMemorySize("master key length", key.length, MASTER_KEY_BYTES);
         }
 
         public static void checkSubKeyLength(int subkeyLen) {
@@ -82,11 +82,7 @@ public interface KeyDerivation {
         }
 
         public static void checkContext(byte[] context) {
-            checkEqual("context length", context.length, CONTEXT_BYTES);
-        }
-
-        public static boolean contextIsCorrect(int length) {
-            return length == KeyDerivation.CONTEXT_BYTES;
+            checkExpectedMemorySize("context length", context.length, CONTEXT_BYTES);
         }
     }
 }
