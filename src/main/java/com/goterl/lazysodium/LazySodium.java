@@ -736,8 +736,8 @@ public abstract class LazySodium implements
     @Override
     public boolean cryptoSecretBoxOpenEasy(byte[] message, byte[] cipherText, int cipherTextLen, byte[] nonce, byte[] key) {
         BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkExpectedMemorySize("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
         SecretBox.Checker.checkCipherTextLength(cipherTextLen);
-        BaseChecker.checkAtLeast("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
         SecretBox.Checker.checkNonce(nonce);
         SecretBox.Checker.checkKey(key);
 
@@ -747,7 +747,7 @@ public abstract class LazySodium implements
     @Override
     public boolean cryptoSecretBoxDetached(byte[] cipherText, byte[] mac, byte[] message, int messageLen, byte[] nonce, byte[] key) {
         BaseChecker.checkArrayLength("message", message, messageLen);
-        BaseChecker.checkAtLeast("cipherText length", cipherText.length, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipherText length", cipherText.length, messageLen);
         SecretBox.Checker.checkMac(mac);
         SecretBox.Checker.checkNonce(nonce);
         SecretBox.Checker.checkKey(key);
@@ -758,8 +758,8 @@ public abstract class LazySodium implements
     @Override
     public boolean cryptoSecretBoxOpenDetached(byte[] message, byte[] cipherText, byte[] mac, int cipherTextLen, byte[] nonce, byte[] key) {
         BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkExpectedMemorySize("message length", message.length, cipherTextLen);
         SecretBox.Checker.checkMac(mac);
-        BaseChecker.checkAtLeast("message length", message.length, cipherTextLen);
         SecretBox.Checker.checkNonce(nonce);
         SecretBox.Checker.checkKey(key);
 

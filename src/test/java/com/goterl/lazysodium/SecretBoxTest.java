@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SecretBoxTest extends BaseTest {
     private static final String MESSAGE = "This is a super secret message.";
+    private static final byte[] MESSAGE_BYTES = MESSAGE.getBytes(StandardCharsets.UTF_8);
     private static final String CIPHER = "0F0997960666C97163633D02A270A49B6A4A4D66BBE63911ADE9E7FE042BEF45A5C671DCBAD26999FF34770DEAC6E7";
     private static final byte[] CIPHER_BYTES = LazySodium.toBin(CIPHER);
     private static final byte[] CIPHER_DETACHED_BYTES = LazySodium.toBin(CIPHER.substring(SecretBox.MACBYTES * 2));
@@ -46,7 +47,22 @@ public class SecretBoxTest extends BaseTest {
     }
 
     @Test
-    public void encryptAndDecrypt() throws SodiumException {
+    public void encryptAndDecryptNative() {
+        // Generate a symmetric key to encrypt the message.
+        byte[] key = new byte[SecretBox.KEYBYTES];
+        secretBoxNative.cryptoSecretBoxKeygen(key);
+
+        byte[] nonce = lazySodium.nonce(SecretBox.NONCEBYTES);
+        byte[] cipherBytes = new byte[MESSAGE_BYTES.length + SecretBox.MACBYTES];
+        assertTrue(secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, nonce, key));
+        byte[] decryptedBytes = new byte[MESSAGE_BYTES.length];
+        assertTrue(secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, cipherBytes, cipherBytes.length, nonce, key));
+
+        assertArrayEquals(MESSAGE_BYTES, decryptedBytes);
+    }
+
+    @Test
+    public void encryptAndDecryptLazy() throws SodiumException {
         // Generate a symmetric key to encrypt the message.
         Key key = secretBoxLazy.cryptoSecretBoxKeygen();
 
@@ -59,11 +75,22 @@ public class SecretBoxTest extends BaseTest {
     }
 
     @Test
-    public void encryptAndDecryptDetached() throws SodiumException {
-        /*
-        Key key = secretBoxLazy.cryptoSecretBoxKeygen();
-        byte[] nonce = lazySodium.nonce(SecretBox.NONCEBYTES);
-        */
+    public void encryptAndDecryptDetachedNative() {
+        byte[] cipherBytes = new byte[MESSAGE_BYTES.length];
+        byte[] macBytes = new byte[SecretBox.MACBYTES];
+        assertTrue(secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        byte[] decryptedBytes = new byte[cipherBytes.length];
+        assertTrue(secretBoxNative.cryptoSecretBoxOpenDetached(decryptedBytes, cipherBytes, macBytes, cipherBytes.length, NONCE_BYTES, KEY_BYTES));
+
+        assertArrayEquals(MESSAGE_BYTES, decryptedBytes);
+
+        // fail when MAC is wrong
+        macBytes[macBytes.length / 2] ^= 0x40;
+        assertFalse(secretBoxNative.cryptoSecretBoxOpenDetached(decryptedBytes, cipherBytes, macBytes, cipherBytes.length, NONCE_BYTES, KEY_BYTES));
+    }
+
+    @Test
+    public void encryptAndDecryptDetachedLazy() throws SodiumException {
         Key key = Key.fromBytes(KEY_BYTES);
         byte[] nonce = NONCE_BYTES;
         DetachedEncrypt detachedEncrypt = secretBoxLazy.cryptoSecretBoxDetached(MESSAGE, nonce, key);
@@ -83,6 +110,19 @@ public class SecretBoxTest extends BaseTest {
     public void cryptoSecretBoxKeygenNativeChecks() {
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxKeygen(new byte[SecretBox.KEYBYTES - 1]));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxKeygen(new byte[SecretBox.KEYBYTES + 1]));
+    }
+
+    @Test
+    public void cryptoSecretBoxEasyNativeChecks() {
+        byte[] cipherBytes = new byte[MESSAGE_BYTES.length + SecretBox.MACBYTES];
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, -1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length + 1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(new byte[MESSAGE_BYTES.length + SecretBox.MACBYTES - 1], MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(new byte[MESSAGE_BYTES.length + SecretBox.MACBYTES + 1], MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, new byte[SecretBox.NONCEBYTES - 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, new byte[SecretBox.NONCEBYTES + 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES - 1]));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxEasy(cipherBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES + 1]));
     }
 
     @Test
@@ -134,10 +174,27 @@ public class SecretBoxTest extends BaseTest {
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, CIPHER_BYTES.length + 1, NONCE_BYTES, KEY_BYTES));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, SecretBox.MACBYTES - 1, NONCE_BYTES, KEY_BYTES));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(new byte[CIPHER_BYTES.length - SecretBox.MACBYTES - 1], CIPHER_BYTES, CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(new byte[CIPHER_BYTES.length - SecretBox.MACBYTES + 1], CIPHER_BYTES, CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, CIPHER_BYTES.length, new byte[SecretBox.NONCEBYTES - 1], KEY_BYTES));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, CIPHER_BYTES.length, new byte[SecretBox.NONCEBYTES + 1], KEY_BYTES));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, CIPHER_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES - 1]));
         assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenEasy(decryptedBytes, CIPHER_BYTES, CIPHER_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES + 1]));
+    }
+
+    @Test
+    public void cryptoSecretBoxDetachedNativeChecks() {
+        byte[] cipherBytes = new byte[MESSAGE_BYTES.length];
+        byte[] macBytes = new byte[SecretBox.MACBYTES];
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, -1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length + 1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(new byte[MESSAGE_BYTES.length - 1], macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(new byte[MESSAGE_BYTES.length + 1], macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, new byte[SecretBox.MACBYTES - 1], MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, new byte[SecretBox.MACBYTES + 1], MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, new byte[SecretBox.NONCEBYTES - 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, new byte[SecretBox.NONCEBYTES + 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES - 1]));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxDetached(cipherBytes, macBytes, MESSAGE_BYTES, MESSAGE_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES + 1]));
     }
 
     @Test
@@ -158,6 +215,21 @@ public class SecretBoxTest extends BaseTest {
     @Test
     public void refuseBadSignatureDetachedLazy() {
         assertThrows(SodiumException.class, () -> secretBoxLazy.cryptoSecretBoxOpenDetached(new DetachedEncrypt(CIPHER_TAMPERED_DETACHED_BYTES, MAC_TAMPERED_DETACHED_BYTES), NONCE_BYTES, Key.fromBytes(KEY_BYTES)));
+    }
+
+    @Test
+    public void cryptoSecretBoxOpenDetachedNativeChecks() {
+        byte[] messageBytes = new byte[MESSAGE_BYTES.length];
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, -1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length + 1, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(new byte[MESSAGE_BYTES.length - 1], CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(new byte[MESSAGE_BYTES.length + 1], CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, new byte[SecretBox.MACBYTES - 1], CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, new byte[SecretBox.MACBYTES + 1], CIPHER_BYTES.length, NONCE_BYTES, KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, new byte[SecretBox.NONCEBYTES - 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, new byte[SecretBox.NONCEBYTES + 1], KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES - 1]));
+        assertThrows(IllegalArgumentException.class, () -> secretBoxNative.cryptoSecretBoxOpenDetached(messageBytes, CIPHER_BYTES, MAC_DETACHED_BYTES, CIPHER_BYTES.length, NONCE_BYTES, new byte[SecretBox.KEYBYTES + 1]));
     }
 
     @Test
