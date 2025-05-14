@@ -393,6 +393,7 @@ public abstract class LazySodium implements
 
     @Override
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
     public SessionPair cryptoKxClientSessionKeys(KeyPair clientKeyPair, KeyPair serverKeyPair) throws SodiumException {
         return cryptoKxClientSessionKeys(clientKeyPair.getPublicKey(), clientKeyPair.getSecretKey(), serverKeyPair.getPublicKey());
     }
@@ -428,6 +429,7 @@ public abstract class LazySodium implements
 
     @Override
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
     public SessionPair cryptoKxServerSessionKeys(KeyPair serverKeyPair, KeyPair clientKeyPair) throws SodiumException {
         return cryptoKxServerSessionKeys(serverKeyPair.getPublicKey(), serverKeyPair.getSecretKey(), clientKeyPair.getPublicKey());
     }
@@ -838,6 +840,8 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoScalarMultBase(byte[] publicKey, byte[] secretKey) {
+        DiffieHellman.Checker.checkPublicKey(publicKey);
+        DiffieHellman.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_scalarmult_base(publicKey, secretKey));
     }
 
@@ -850,6 +854,9 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoScalarMult(byte[] shared, byte[] secretKey, byte[] publicKey) {
+        DiffieHellman.Checker.checkSharedKey(shared);
+        DiffieHellman.Checker.checkPublicKey(publicKey);
+        DiffieHellman.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_scalarmult(shared, secretKey, publicKey));
     }
 

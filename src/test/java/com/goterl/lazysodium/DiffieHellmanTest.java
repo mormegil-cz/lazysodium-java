@@ -13,26 +13,40 @@ import com.goterl.lazysodium.interfaces.Box;
 import com.goterl.lazysodium.interfaces.DiffieHellman;
 import com.goterl.lazysodium.interfaces.SecretBox;
 import com.goterl.lazysodium.utils.Key;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DiffieHellmanTest extends BaseTest {
 
-    private String clientSecretKey = "CLIENT_TOP_SECRET_KEY_1234567890";
-    private String serverSecretKey = "SERVER_TOP_SECRET_KEY_1234567890";
+    private static final String CLIENT_SECRET_KEY = "CLIENT_TOP_SECRET_KEY_1234567890";
+    private static final byte[] CLIENT_SECRET_KEY_BYTES = CLIENT_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+    private static final String SERVER_SECRET_KEY = "SERVER_TOP_SECRET_KEY_1234567890";
+    private static final byte[] SERVER_SECRET_KEY_BYTES = SERVER_SECRET_KEY.getBytes(StandardCharsets.UTF_8);
 
+    private DiffieHellman.Native dhNative;
+    private DiffieHellman.Lazy dhLazy;
+
+    @BeforeAll
+    public void before() {
+        dhNative = lazySodium;
+        dhLazy = lazySodium;
+    }
 
     @Test
     public void create() throws SodiumException {
-        DiffieHellman.Lazy dh = (DiffieHellman.Lazy) lazySodium;
-        SecretBox.Lazy box = (SecretBox.Lazy) lazySodium;
+        SecretBox.Lazy box = lazySodium;
 
-        Key secretKeyC = Key.fromPlainString(clientSecretKey);
-        Key publicKeyC = dh.cryptoScalarMultBase(secretKeyC);
+        Key secretKeyC = Key.fromPlainString(CLIENT_SECRET_KEY);
+        Key publicKeyC = dhLazy.cryptoScalarMultBase(secretKeyC);
 
-        Key secretKeyS = Key.fromPlainString(serverSecretKey);
-        Key publicKeyS = dh.cryptoScalarMultBase(secretKeyS);
+        Key secretKeyS = Key.fromPlainString(SERVER_SECRET_KEY);
+        Key publicKeyS = dhLazy.cryptoScalarMultBase(secretKeyS);
 
         // -----
         // ON THE CLIENT
@@ -40,7 +54,7 @@ public class DiffieHellmanTest extends BaseTest {
 
         // Compute a shared key for sending from client
         // to server.
-        Key sharedKey = dh.cryptoScalarMult(secretKeyC, publicKeyS);
+        Key sharedKey = dhLazy.cryptoScalarMult(secretKeyC, publicKeyS);
 
         String message = "Hello";
         byte[] nonce = new byte[Box.NONCEBYTES];
@@ -54,11 +68,34 @@ public class DiffieHellmanTest extends BaseTest {
         // -----
 
         // Compute the shared key for receiving server messages from client
-        Key sharedKeyServer = dh.cryptoScalarMult(secretKeyS, publicKeyC);
+        Key sharedKeyServer = dhLazy.cryptoScalarMult(secretKeyS, publicKeyC);
         String decrypted = box.cryptoSecretBoxOpenEasy(encrypted, nonce, sharedKeyServer);
 
         // 'decrypted' == Hello
 
         assertEquals(message, decrypted);
+    }
+
+    @Test
+    public void cryptoScalarMultBaseChecks() {
+        byte[] publicKeyBytes = new byte[DiffieHellman.SCALARMULT_BYTES];
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMultBase(new byte[DiffieHellman.SCALARMULT_BYTES - 1], CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMultBase(new byte[DiffieHellman.SCALARMULT_BYTES + 1], CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMultBase(publicKeyBytes, new byte[DiffieHellman.SCALARMULT_SCALARBYTES - 1]));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMultBase(publicKeyBytes, new byte[DiffieHellman.SCALARMULT_SCALARBYTES + 1]));
+    }
+
+    @Test
+    public void cryptoScalarMultChecks() {
+        byte[] sharedKeyBytes = new byte[DiffieHellman.SCALARMULT_BYTES];
+        byte[] publicKeyBytes = new byte[DiffieHellman.SCALARMULT_BYTES];
+        assertTrue(dhNative.cryptoScalarMultBase(publicKeyBytes, CLIENT_SECRET_KEY_BYTES));
+
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(new byte[DiffieHellman.SCALARMULT_BYTES - 1], publicKeyBytes, CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(new byte[DiffieHellman.SCALARMULT_BYTES + 1], publicKeyBytes, CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(sharedKeyBytes, new byte[DiffieHellman.SCALARMULT_BYTES - 1], CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(sharedKeyBytes, new byte[DiffieHellman.SCALARMULT_BYTES + 1], CLIENT_SECRET_KEY_BYTES));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(sharedKeyBytes, publicKeyBytes, new byte[DiffieHellman.SCALARMULT_SCALARBYTES - 1]));
+        assertThrows(IllegalArgumentException.class, () -> dhNative.cryptoScalarMult(sharedKeyBytes, publicKeyBytes, new byte[DiffieHellman.SCALARMULT_SCALARBYTES + 1]));
     }
 }

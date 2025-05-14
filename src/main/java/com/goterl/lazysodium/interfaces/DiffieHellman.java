@@ -9,6 +9,7 @@
 package com.goterl.lazysodium.interfaces;
 
 
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Key;
 
 public interface DiffieHellman {
@@ -18,6 +19,22 @@ public interface DiffieHellman {
 
     int SCALARMULT_BYTES = SCALARMULT_CURVE25519_BYTES;
     int SCALARMULT_SCALARBYTES = SCALARMULT_CURVE25519_SCALARBYTES;
+
+
+    class Checker extends BaseChecker {
+        public static void checkPublicKey(byte[] publicKey) {
+            checkExpectedMemorySize("publicKey", SCALARMULT_BYTES, publicKey.length);
+        }
+
+        public static void checkSecretKey(byte[] secretKey) {
+            checkExpectedMemorySize("secretKey", SCALARMULT_SCALARBYTES, secretKey.length);
+        }
+
+        public static void checkSharedKey(byte[] sharedKey) {
+            checkExpectedMemorySize("sharedKey", SCALARMULT_BYTES, sharedKey.length);
+        }
+
+    }
 
 
     interface Native {
