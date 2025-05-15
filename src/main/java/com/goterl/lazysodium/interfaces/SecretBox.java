@@ -40,6 +40,14 @@ public interface SecretBox {
             checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
         }
 
+        public static void checkCipherText(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
+        }
+
+        public static void checkMessage(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
+        }
+
         public static void checkCipherTextLength(long cipherTextLen) {
             checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
         }
