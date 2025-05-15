@@ -23,15 +23,15 @@ public interface DiffieHellman {
 
     class Checker extends BaseChecker {
         public static void checkPublicKey(byte[] publicKey) {
-            checkExpectedMemorySize("publicKey", SCALARMULT_BYTES, publicKey.length);
+            checkExpectedMemorySize("publicKey", publicKey.length, SCALARMULT_BYTES);
         }
 
         public static void checkSecretKey(byte[] secretKey) {
-            checkExpectedMemorySize("secretKey", SCALARMULT_SCALARBYTES, secretKey.length);
+            checkExpectedMemorySize("secretKey", secretKey.length, SCALARMULT_SCALARBYTES);
         }
 
         public static void checkSharedKey(byte[] sharedKey) {
-            checkExpectedMemorySize("sharedKey", SCALARMULT_BYTES, sharedKey.length);
+            checkExpectedMemorySize("sharedKey", sharedKey.length, SCALARMULT_BYTES);
         }
 
     }

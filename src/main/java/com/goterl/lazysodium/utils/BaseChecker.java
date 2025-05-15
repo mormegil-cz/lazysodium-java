@@ -42,7 +42,7 @@ public class BaseChecker {
     /**
      * Throw if provided value does not match an expected value.
      */
-    public static void checkEqual(String name, int expected, int actual) {
+    public static void checkEqual(String name, int actual, int expected) {
         if (actual != expected) {
             // Neither value is reported, in case this is passed sensitive
             // values, even though most uses are likely for header lengths and
@@ -52,7 +52,7 @@ public class BaseChecker {
         }
     }
 
-    public static void checkExpectedMemorySize(String name, int expected, int actual) {
+    public static void checkExpectedMemorySize(String name, int actual, int expected) {
         checkEqual(name, expected, actual);
     }
 

@@ -45,11 +45,11 @@ public interface SecretStream {
     class Checker extends BaseChecker {
 
         public static void checkHeader(byte[] header) {
-            checkExpectedMemorySize("secret stream header length", HEADERBYTES, header.length);
+            checkExpectedMemorySize("secret stream header length", header.length, HEADERBYTES);
         }
 
         public static void checkKey(byte[] key) {
-            checkExpectedMemorySize("secret stream key length", KEYBYTES, key.length);
+            checkExpectedMemorySize("secret stream key length", key.length, KEYBYTES);
         }
 
         public static void checkPush(byte[] message, int messageLen, byte[] cipher) {
