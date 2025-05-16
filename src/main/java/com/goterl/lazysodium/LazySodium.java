@@ -1171,88 +1171,105 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoSignUpdate(Sign.StateCryptoSign state, byte[] chunk, int chunkLength) {
+        BaseChecker.checkArrayLength("chunk", chunk, chunkLength);
         return successful(getSodium().crypto_sign_update(state, chunk, chunkLength));
     }
 
     @Override
-    public boolean cryptoSignFinalCreate(Sign.StateCryptoSign state, byte[] sig, Pointer sigLen, byte[] sk) {
-        return successful(getSodium().crypto_sign_final_create(state, sig, sigLen, sk));
+    public boolean cryptoSignFinalCreate(Sign.StateCryptoSign state, byte[] sig, byte[] sk) {
+        Sign.Checker.checkSignature(sig);
+        Sign.Checker.checkSecretKey(sk);
+        return successful(getSodium().crypto_sign_final_create(state, sig, null, sk));
     }
 
     @Override
     public boolean cryptoSignFinalVerify(Sign.StateCryptoSign state, byte[] sig, byte[] pk) {
+        Sign.Checker.checkSignature(sig);
+        Sign.Checker.checkPublicKey(pk);
         return successful(getSodium().crypto_sign_final_verify(state, sig, pk));
     }
 
     @Override
     public boolean cryptoSignKeypair(byte[] publicKey, byte[] secretKey) {
+        Sign.Checker.checkPublicKey(publicKey);
+        Sign.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_sign_keypair(publicKey, secretKey));
     }
 
-
     @Override
     public boolean cryptoSignSeedKeypair(byte[] publicKey, byte[] secretKey, byte[] seed) {
+        Sign.Checker.checkPublicKey(publicKey);
+        Sign.Checker.checkSecretKey(secretKey);
+        Sign.Checker.checkSeed(seed);
         return successful(getSodium().crypto_sign_seed_keypair(publicKey, secretKey, seed));
     }
 
     @Override
     public boolean cryptoSign(byte[] signedMessage, byte[] message, int messageLen, byte[] secretKey) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Sign.Checker.checkSignedMessageLength(signedMessage, messageLen);
+        Sign.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_sign(signedMessage, (new PointerByReference(Pointer.NULL)).getPointer(), message, messageLen, secretKey));
     }
 
     @Override
     public boolean cryptoSignOpen(byte[] message, byte[] signedMessage, int signedMessageLen, byte[] publicKey) {
-        if (signedMessageLen < 0 || signedMessageLen > signedMessage.length) {
-            throw new IllegalArgumentException("signedMessageLen out of bounds: " + signedMessageLen);
-        }
+        BaseChecker.checkArrayLength("signedMessage", signedMessage, signedMessageLen);
+        Sign.Checker.checkMessageLength(message, signedMessageLen);
+        Sign.Checker.checkPublicKey(publicKey);
         return successful(getSodium().crypto_sign_open(message, (new PointerByReference(Pointer.NULL)).getPointer(), signedMessage, signedMessageLen, publicKey));
     }
 
     @Override
     public boolean cryptoSignDetached(byte[] signature, byte[] message, int messageLen, byte[] secretKey) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        Sign.Checker.checkSignature(signature);
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Sign.Checker.checkSecretKey(secretKey);
         return successful(getSodium().crypto_sign_detached(signature, (new PointerByReference(Pointer.NULL)).getPointer(), message, messageLen, secretKey));
     }
 
     @Override
     public boolean cryptoSignVerifyDetached(byte[] signature, byte[] message, int messageLen, byte[] publicKey) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        Sign.Checker.checkSignature(signature);
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Sign.Checker.checkPublicKey(publicKey);
         return successful(getSodium().crypto_sign_verify_detached(signature, message, messageLen, publicKey));
     }
 
     @Override
     public boolean convertPublicKeyEd25519ToCurve25519(byte[] curve, byte[] ed) {
+        Sign.Checker.checkPublicKeyCurve25519(curve);
+        Sign.Checker.checkPublicKeyEd25519(ed);
         return successful(getSodium().crypto_sign_ed25519_pk_to_curve25519(curve, ed));
     }
 
     @Override
     public boolean convertSecretKeyEd25519ToCurve25519(byte[] curve, byte[] ed) {
+        Sign.Checker.checkSecretKeyCurve25519(curve);
+        Sign.Checker.checkSecretKeyEd25519(ed);
         return successful(getSodium().crypto_sign_ed25519_sk_to_curve25519(curve, ed));
     }
 
     @Override
     public boolean cryptoSignEd25519SkToSeed(byte[] seed, byte[] ed) {
+        Sign.Checker.checkSeed(seed);
+        Sign.Checker.checkSecretKeyEd25519(ed);
         return successful(getSodium().crypto_sign_ed25519_sk_to_seed(seed, ed));
     }
 
     @Override
-    public boolean cryptoSignEd25519SkToPk(byte[] publicKey, byte[] ed) {
-        return successful(getSodium().crypto_sign_ed25519_sk_to_pk(publicKey, ed));
+    public boolean cryptoSignEd25519SkToPk(byte[] publicKey, byte[] secretKey) {
+        Sign.Checker.checkPublicKey(publicKey);
+        Sign.Checker.checkSecretKey(secretKey);
+        return successful(getSodium().crypto_sign_ed25519_sk_to_pk(publicKey, secretKey));
     }
 
     // -- lazy
 
     @Override
     public KeyPair cryptoSignKeypair() throws SodiumException {
-        byte[] publicKey = randomBytesBuf(Sign.PUBLICKEYBYTES);
-        byte[] secretKey = randomBytesBuf(Sign.SECRETKEYBYTES);
+        byte[] publicKey = new byte[Sign.PUBLICKEYBYTES];
+        byte[] secretKey = new byte[Sign.SECRETKEYBYTES];
         if (!cryptoSignKeypair(publicKey, secretKey)) {
             throw new SodiumException("Could not generate a signing keypair.");
         }
@@ -1261,8 +1278,8 @@ public abstract class LazySodium implements
 
     @Override
     public KeyPair cryptoSignSeedKeypair(byte[] seed) throws SodiumException {
-        byte[] publicKey = randomBytesBuf(Sign.PUBLICKEYBYTES);
-        byte[] secretKey = randomBytesBuf(Sign.SECRETKEYBYTES);
+        byte[] publicKey = new byte[Sign.PUBLICKEYBYTES];
+        byte[] secretKey = new byte[Sign.SECRETKEYBYTES];
         if (!cryptoSignSeedKeypair(publicKey, secretKey, seed)) {
             throw new SodiumException("Could not generate a signing keypair with a seed.");
         }
@@ -1283,7 +1300,7 @@ public abstract class LazySodium implements
     public String cryptoSign(String message, String secretKey) throws SodiumException {
         byte[] messageBytes = bytes(message);
         byte[] secretKeyBytes = messageEncoder.decode(secretKey);
-        byte[] signedMessage = randomBytesBuf(Sign.BYTES + messageBytes.length);
+        byte[] signedMessage = new byte[Sign.BYTES + messageBytes.length];
         boolean res = cryptoSign(signedMessage, messageBytes, messageBytes.length, secretKeyBytes);
 
         if (!res) {
@@ -1295,15 +1312,15 @@ public abstract class LazySodium implements
 
     @Override
     public String cryptoSign(String message, Key secretKey) throws SodiumException {
-        return cryptoSign(message, secretKey.getAsHexString());
+        return cryptoSign(message, messageEncoder.encode(secretKey.getAsBytes()));
     }
 
     @Override
     public String cryptoSignOpen(String signedMessage, Key publicKey) {
         byte[] signedMessageBytes = messageEncoder.decode(signedMessage);
+        Sign.Checker.checkSignedMessageLength(signedMessageBytes.length);
+        byte[] messageBytes = new byte[signedMessageBytes.length - Sign.BYTES];
         byte[] publicKeyBytes = publicKey.getAsBytes();
-
-        byte[] messageBytes = randomBytesBuf(signedMessageBytes.length - Sign.BYTES);
 
         boolean res = cryptoSignOpen(
                 messageBytes,
@@ -1357,6 +1374,17 @@ public abstract class LazySodium implements
         }
 
         return new KeyPair(Key.fromBytes(curvePkBytes), Key.fromBytes(curveSkBytes));
+    }
+
+    @Override
+    public byte[] cryptoSignEd25519SkToSeed(Key secretKey) throws SodiumException {
+        byte[] seed = new byte[Sign.SEEDBYTES];
+        boolean res = cryptoSignEd25519SkToSeed(seed, secretKey.getAsBytes());
+        if (!res) {
+            throw new SodiumException("Could not convert this secret key.");
+        }
+
+        return seed;
     }
 
 

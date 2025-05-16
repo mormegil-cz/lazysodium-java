@@ -347,7 +347,7 @@ public class Sodium {
 
     public native int crypto_sign_update(Sign.StateCryptoSign state, byte[] chunk, long chunkLength);
 
-    public native int crypto_sign_final_create(Sign.StateCryptoSign state, byte[] sig, Pointer sigLen, byte[] sk);
+    public native int crypto_sign_final_create(Sign.StateCryptoSign state, byte[] sig, long[] sigLen, byte[] sk);
 
     public native int crypto_sign_final_verify(Sign.StateCryptoSign state, byte[] sig, byte[] pk);
 
