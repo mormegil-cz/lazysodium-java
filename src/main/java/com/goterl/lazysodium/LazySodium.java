@@ -1598,153 +1598,213 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoStreamChaCha20Keygen(byte[] key) {
+        Stream.Checker.checkChaCha20Key(key);
         getSodium().crypto_stream_chacha20_keygen(key);
     }
 
     @Override
     public boolean cryptoStreamChaCha20(byte[] c, int cLen, byte[] nonce, byte[] key) {
-        if (cLen < 0 || cLen > c.length) {
-            throw new IllegalArgumentException("cLen out of bounds: " + cLen);
-        }
+        BaseChecker.checkArrayLength("c", c, cLen);
+        Stream.Checker.checkChaCha20Nonce(nonce);
+        Stream.Checker.checkChaCha20Key(key);
         return successful(getSodium().crypto_stream_chacha20(c, cLen, nonce, key));
     }
 
     @Override
     public boolean cryptoStreamChaCha20Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkChaCha20Nonce(nonce);
+        Stream.Checker.checkChaCha20Key(key);
         return successful(getSodium().crypto_stream_chacha20_xor(cipher, message, messageLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamChacha20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+    public boolean cryptoStreamChaCha20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkChaCha20Nonce(nonce);
+        Stream.Checker.checkChaCha20Key(key);
         return successful(getSodium().crypto_stream_chacha20_xor_ic(cipher, message, messageLen, nonce, ic, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public boolean cryptoStreamChacha20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
+        return cryptoStreamChaCha20XorIc(cipher, message, messageLen, nonce, ic, key);
     }
 
     // Chacha20 Ietf
 
     @Override
     public void cryptoStreamChaCha20IetfKeygen(byte[] key) {
+        Stream.Checker.checkChaCha20IetfKey(key);
         getSodium().crypto_stream_chacha20_ietf_keygen(key);
     }
 
     @Override
     public boolean cryptoStreamChaCha20Ietf(byte[] c, int cLen, byte[] nonce, byte[] key) {
-        if (cLen < 0 || cLen > c.length) {
-            throw new IllegalArgumentException("cLen out of bounds: " + cLen);
-        }
+        BaseChecker.checkArrayLength("c", c, cLen);
+        Stream.Checker.checkChaCha20IetfNonce(nonce);
+        Stream.Checker.checkChaCha20IetfKey(key);
         return successful(getSodium().crypto_stream_chacha20_ietf(c, cLen, nonce, key));
     }
 
     @Override
     public boolean cryptoStreamChaCha20IetfXor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkChaCha20IetfNonce(nonce);
+        Stream.Checker.checkChaCha20IetfKey(key);
         return successful(getSodium().crypto_stream_chacha20_ietf_xor(cipher, message, messageLen, nonce, key));
     }
 
     @Override
-    public boolean cryptoStreamChacha20IetfXorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+    public boolean cryptoStreamChaCha20IetfXorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkChaCha20IetfNonce(nonce);
+        Stream.Checker.checkChaCha20IetfKey(key);
         return successful(getSodium().crypto_stream_chacha20_ietf_xor_ic(cipher, message, messageLen, nonce, ic, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public boolean cryptoStreamChacha20IetfXorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
+        return cryptoStreamChaCha20IetfXorIc(cipher, message, messageLen, nonce, ic, key);
     }
 
     // Salsa20
 
     @Override
     public void cryptoStreamSalsa20Keygen(byte[] key) {
+        Stream.Checker.checkSalsa20Key(key);
         getSodium().crypto_stream_salsa20_keygen(key);
     }
 
     @Override
     public boolean cryptoStreamSalsa20(byte[] c, int cLen, byte[] nonce, byte[] key) {
-        if (cLen < 0 || cLen > c.length) {
-            throw new IllegalArgumentException("cLen out of bounds: " + cLen);
-        }
+        BaseChecker.checkArrayLength("c", c, cLen);
+        Stream.Checker.checkSalsa20Nonce(nonce);
+        Stream.Checker.checkSalsa20Key(key);
         return successful(getSodium().crypto_stream_salsa20(c, cLen, nonce, key));
     }
 
     @Override
     public boolean cryptoStreamSalsa20Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkSalsa20Nonce(nonce);
+        Stream.Checker.checkSalsa20Key(key);
         return successful(getSodium().crypto_stream_salsa20_xor(cipher, message, messageLen, nonce, key));
     }
 
     @Override
     public boolean cryptoStreamSalsa20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkSalsa20Nonce(nonce);
+        Stream.Checker.checkSalsa20Key(key);
         return successful(getSodium().crypto_stream_salsa20_xor_ic(cipher, message, messageLen, nonce, ic, key));
     }
 
 
     @Override
     public void cryptoStreamXSalsa20Keygen(byte[] key) {
-        getSodium().crypto_stream_keygen(key);
+        Stream.Checker.checkXSalsa20Key(key);
+        getSodium().crypto_stream_xsalsa20_keygen(key);
     }
 
     @Override
     public boolean cryptoStreamXSalsa20(byte[] c, int cLen, byte[] nonce, byte[] key) {
-        if (cLen < 0 || cLen > c.length) {
-            throw new IllegalArgumentException("cLen out of bounds: " + cLen);
-        }
-        return successful(getSodium().crypto_stream(c, cLen, nonce, key));
+        BaseChecker.checkArrayLength("c", c, cLen);
+        Stream.Checker.checkXSalsa20Nonce(nonce);
+        Stream.Checker.checkXSalsa20Key(key);
+        return successful(getSodium().crypto_stream_xsalsa20(c, cLen, nonce, key));
     }
 
     @Override
     public boolean cryptoStreamXSalsa20Xor(byte[] cipher, byte[] message, int messageLen, byte[] nonce, byte[] key) {
-        if (messageLen < 0 || messageLen > message.length) {
-            throw new IllegalArgumentException("messageLen out of bounds: " + messageLen);
-        }
-        return successful(getSodium().crypto_stream_xor(cipher, message, messageLen, nonce, key));
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkXSalsa20Nonce(nonce);
+        Stream.Checker.checkXSalsa20Key(key);
+        return successful(getSodium().crypto_stream_xsalsa20_xor(cipher, message, messageLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoStreamXSalsa20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher length", cipher.length, messageLen);
+        Stream.Checker.checkXSalsa20Nonce(nonce);
+        Stream.Checker.checkXSalsa20Key(key);
+        return successful(getSodium().crypto_stream_xsalsa20_xor_ic(cipher, message, messageLen, nonce, ic, key));
     }
 
     // Lazy
 
     @Override
     public Key cryptoStreamKeygen(Stream.Method method) {
-        if (method.equals(Stream.Method.CHACHA20)) {
-            byte[] k = randomBytesBuf(Stream.CHACHA20_KEYBYTES);
-            cryptoStreamChaCha20Keygen(k);
-            return Key.fromBytes(k);
-        } else if (method.equals(Stream.Method.CHACHA20_IETF)) {
-            byte[] k = randomBytesBuf(Stream.CHACHA20_IETF_KEYBYTES);
-            cryptoStreamChaCha20Keygen(k);
-            return Key.fromBytes(k);
-        } else if (method.equals(Stream.Method.SALSA20)) {
-            byte[] k = randomBytesBuf(Stream.SALSA20_KEYBYTES);
-            cryptoStreamSalsa20Keygen(k);
-            return Key.fromBytes(k);
-        } else {
-            byte[] k = randomBytesBuf(Stream.XSALSA20_KEYBYTES);
-            cryptoStreamXSalsa20Keygen(k);
-            return Key.fromBytes(k);
+        if (method == null) {
+            method = Stream.Method.XSALSA20;
+        }
+        switch (method) {
+            case CHACHA20: {
+                byte[] k = new byte[Stream.CHACHA20_KEYBYTES];
+                cryptoStreamChaCha20Keygen(k);
+                return Key.fromBytes(k);
+            }
+            case CHACHA20_IETF: {
+                byte[] k = new byte[Stream.CHACHA20_IETF_KEYBYTES];
+                cryptoStreamChaCha20Keygen(k);
+                return Key.fromBytes(k);
+            }
+            case SALSA20: {
+                byte[] k = new byte[Stream.SALSA20_KEYBYTES];
+                cryptoStreamSalsa20Keygen(k);
+                return Key.fromBytes(k);
+            }
+            case XSALSA20: {
+                byte[] k = new byte[Stream.XSALSA20_KEYBYTES];
+                cryptoStreamXSalsa20Keygen(k);
+                return Key.fromBytes(k);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported stream cipher method " + method);
         }
     }
 
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public byte[] cryptoStream(byte[] nonce, Key key, Stream.Method method) {
+        return cryptoStream(20, nonce, key, method);
+    }
 
     @Override
-    public byte[] cryptoStream(byte[] nonce, Key key, Stream.Method method) {
-        byte[] c = new byte[20];
+    public byte[] cryptoStream(int bytes, byte[] nonce, Key key, Stream.Method method) {
+        byte[] c = new byte[bytes];
         int cLen = c.length;
-        if (method.equals(Stream.Method.CHACHA20)) {
-            cryptoStreamChaCha20(c, cLen, nonce, key.getAsBytes());
-        } else if (method.equals(Stream.Method.CHACHA20_IETF)) {
-            cryptoStreamChaCha20Ietf(c, cLen, nonce, key.getAsBytes());
-        } else if (method.equals(Stream.Method.SALSA20)) {
-            cryptoStreamSalsa20(c, cLen, nonce, key.getAsBytes());
-        } else {
-            cryptoStreamXSalsa20(c, cLen, nonce, key.getAsBytes());
+        if (method == null) {
+            method = Stream.Method.XSALSA20;
+        }
+        switch (method) {
+            case CHACHA20:
+                cryptoStreamChaCha20(c, cLen, nonce, key.getAsBytes());
+                break;
+            case CHACHA20_IETF:
+                cryptoStreamChaCha20Ietf(c, cLen, nonce, key.getAsBytes());
+                break;
+            case SALSA20:
+                cryptoStreamSalsa20(c, cLen, nonce, key.getAsBytes());
+                break;
+            case XSALSA20:
+                cryptoStreamXSalsa20(c, cLen, nonce, key.getAsBytes());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported stream cipher method " + method);
         }
         return c;
     }
@@ -1777,31 +1837,49 @@ public abstract class LazySodium implements
     private byte[] cryptoStreamDefaultXor(byte[] messageBytes, byte[] nonce, Key key, Stream.Method method) {
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
-        if (method.equals(Stream.Method.CHACHA20)) {
-            cryptoStreamChaCha20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
-        } else if (method.equals(Stream.Method.CHACHA20_IETF)) {
-            cryptoStreamChaCha20IetfXor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
-        } else if (method.equals(Stream.Method.SALSA20)) {
-            cryptoStreamSalsa20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
-        } else {
-            cryptoStreamXSalsa20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+        if (method == null) {
+            method = Stream.Method.XSALSA20;
+        }
+        switch (method) {
+            case CHACHA20:
+                cryptoStreamChaCha20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+                break;
+            case CHACHA20_IETF:
+                cryptoStreamChaCha20IetfXor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+                break;
+            case SALSA20:
+                cryptoStreamSalsa20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+                break;
+            case XSALSA20:
+                cryptoStreamXSalsa20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported stream cipher method " + method);
         }
         return cipher;
     }
 
-    protected byte[] cryptoStreamDefaultXorIc(byte[] messageBytes, byte[] nonce, long ic, Key key, Stream.Method method) {
+    private byte[] cryptoStreamDefaultXorIc(byte[] messageBytes, byte[] nonce, long ic, Key key, Stream.Method method) {
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
-        if (method.equals(Stream.Method.CHACHA20)) {
-            cryptoStreamChacha20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
-        } else if (method.equals(Stream.Method.CHACHA20_IETF)) {
-            cryptoStreamChacha20IetfXorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
-        } else if (method.equals(Stream.Method.SALSA20)) {
-            cryptoStreamSalsa20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
-        } else {
-            // XSalsa20 has no IC so return the
-            // one without the IC
-            cryptoStreamXSalsa20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
+        if (method == null) {
+            method = Stream.Method.XSALSA20;
+        }
+        switch (method) {
+            case CHACHA20:
+                cryptoStreamChaCha20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
+                break;
+            case CHACHA20_IETF:
+                cryptoStreamChaCha20IetfXorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
+                break;
+            case SALSA20:
+                cryptoStreamSalsa20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
+                break;
+            case XSALSA20:
+                cryptoStreamXSalsa20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported stream cipher method " + method);
         }
         return cipher;
     }

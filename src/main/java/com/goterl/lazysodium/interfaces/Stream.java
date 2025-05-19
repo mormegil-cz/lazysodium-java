@@ -9,6 +9,7 @@
 package com.goterl.lazysodium.interfaces;
 
 
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Constants;
 import com.goterl.lazysodium.utils.Key;
 
@@ -54,6 +55,42 @@ public interface Stream {
     }
 
 
+    class Checker extends BaseChecker {
+
+        public static void checkChaCha20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20_KEYBYTES);
+        }
+
+        public static void checkChaCha20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_NONCEBYTES);
+        }
+
+        public static void checkChaCha20IetfKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20_IETF_KEYBYTES);
+        }
+
+        public static void checkChaCha20IetfNonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_IETF_NONCEBYTES);
+        }
+
+        public static void checkSalsa20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, SALSA20_KEYBYTES);
+        }
+
+        public static void checkSalsa20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, SALSA20_NONCEBYTES);
+        }
+
+        public static void checkXSalsa20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, XSALSA20_KEYBYTES);
+        }
+
+        public static void checkXSalsa20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, XSALSA20_NONCEBYTES);
+        }
+
+    }
+
 
     interface Native {
 
@@ -74,6 +111,20 @@ public interface Stream {
                 byte[] key
         );
 
+        boolean cryptoStreamChaCha20XorIc(
+                byte[] cipher,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                long ic,
+                byte[] key
+        );
+
+        /**
+         * Backward-compatible method name.
+         * @deprecated Use {@link #cryptoStreamChaCha20XorIc(byte[], byte[], int, byte[], long, byte[])} instead.
+         */
+        @Deprecated(forRemoval = true)
         boolean cryptoStreamChacha20XorIc(
                 byte[] cipher,
                 byte[] message,
@@ -102,6 +153,20 @@ public interface Stream {
                 byte[] key
         );
 
+        boolean cryptoStreamChaCha20IetfXorIc(
+                byte[] cipher,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                long ic,
+                byte[] key
+        );
+
+        /**
+         * Backward-compatible method name.
+         * @deprecated Use {@link #cryptoStreamChaCha20XorIc(byte[], byte[], int, byte[], long, byte[])} instead.
+         */
+        @Deprecated(forRemoval = true)
         boolean cryptoStreamChacha20IetfXorIc(
                 byte[] cipher,
                 byte[] message,
@@ -158,6 +223,15 @@ public interface Stream {
                 byte[] key
         );
 
+        boolean cryptoStreamXSalsa20XorIc(
+                byte[] cipher,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                long ic,
+                byte[] key
+        );
+
     }
 
 
@@ -166,7 +240,23 @@ public interface Stream {
 
         Key cryptoStreamKeygen(Method method);
 
+        /**
+         * Generate 20 bytes of keystream
+         * @param nonce  Nonce
+         * @param key    Key
+         * @param method Stream cipher to use
+         * @return 20-byte keystream data
+         * @deprecated Use {@link #cryptoStream(int, byte[], Key, Method)} instead.
+         */
+        @Deprecated(forRemoval = true)
         byte[] cryptoStream(
+                byte[] nonce,
+                Key key,
+                Method method
+        );
+
+        byte[] cryptoStream(
+                int bytes,
                 byte[] nonce,
                 Key key,
                 Method method
