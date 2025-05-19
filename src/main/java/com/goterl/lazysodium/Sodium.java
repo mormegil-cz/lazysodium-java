@@ -414,7 +414,7 @@ public class Sodium {
     public native int crypto_secretstream_xchacha20poly1305_push(
             SecretStream.State state,
             byte[] cipher,
-            long[] cipherAddr,
+            long[] cipherLen,
             byte[] message,
             long messageLen,
             byte[] additionalData,
@@ -431,7 +431,7 @@ public class Sodium {
     public native int crypto_secretstream_xchacha20poly1305_pull(
             SecretStream.State state,
             byte[] message,
-            long[] messageAddress,
+            long[] messageLen,
             byte[] tagAddress,
             byte[] cipher,
             long cipherLen,
