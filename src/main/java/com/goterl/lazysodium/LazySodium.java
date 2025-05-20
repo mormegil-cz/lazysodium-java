@@ -1748,7 +1748,7 @@ public abstract class LazySodium implements
     @Override
     public Key cryptoStreamKeygen(Stream.Method method) {
         if (method == null) {
-            method = Stream.Method.XSALSA20;
+            method = Stream.Method.DEFAULT;
         }
         switch (method) {
             case CHACHA20: {
@@ -1788,7 +1788,7 @@ public abstract class LazySodium implements
         byte[] c = new byte[bytes];
         int cLen = c.length;
         if (method == null) {
-            method = Stream.Method.XSALSA20;
+            method = Stream.Method.DEFAULT;
         }
         switch (method) {
             case CHACHA20:
@@ -1838,7 +1838,7 @@ public abstract class LazySodium implements
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
         if (method == null) {
-            method = Stream.Method.XSALSA20;
+            method = Stream.Method.DEFAULT;
         }
         switch (method) {
             case CHACHA20:
@@ -1863,7 +1863,7 @@ public abstract class LazySodium implements
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
         if (method == null) {
-            method = Stream.Method.XSALSA20;
+            method = Stream.Method.DEFAULT;
         }
         switch (method) {
             case CHACHA20:
@@ -1891,22 +1891,23 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoAuth(byte[] tag, byte[] in, int inLen, byte[] key) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkTag(tag);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkKey(key);
         return successful(getSodium().crypto_auth(tag, in, inLen, key));
     }
 
     @Override
     public boolean cryptoAuthVerify(byte[] tag, byte[] in, int inLen, byte[] key) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkTag(tag);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkKey(key);
         return successful(getSodium().crypto_auth_verify(tag, in, inLen, key));
     }
 
     @Override
     public void cryptoAuthKeygen(byte[] k) {
+        Auth.Checker.checkKey(k);
         getSodium().crypto_auth_keygen(k);
     }
 
@@ -1920,7 +1921,7 @@ public abstract class LazySodium implements
 
     @Override
     public String cryptoAuth(String message, Key key) throws SodiumException {
-        byte[] tag = randomBytesBuf(Auth.BYTES);
+        byte[] tag = new byte[Auth.BYTES];
         byte[] messageBytes = bytes(message);
         byte[] keyBytes = key.getAsBytes();
         boolean res = cryptoAuth(tag, messageBytes, messageBytes.length, keyBytes);
@@ -1943,146 +1944,150 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoAuthHMACSha256Keygen(byte[] key) {
+        Auth.Checker.checkHMACSha256Key(key);
         getSodium().crypto_auth_hmacsha256_keygen(key);
     }
 
     @Override
     public boolean cryptoAuthHMACSha256(byte[] out, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha256Tag(out);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha256Key(k);
         return successful(getSodium().crypto_auth_hmacsha256(out, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha256Verify(byte[] h, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha256Tag(h);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha256Key(k);
         return successful(getSodium().crypto_auth_hmacsha256_verify(h, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha256Init(Auth.StateHMAC256 state, byte[] key, int keyLen) {
-        if (keyLen < 0 || keyLen > key.length) {
-            throw new IllegalArgumentException("keyLen out of bounds: " + keyLen);
-        }
+        BaseChecker.checkArrayLength("key", key, keyLen);
         return successful(getSodium().crypto_auth_hmacsha256_init(state, key, keyLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha256Update(Auth.StateHMAC256 state, byte[] in, int inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_auth_hmacsha256_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha256Final(Auth.StateHMAC256 state, byte[] out) {
+        Auth.Checker.checkHMACSha256Tag(out);
         return successful(getSodium().crypto_auth_hmacsha256_final(state, out));
     }
 
 
     @Override
     public void cryptoAuthHMACSha512Keygen(byte[] key) {
+        Auth.Checker.checkHMACSha512Key(key);
         getSodium().crypto_auth_hmacsha512_keygen(key);
     }
 
     @Override
     public boolean cryptoAuthHMACSha512(byte[] out, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha512Tag(out);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha512Key(k);
         return successful(getSodium().crypto_auth_hmacsha512(out, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512Verify(byte[] h, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha512Tag(h);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha512Key(k);
         return successful(getSodium().crypto_auth_hmacsha512_verify(h, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512Init(Auth.StateHMAC512 state, byte[] key, int keyLen) {
-        if (keyLen < 0 || keyLen > key.length) {
-            throw new IllegalArgumentException("keyLen out of bounds: " + keyLen);
-        }
+        BaseChecker.checkArrayLength("key", key, keyLen);
         return successful(getSodium().crypto_auth_hmacsha512_init(state, key, keyLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512Update(Auth.StateHMAC512 state, byte[] in, int inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_auth_hmacsha512_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512Final(Auth.StateHMAC512 state, byte[] out) {
+        Auth.Checker.checkHMACSha512Tag(out);
         return successful(getSodium().crypto_auth_hmacsha512_final(state, out));
     }
 
+
     @Override
     public void cryptoAuthHMACSha512256Keygen(byte[] key) {
+        Auth.Checker.checkHMACSha512256Key(key);
         getSodium().crypto_auth_hmacsha512256_keygen(key);
     }
 
     @Override
     public boolean cryptoAuthHMACSha512256(byte[] out, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha512256Tag(out);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha512256Key(k);
         return successful(getSodium().crypto_auth_hmacsha512256(out, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512256Verify(byte[] h, byte[] in, int inLen, byte[] k) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        Auth.Checker.checkHMACSha512256Tag(h);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        Auth.Checker.checkHMACSha512256Key(k);
         return successful(getSodium().crypto_auth_hmacsha512256_verify(h, in, inLen, k));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512256Init(Auth.StateHMAC512256 state, byte[] key, int keyLen) {
-        if (keyLen < 0 || keyLen > key.length) {
-            throw new IllegalArgumentException("keyLen out of bounds: " + keyLen);
-        }
+        BaseChecker.checkArrayLength("key", key, keyLen);
         return successful(getSodium().crypto_auth_hmacsha512256_init(state, key, keyLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512256Update(Auth.StateHMAC512256 state, byte[] in, int inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
+        BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_auth_hmacsha512256_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoAuthHMACSha512256Final(Auth.StateHMAC512256 state, byte[] out) {
+        Auth.Checker.checkHMACSha512256Tag(out);
         return successful(getSodium().crypto_auth_hmacsha512256_final(state, out));
     }
 
 
     @Override
     public Key cryptoAuthHMACShaKeygen(Auth.Type type) {
-        if (type.equals(Auth.Type.SHA256)) {
-            byte[] k = new byte[Auth.HMACSHA256_KEYBYTES];
-            cryptoAuthHMACSha256Keygen(k);
-            return Key.fromBytes(k);
-        } else if (type.equals(Auth.Type.SHA512)) {
-            byte[] k = new byte[Auth.HMACSHA512_KEYBYTES];
-            cryptoAuthHMACSha512Keygen(k);
-            return Key.fromBytes(k);
-        } else {
-            byte[] k = new byte[Auth.HMACSHA512256_KEYBYTES];
-            cryptoAuthHMACSha512256Keygen(k);
-            return Key.fromBytes(k);
+        if (type == null) {
+            type = Auth.Type.DEFAULT;
+        }
+        switch (type) {
+            case SHA256: {
+                byte[] k = new byte[Auth.HMACSHA256_KEYBYTES];
+                cryptoAuthHMACSha256Keygen(k);
+                return Key.fromBytes(k);
+            }
+            case SHA512: {
+                byte[] k = new byte[Auth.HMACSHA512_KEYBYTES];
+                cryptoAuthHMACSha512Keygen(k);
+                return Key.fromBytes(k);
+            }
+            case SHA512256: {
+                byte[] k = new byte[Auth.HMACSHA512256_KEYBYTES];
+                cryptoAuthHMACSha512256Keygen(k);
+                return Key.fromBytes(k);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported auth type " + type);
         }
     }
 
@@ -2091,18 +2096,27 @@ public abstract class LazySodium implements
         byte[] inBytes = bytes(in);
         byte[] keyBytes = key.getAsBytes();
         int inByteLen = inBytes.length;
-        if (type.equals(Auth.Type.SHA256)) {
-            byte[] out = new byte[Auth.HMACSHA256_BYTES];
-            cryptoAuthHMACSha256(out, inBytes, inByteLen, keyBytes);
-            return messageEncoder.encode(out);
-        } else if (type.equals(Auth.Type.SHA512)) {
-            byte[] out = new byte[Auth.HMACSHA512_BYTES];
-            cryptoAuthHMACSha512(out, inBytes, inByteLen, keyBytes);
-            return messageEncoder.encode(out);
-        } else {
-            byte[] out = new byte[Auth.HMACSHA512256_BYTES];
-            cryptoAuthHMACSha512256(out, inBytes, inByteLen, keyBytes);
-            return messageEncoder.encode(out);
+        if (type == null) {
+            type = Auth.Type.DEFAULT;
+        }
+        switch (type) {
+            case SHA256: {
+                byte[] out = new byte[Auth.HMACSHA256_BYTES];
+                cryptoAuthHMACSha256(out, inBytes, inByteLen, keyBytes);
+                return messageEncoder.encode(out);
+            }
+            case SHA512: {
+                byte[] out = new byte[Auth.HMACSHA512_BYTES];
+                cryptoAuthHMACSha512(out, inBytes, inByteLen, keyBytes);
+                return messageEncoder.encode(out);
+            }
+            case SHA512256: {
+                byte[] out = new byte[Auth.HMACSHA512256_BYTES];
+                cryptoAuthHMACSha512256(out, inBytes, inByteLen, keyBytes);
+                return messageEncoder.encode(out);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported auth type " + type);
         }
     }
 
@@ -2112,12 +2126,18 @@ public abstract class LazySodium implements
         byte[] inBytes = bytes(in);
         byte[] keyBytes = key.getAsBytes();
         int inByteLen = inBytes.length;
-        if (type.equals(Auth.Type.SHA256)) {
-            return cryptoAuthHMACSha256Verify(authBytes, inBytes, inByteLen, keyBytes);
-        } else if (type.equals(Auth.Type.SHA512)) {
-            return cryptoAuthHMACSha512Verify(authBytes, inBytes, inByteLen, keyBytes);
-        } else {
-            return cryptoAuthHMACSha512256Verify(authBytes, inBytes, inByteLen, keyBytes);
+        if (type == null) {
+            type = Auth.Type.DEFAULT;
+        }
+        switch (type) {
+            case SHA256:
+                return cryptoAuthHMACSha256Verify(authBytes, inBytes, inByteLen, keyBytes);
+            case SHA512:
+                return cryptoAuthHMACSha512Verify(authBytes, inBytes, inByteLen, keyBytes);
+            case SHA512256:
+                return cryptoAuthHMACSha512256Verify(authBytes, inBytes, inByteLen, keyBytes);
+            default:
+                throw new IllegalArgumentException("Unsupported auth type " + type);
         }
     }
 
