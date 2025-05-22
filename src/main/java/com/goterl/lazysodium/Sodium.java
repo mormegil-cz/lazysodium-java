@@ -740,16 +740,16 @@ public class Sodium {
             byte[] key, int keyLen
     );
 
-    public native int crypto_generichash_init(byte[] state,
+    public native int crypto_generichash_init(Pointer state,
                                        byte[] key,
                                        int keyLength,
                                        int outLen);
 
-    public native int crypto_generichash_update(byte[] state,
+    public native int crypto_generichash_update(Pointer state,
                                          byte[] in,
                                          long inLen);
 
-    public native int crypto_generichash_final(byte[] state, byte[] out, int outLen);
+    public native int crypto_generichash_final(Pointer state, byte[] out, int outLen);
 
     public native int crypto_generichash_statebytes();
 

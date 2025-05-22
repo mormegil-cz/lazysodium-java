@@ -2263,56 +2263,46 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoGenericHash(byte[] out, int outLen, byte[] in, int inLen, byte[] key, int keyLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
-        if (outLen < 0 || outLen > out.length) {
-            throw new IllegalArgumentException("outLen out of bounds: " + outLen);
-        }
+        BaseChecker.checkArrayLength("out", out, outLen);
+        GenericHash.Checker.checkOutputLength(outLen);
+        BaseChecker.checkArrayLength("in", in, inLen);
+        GenericHash.Checker.checkKey(key, keyLen);
         return successful(getSodium().crypto_generichash(out, outLen, in, inLen, key, keyLen));
     }
 
     @Override
     public boolean cryptoGenericHash(byte[] out, int outLen, byte[] in, int inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
-        if (outLen < 0 || outLen > out.length) {
-            throw new IllegalArgumentException("outLen out of bounds: " + outLen);
-        }
-        return successful(getSodium().crypto_generichash(out, outLen, in, inLen, null, 0));
+        return cryptoGenericHash(out, outLen, in, inLen, null, 0);
     }
 
     @Override
-    public boolean cryptoGenericHashInit(byte[] state, byte[] key, int keyLength, int outLen) {
-        return successful(getSodium().crypto_generichash_init(state, key, keyLength, outLen));
+    public boolean cryptoGenericHashInit(GenericHash.State state, byte[] key, int keyLength, int outLen) {
+        GenericHash.Checker.checkKey(key, keyLength);
+        GenericHash.Checker.checkOutputLength(outLen);
+        return successful(getSodium().crypto_generichash_init(state.getPointer(), key, keyLength, outLen));
     }
 
     @Override
-    public boolean cryptoGenericHashInit(byte[] state, int outLen) {
-        return successful(getSodium().crypto_generichash_init(state, null, 0, outLen));
+    public boolean cryptoGenericHashInit(GenericHash.State state, int outLen) {
+        return cryptoGenericHashInit(state, null, 0, outLen);
     }
 
     @Override
-    public boolean cryptoGenericHashUpdate(byte[] state, byte[] in, int inLen) {
-        if (inLen < 0 || inLen > in.length) {
-            throw new IllegalArgumentException("inLen out of bounds: " + inLen);
-        }
-        return successful(getSodium().crypto_generichash_update(state, in, inLen));
+    public boolean cryptoGenericHashUpdate(GenericHash.State state, byte[] in, int inLen) {
+        BaseChecker.checkArrayLength("in", in, inLen);
+        return successful(getSodium().crypto_generichash_update(state.getPointer(), in, inLen));
     }
 
     @Override
-    public boolean cryptoGenericHashFinal(byte[] state, byte[] out, int outLen) {
-        return successful(getSodium().crypto_generichash_final(state, out, outLen));
-    }
-
-    @Override
-    public int cryptoGenericHashStateBytes() {
-        return getSodium().crypto_generichash_statebytes();
+    public boolean cryptoGenericHashFinal(GenericHash.State state, byte[] out, int outLen) {
+        BaseChecker.checkArrayLength("out", out, outLen);
+        GenericHash.Checker.checkOutputLength(outLen);
+        return successful(getSodium().crypto_generichash_final(state.getPointer(), out, outLen));
     }
 
     @Override
     public void cryptoGenericHashKeygen(byte[] k) {
+        GenericHash.Checker.checkKey(k);
         getSodium().crypto_generichash_keygen(k);
     }
 
@@ -2320,25 +2310,23 @@ public abstract class LazySodium implements
 
     @Override
     public Key cryptoGenericHashKeygen() {
-        byte[] key = randomBytesBuf(GenericHash.KEYBYTES);
+        byte[] key = new byte[GenericHash.KEYBYTES];
         cryptoGenericHashKeygen(key);
         return Key.fromBytes(key);
     }
 
     @Override
     public Key cryptoGenericHashKeygen(int size) {
-        byte[] key = randomBytesBuf(size);
-        cryptoGenericHashKeygen(key);
-        return Key.fromBytes(key);
+        return Key.generate(this, size);
     }
 
     @Override
     public String cryptoGenericHash(String in, Key key) throws SodiumException {
         byte[] message = bytes(in);
-        byte[] keyBytes = key.getAsBytes();
+        byte[] keyBytes = key == null ? null : key.getAsBytes();
 
-        byte[] hash = randomBytesBuf(GenericHash.BYTES);
-        boolean res = cryptoGenericHash(hash, hash.length, message, message.length, keyBytes, keyBytes.length);
+        byte[] hash = new byte[GenericHash.BYTES];
+        boolean res = cryptoGenericHash(hash, hash.length, message, message.length, keyBytes, keyBytes == null ? 0 : keyBytes.length);
 
         if (!res) {
             throw new SodiumException("Could not hash the message.");
@@ -2349,33 +2337,25 @@ public abstract class LazySodium implements
 
     @Override
     public String cryptoGenericHash(String in) throws SodiumException {
-        byte[] message = bytes(in);
-        byte[] hash = randomBytesBuf(GenericHash.BYTES);
-        boolean res = cryptoGenericHash(hash, hash.length, message, message.length, null, 0);
-
-        if (!res) {
-            throw new SodiumException("Could not hash the message.");
-        }
-
-        return messageEncoder.encode(hash);
+        return cryptoGenericHash(in, null);
     }
 
     @Override
-    public boolean cryptoGenericHashInit(byte[] state, Key key, int outLen) {
-        byte[] keyBytes = key.getAsBytes();
-        return getSodium().crypto_generichash_init(state, keyBytes, keyBytes.length, outLen) == 0;
+    public boolean cryptoGenericHashInit(GenericHash.State state, Key key, int outLen) {
+        byte[] keyBytes = key == null ? null : key.getAsBytes();
+        return cryptoGenericHashInit(state, keyBytes, keyBytes == null ? 0 : keyBytes.length, outLen);
     }
 
     @Override
-    public boolean cryptoGenericHashUpdate(byte[] state, String in) {
+    public boolean cryptoGenericHashUpdate(GenericHash.State state, String in) {
         byte[] inBytes = bytes(in);
-        return getSodium().crypto_generichash_update(state, inBytes, inBytes.length) == 0;
+        return cryptoGenericHashUpdate(state, inBytes, inBytes.length);
     }
 
     @Override
-    public String cryptoGenericHashFinal(byte[] state, int outLen) throws SodiumException {
+    public String cryptoGenericHashFinal(GenericHash.State state, int outLen) throws SodiumException {
         byte[] hash = new byte[outLen];
-        boolean res = getSodium().crypto_generichash_final(state, hash, hash.length) == 0;
+        boolean res = cryptoGenericHashFinal(state, hash, hash.length);
         if (!res) {
             throw new SodiumException("Could not finalise the hashing process.");
         }
