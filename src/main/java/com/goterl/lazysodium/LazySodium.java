@@ -2369,106 +2369,318 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoAeadChaCha20Poly1305Keygen(byte[] key) {
+        AEAD.Checker.checkChaCha20Poly1305Key(key);
         getSodium().crypto_aead_chacha20poly1305_keygen(key);
     }
 
     @Override
-    public boolean cryptoAeadChaCha20Poly1305Encrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
+    public boolean cryptoAeadChaCha20Poly1305Encrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         BaseChecker.checkArrayLength("mLen", m, mLen);
-        BaseChecker.checkAtLeast("c.length", c.length, mLen + AEAD.CHACHA20POLY1305_ABYTES);
-        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305CipherLength(c, mLen, cLen != null);
         BaseChecker.checkOptionalOutPointer("cLen", cLen);
-        return successful(getSodium().crypto_aead_chacha20poly1305_encrypt(c, cLen, m, mLen, ad, adLen, nSec, nPub, k));
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305Nonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305Key(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_encrypt(c, cLen, m, mLen, ad, adLen, null, nPub, k));
     }
 
     @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public boolean cryptoAeadChaCha20Poly1305Encrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
+        return cryptoAeadChaCha20Poly1305Encrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
+    }
+
+    @Override
+    public boolean cryptoAeadChaCha20Poly1305Decrypt(byte[] m, long[] mLen, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        AEAD.Checker.checkChaCha20Poly1305DecryptedMessageLength(m, cLen, mLen != null);
+        BaseChecker.checkOptionalOutPointer("mLen", mLen);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305Nonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305Key(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_decrypt(m, mLen, null, c, cLen, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305Decrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_decrypt(m, mLen, nSec, c, cLen, ad, adLen, nPub, k));
+        return cryptoAeadChaCha20Poly1305Decrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305EncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("mLen", m, mLen);
+        BaseChecker.checkExpectedMemorySize("c", c.length, mLen);
+        AEAD.Checker.checkChaCha20Poly1305Mac(mac, macLenAddress != null);
+        BaseChecker.checkOptionalOutPointer("macLenAddress", macLenAddress);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305Nonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305Key(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, null, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305EncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, nSec, nPub, k));
+        return cryptoAeadChaCha20Poly1305EncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305DecryptDetached(byte[] m, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        BaseChecker.checkExpectedMemorySize("m", m.length, cLen);
+        AEAD.Checker.checkChaCha20Poly1305Mac(mac, false);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305Nonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305Key(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_decrypt_detached(m, null, c, cLen, mac, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305DecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_decrypt_detached(m, nSec, c, cLen, mac, ad, adLen, nPub, k));
+        return cryptoAeadChaCha20Poly1305DecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
 
     @Override
     public void cryptoAeadChaCha20Poly1305IetfKeygen(byte[] key) {
+        AEAD.Checker.checkChaCha20Poly1305IetfKey(key);
         getSodium().crypto_aead_chacha20poly1305_ietf_keygen(key);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("mLen", m, mLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfCipherLength(c, mLen, cLen != null);
+        BaseChecker.checkOptionalOutPointer("cLen", cLen);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_encrypt(c, cLen, m, mLen, ad, adLen, null, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_encrypt(c, cLen, m, mLen, ad, adLen, nSec, nPub, k));
+        return cryptoAeadChaCha20Poly1305IetfEncrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfDecryptedMessageLength(m, cLen, mLen != null);
+        BaseChecker.checkOptionalOutPointer("mLen", mLen);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_decrypt(m, mLen, null, c, cLen, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_decrypt(m, mLen, nSec, c, cLen, ad, adLen, nPub, k));
+        return cryptoAeadChaCha20Poly1305IetfDecrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("mLen", m, mLen);
+        BaseChecker.checkExpectedMemorySize("c", c.length, mLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfMac(mac, macLenAddress != null);
+        BaseChecker.checkOptionalOutPointer("macLenAddress", macLenAddress);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, null, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, nSec, nPub, k));
+        return cryptoAeadChaCha20Poly1305IetfEncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        BaseChecker.checkExpectedMemorySize("m", m.length, cLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfMac(mac, false);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_decrypt_detached(m, null, c, cLen, mac, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_chacha20poly1305_ietf_decrypt_detached(m, nSec, c, cLen, mac, ad, adLen, nPub, k));
+        return cryptoAeadChaCha20Poly1305IetfDecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
 
     @Override
     public void cryptoAeadXChaCha20Poly1305IetfKeygen(byte[] k) {
+        AEAD.Checker.checkXChaCha20Poly1305IetfKey(k);
         getSodium().crypto_aead_xchacha20poly1305_ietf_keygen(k);
     }
 
     @Override
+    public boolean cryptoAeadXChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("mLen", m, mLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfCipherLength(c, mLen, cLen != null);
+        BaseChecker.checkOptionalOutPointer("cLen", cLen);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkXChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_encrypt(c, cLen, m, mLen, ad, adLen, null, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadXChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_encrypt(c, cLen, m, mLen, ad, adLen, nSec, nPub, k));
+        return cryptoAeadXChaCha20Poly1305IetfEncrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadXChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfDecryptedMessageLength(m, cLen, mLen != null);
+        BaseChecker.checkOptionalOutPointer("mLen", mLen);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkXChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_decrypt(m, mLen, null, c, cLen, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadXChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_decrypt(m, mLen, nSec, c, cLen, ad, adLen, nPub, k));
+        return cryptoAeadXChaCha20Poly1305IetfDecrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadXChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("mLen", m, mLen);
+        BaseChecker.checkExpectedMemorySize("c", c.length, mLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfMac(mac, macLenAddress != null);
+        BaseChecker.checkOptionalOutPointer("macLenAddress", macLenAddress);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkXChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, null, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadXChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_encrypt_detached(c, mac, macLenAddress, m, mLen, ad, adLen, nSec, nPub, k));
+        return cryptoAeadXChaCha20Poly1305IetfEncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
 
     @Override
+    public boolean cryptoAeadXChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
+        BaseChecker.checkArrayLength("cLen", c, cLen);
+        BaseChecker.checkExpectedMemorySize("m", m.length, cLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfMac(mac, false);
+        BaseChecker.checkOptionalArrayLength("ad", ad, adLen);
+        AEAD.Checker.checkXChaCha20Poly1305IetfNonce(nPub);
+        AEAD.Checker.checkXChaCha20Poly1305IetfKey(k);
+        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_decrypt_detached(m, null, c, cLen, mac, ad, adLen, nPub, k));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadXChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
-        return successful(getSodium().crypto_aead_xchacha20poly1305_ietf_decrypt_detached(m, nSec, c, cLen, mac, ad, adLen, nPub, k));
+        return cryptoAeadXChaCha20Poly1305IetfDecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
 
     @Override
     public void cryptoAeadAES256GCMKeygen(byte[] key) {
+        AEAD.Checker.checkAes256GcmKey(key);
         getSodium().crypto_aead_aes256gcm_keygen(key);
     }
 
     @Override
+    public boolean cryptoAeadAES256GCMEncrypt(byte[] cipher, long[] cipherLen, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
+        BaseChecker.checkArrayLength("messageLen", message, messageLen);
+        AEAD.Checker.checkAes256GcmCipherLength(cipher, messageLen, cipherLen != null);
+        BaseChecker.checkOptionalOutPointer("cipherLen", cipherLen);
+        BaseChecker.checkOptionalArrayLength("additionalDataLen", additionalData, additionalDataLen);
+        AEAD.Checker.checkAes256GcmNonce(nPub);
+        AEAD.Checker.checkAes256GcmKey(key);
+        return successful(getSodium().crypto_aead_aes256gcm_encrypt(cipher, cipherLen, message, messageLen, additionalData, additionalDataLen, null, nPub, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadAES256GCMEncrypt(byte[] cipher, long[] cipherLen, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nSec, byte[] nPub, byte[] key) {
-        return successful(getSodium().crypto_aead_aes256gcm_encrypt(cipher, cipherLen, message, messageLen, additionalData, additionalDataLen, nSec, nPub, key));
+        return cryptoAeadAES256GCMEncrypt(cipher, cipherLen, message, messageLen, additionalData, additionalDataLen, nPub, key);
     }
 
     @Override
+    public boolean cryptoAeadAES256GCMDecrypt(byte[] message, long[] messageLen, byte[] cipher, int cipherLen, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
+        BaseChecker.checkArrayLength("cipherLen", cipher, cipherLen);
+        AEAD.Checker.checkAes256GcmDecryptedMessageLength(message, cipherLen, messageLen != null);
+        BaseChecker.checkOptionalOutPointer("messageLen", messageLen);
+        BaseChecker.checkOptionalArrayLength("additionalData", additionalData, additionalDataLen);
+        AEAD.Checker.checkAes256GcmNonce(nPub);
+        AEAD.Checker.checkAes256GcmKey(key);
+        return successful(getSodium().crypto_aead_aes256gcm_decrypt(message, messageLen, null, cipher, cipherLen, additionalData, additionalDataLen, nPub, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadAES256GCMDecrypt(byte[] message, long[] messageLen, byte[] nSec, byte[] cipher, int cipherLen, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
-        return successful(getSodium().crypto_aead_aes256gcm_decrypt(message, messageLen, nSec, cipher, cipherLen, additionalData, additionalDataLen, nPub, key));
+        return cryptoAeadAES256GCMDecrypt(message, messageLen, cipher, cipherLen, additionalData, additionalDataLen, nPub, key);
     }
 
     @Override
+    public boolean cryptoAeadAES256GCMEncryptDetached(byte[] cipher, byte[] mac, long[] macLenAddress, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
+        BaseChecker.checkArrayLength("messageLen", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipher", cipher.length, messageLen);
+        AEAD.Checker.checkAes256GcmMac(mac, macLenAddress != null);
+        BaseChecker.checkOptionalOutPointer("macLenAddress", macLenAddress);
+        BaseChecker.checkOptionalArrayLength("additionalDataLen", additionalData, additionalDataLen);
+        AEAD.Checker.checkAes256GcmNonce(nPub);
+        AEAD.Checker.checkAes256GcmKey(key);
+        return successful(getSodium().crypto_aead_aes256gcm_encrypt_detached(cipher, mac, macLenAddress, message, messageLen, additionalData, additionalDataLen, null, nPub, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadAES256GCMEncryptDetached(byte[] cipher, byte[] mac, long[] macLenAddress, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nSec, byte[] nPub, byte[] key) {
-        return successful(getSodium().crypto_aead_aes256gcm_encrypt_detached(cipher, mac, macLenAddress, message, messageLen, additionalData, additionalDataLen, nSec, nPub, key));
+        return cryptoAeadAES256GCMEncryptDetached(cipher, mac, macLenAddress, message, messageLen, additionalData, additionalDataLen, nPub, key);
     }
 
     @Override
+    public boolean cryptoAeadAES256GCMDecryptDetached(byte[] message, byte[] cipher, int cipherLen, byte[] mac, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
+        BaseChecker.checkArrayLength("cipherLen", cipher, cipherLen);
+        BaseChecker.checkExpectedMemorySize("message", message.length, cipherLen);
+        AEAD.Checker.checkAes256GcmMac(mac, false);
+        BaseChecker.checkOptionalArrayLength("additionalData", additionalData, additionalDataLen);
+        AEAD.Checker.checkAes256GcmNonce(nPub);
+        AEAD.Checker.checkAes256GcmKey(key);
+        return successful(getSodium().crypto_aead_aes256gcm_decrypt_detached(message, null, cipher, cipherLen, mac, additionalData, additionalDataLen, nPub, key));
+    }
+
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
     public boolean cryptoAeadAES256GCMDecryptDetached(byte[] message, byte[] nSec, byte[] cipher, int cipherLen, byte[] mac, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
-        return successful(getSodium().crypto_aead_aes256gcm_decrypt_detached(message, nSec, cipher, cipherLen, mac, additionalData, additionalDataLen, nPub, key));
+        return cryptoAeadAES256GCMDecryptDetached(message, cipher, cipherLen, mac, additionalData, additionalDataLen, nPub, key);
     }
 
     @Override
@@ -2504,229 +2716,258 @@ public abstract class LazySodium implements
 
     @Override
     public String encrypt(String m, String additionalData, byte[] nPub, Key k, AEAD.Method method) {
-        return encrypt(m, additionalData, null, nPub, k, method);
-    }
-
-    @Override
-    public String encrypt(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
         byte[] messageBytes = bytes(m);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
 
-        if (method.equals(AEAD.Method.CHACHA20_POLY1305)) {
-            byte[] cipherBytes = new byte[messageBytes.length + AEAD.CHACHA20POLY1305_ABYTES];
-            cryptoAeadChaCha20Poly1305Encrypt(
-                    cipherBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return messageEncoder.encode(cipherBytes);
-        } else if (method.equals(AEAD.Method.CHACHA20_POLY1305_IETF)) {
-            byte[] cipherBytes = new byte[messageBytes.length + AEAD.CHACHA20POLY1305_IETF_ABYTES];
-            cryptoAeadChaCha20Poly1305IetfEncrypt(
-                    cipherBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return messageEncoder.encode(cipherBytes);
-        } else if (method.equals(AEAD.Method.XCHACHA20_POLY1305_IETF)) {
-            byte[] cipherBytes3 = new byte[messageBytes.length + AEAD.XCHACHA20POLY1305_IETF_ABYTES];
-            cryptoAeadXChaCha20Poly1305IetfEncrypt(
-                    cipherBytes3,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return messageEncoder.encode(cipherBytes3);
-        } else {
-            byte[] cipherBytes = new byte[messageBytes.length + AEAD.AES256GCM_ABYTES];
-            cryptoAeadAES256GCMEncrypt(
-                    cipherBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return messageEncoder.encode(cipherBytes);
+        if (method == null) {
+            method = AEAD.Method.DEFAULT;
+        }
+        switch (method) {
+            case CHACHA20_POLY1305: {
+                byte[] cipherBytes;
+                cipherBytes = new byte[messageBytes.length + AEAD.CHACHA20POLY1305_ABYTES];
+                cryptoAeadChaCha20Poly1305Encrypt(
+                        cipherBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return messageEncoder.encode(cipherBytes);
+            }
+            case CHACHA20_POLY1305_IETF: {
+                byte[] cipherBytes = new byte[messageBytes.length + AEAD.CHACHA20POLY1305_IETF_ABYTES];
+                cryptoAeadChaCha20Poly1305IetfEncrypt(
+                        cipherBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return messageEncoder.encode(cipherBytes);
+            }
+            case XCHACHA20_POLY1305_IETF: {
+                byte[] cipherBytes = new byte[messageBytes.length + AEAD.XCHACHA20POLY1305_IETF_ABYTES];
+                cryptoAeadXChaCha20Poly1305IetfEncrypt(
+                        cipherBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return messageEncoder.encode(cipherBytes);
+            }
+            case AES256GCM: {
+                byte[] cipherBytes = new byte[messageBytes.length + AEAD.AES256GCM_ABYTES];
+                cryptoAeadAES256GCMEncrypt(
+                        cipherBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return messageEncoder.encode(cipherBytes);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported AEAD method: " + method);
         }
     }
 
-
     @Override
-    public String decrypt(String cipher, String additionalData, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
-        return decrypt(cipher, additionalData, null, nPub, k, method);
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public String encrypt(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
+        return encrypt(m, additionalData, nPub, k, method);
     }
 
     @Override
-    public String decrypt(String cipher, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
+    public String decrypt(String cipher, String additionalData, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
         byte[] cipherBytes = messageEncoder.decode(cipher);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
 
-        if (method.equals(AEAD.Method.CHACHA20_POLY1305)) {
-            byte[] messageBytes = new byte[cipherBytes.length - AEAD.CHACHA20POLY1305_ABYTES];
-            if (!cryptoAeadChaCha20Poly1305Decrypt(
-                    messageBytes,
-                    null,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
+        if (method == null) {
+            method = AEAD.Method.DEFAULT;
+        }
+        switch (method) {
+            case CHACHA20_POLY1305: {
+                byte[] messageBytes = new byte[cipherBytes.length - AEAD.CHACHA20POLY1305_ABYTES];
+                if (!cryptoAeadChaCha20Poly1305Decrypt(
+                        messageBytes,
+                        null,
+                        cipherBytes,
+                        cipherBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return str(messageBytes);
             }
-            return str(messageBytes);
-        } else if (method.equals(AEAD.Method.CHACHA20_POLY1305_IETF)) {
-            byte[] messageBytes = new byte[cipherBytes.length - AEAD.CHACHA20POLY1305_IETF_ABYTES];
-            if (!cryptoAeadChaCha20Poly1305IetfDecrypt(
-                    messageBytes,
-                    null,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
+            case CHACHA20_POLY1305_IETF: {
+                byte[] messageBytes = new byte[cipherBytes.length - AEAD.CHACHA20POLY1305_IETF_ABYTES];
+                if (!cryptoAeadChaCha20Poly1305IetfDecrypt(
+                        messageBytes,
+                        null,
+                        cipherBytes,
+                        cipherBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return str(messageBytes);
             }
-            return str(messageBytes);
-        } else if (method.equals(AEAD.Method.XCHACHA20_POLY1305_IETF)) {
-            byte[] messageBytes = new byte[cipherBytes.length - AEAD.XCHACHA20POLY1305_IETF_ABYTES];
-            if (!cryptoAeadXChaCha20Poly1305IetfDecrypt(
-                    messageBytes,
-                    null,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
+            case XCHACHA20_POLY1305_IETF: {
+                byte[] messageBytes = new byte[cipherBytes.length - AEAD.XCHACHA20POLY1305_IETF_ABYTES];
+                if (!cryptoAeadXChaCha20Poly1305IetfDecrypt(
+                        messageBytes,
+                        null,
+                        cipherBytes,
+                        cipherBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return str(messageBytes);
             }
-            return str(messageBytes);
-        } else {
-            byte[] messageBytes = new byte[cipherBytes.length - AEAD.AES256GCM_ABYTES];
-            if (!cryptoAeadAES256GCMDecrypt(
-                    messageBytes,
-                    null,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
+            case AES256GCM: {
+                byte[] messageBytes = new byte[cipherBytes.length - AEAD.AES256GCM_ABYTES];
+                if (!cryptoAeadAES256GCMDecrypt(
+                        messageBytes,
+                        null,
+                        cipherBytes,
+                        cipherBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return str(messageBytes);
             }
-            return str(messageBytes);
+            default:
+                throw new IllegalArgumentException("Unsupported AEAD method: " + method);
         }
     }
 
     @Override
-    public DetachedEncrypt encryptDetached(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public String decrypt(String cipher, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
+        return decrypt(cipher, additionalData, nPub, k, method);
+    }
+
+    @Override
+    public DetachedEncrypt encryptDetached(String m, String additionalData, byte[] nPub, Key k, AEAD.Method method) {
         byte[] messageBytes = bytes(m);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
         byte[] cipherBytes = new byte[messageBytes.length];
 
-        if (method.equals(AEAD.Method.CHACHA20_POLY1305)) {
-            byte[] macBytes = new byte[AEAD.CHACHA20POLY1305_ABYTES];
+        if (method == null) {
+            method = AEAD.Method.DEFAULT;
+        }
+        switch (method) {
+            case CHACHA20_POLY1305: {
+                byte[] macBytes = new byte[AEAD.CHACHA20POLY1305_ABYTES];
 
-            cryptoAeadChaCha20Poly1305EncryptDetached(
-                    cipherBytes,
-                    macBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return new DetachedEncrypt(cipherBytes, macBytes);
-        } else if (method.equals(AEAD.Method.CHACHA20_POLY1305_IETF)) {
-            byte[] macBytes = new byte[AEAD.CHACHA20POLY1305_IETF_ABYTES];
-            cryptoAeadChaCha20Poly1305IetfEncryptDetached(
-                    cipherBytes,
-                    macBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return new DetachedEncrypt(cipherBytes, macBytes);
-        } else if (method.equals(AEAD.Method.XCHACHA20_POLY1305_IETF)) {
-            byte[] macBytes = new byte[AEAD.XCHACHA20POLY1305_IETF_ABYTES];
-            cryptoAeadXChaCha20Poly1305IetfEncryptDetached(
-                    cipherBytes,
-                    macBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return new DetachedEncrypt(cipherBytes, macBytes);
-        } else {
-            byte[] macBytes = new byte[AEAD.AES256GCM_ABYTES];
-            cryptoAeadAES256GCMEncryptDetached(
-                    cipherBytes,
-                    macBytes,
-                    null,
-                    messageBytes,
-                    messageBytes.length,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nSec,
-                    nPub,
-                    keyBytes
-            );
-            return new DetachedEncrypt(cipherBytes, macBytes);
+                cryptoAeadChaCha20Poly1305EncryptDetached(
+                        cipherBytes,
+                        macBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return new DetachedEncrypt(cipherBytes, macBytes);
+            }
+            case CHACHA20_POLY1305_IETF: {
+                byte[] macBytes = new byte[AEAD.CHACHA20POLY1305_IETF_ABYTES];
+                cryptoAeadChaCha20Poly1305IetfEncryptDetached(
+                        cipherBytes,
+                        macBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return new DetachedEncrypt(cipherBytes, macBytes);
+            }
+            case XCHACHA20_POLY1305_IETF: {
+                byte[] macBytes = new byte[AEAD.XCHACHA20POLY1305_IETF_ABYTES];
+                cryptoAeadXChaCha20Poly1305IetfEncryptDetached(
+                        cipherBytes,
+                        macBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return new DetachedEncrypt(cipherBytes, macBytes);
+            }
+            case AES256GCM: {
+                byte[] macBytes = new byte[AEAD.AES256GCM_ABYTES];
+                cryptoAeadAES256GCMEncryptDetached(
+                        cipherBytes,
+                        macBytes,
+                        null,
+                        messageBytes,
+                        messageBytes.length,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                );
+                return new DetachedEncrypt(cipherBytes, macBytes);
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported AEAD method: " + method);
         }
     }
 
     @Override
-    public DetachedDecrypt decryptDetached(DetachedEncrypt detachedEncrypt, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public DetachedEncrypt encryptDetached(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
+        return encryptDetached(m, additionalData, nPub, k, method);
+    }
+
+    @Override
+    public DetachedDecrypt decryptDetached(DetachedEncrypt detachedEncrypt, String additionalData, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
         byte[] cipherBytes = detachedEncrypt.getCipher();
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
@@ -2734,69 +2975,74 @@ public abstract class LazySodium implements
         byte[] messageBytes = new byte[cipherBytes.length];
         byte[] macBytes = detachedEncrypt.getMac();
 
-        if (method.equals(AEAD.Method.CHACHA20_POLY1305)) {
-            if (!cryptoAeadChaCha20Poly1305DecryptDetached(
-                    messageBytes,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    macBytes,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
-            }
-            return new DetachedDecrypt(messageBytes, macBytes, charset);
-        } else if (method.equals(AEAD.Method.CHACHA20_POLY1305_IETF)) {
-            if (!cryptoAeadChaCha20Poly1305IetfDecryptDetached(
-                    messageBytes,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    macBytes,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
-            }
-            return new DetachedDecrypt(messageBytes, macBytes, charset);
-        } else if (method.equals(AEAD.Method.XCHACHA20_POLY1305_IETF)) {
-            if (!cryptoAeadXChaCha20Poly1305IetfDecryptDetached(
-                    messageBytes,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    macBytes,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
-            }
-            return new DetachedDecrypt(messageBytes, macBytes, charset);
-        } else {
-            if (!cryptoAeadAES256GCMDecryptDetached(
-                    messageBytes,
-                    nSec,
-                    cipherBytes,
-                    cipherBytes.length,
-                    macBytes,
-                    additionalDataBytes,
-                    additionalBytesLen,
-                    nPub,
-                    keyBytes
-            )) {
-                throw new AEADBadTagException();
-            }
-            return new DetachedDecrypt(messageBytes, macBytes, charset);
+        switch (method) {
+            case CHACHA20_POLY1305:
+                if (!cryptoAeadChaCha20Poly1305DecryptDetached(
+                        messageBytes,
+                        cipherBytes,
+                        cipherBytes.length,
+                        macBytes,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return new DetachedDecrypt(messageBytes, macBytes, charset);
+            case CHACHA20_POLY1305_IETF:
+                if (!cryptoAeadChaCha20Poly1305IetfDecryptDetached(
+                        messageBytes,
+                        cipherBytes,
+                        cipherBytes.length,
+                        macBytes,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return new DetachedDecrypt(messageBytes, macBytes, charset);
+            case XCHACHA20_POLY1305_IETF:
+                if (!cryptoAeadXChaCha20Poly1305IetfDecryptDetached(
+                        messageBytes,
+                        cipherBytes,
+                        cipherBytes.length,
+                        macBytes,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return new DetachedDecrypt(messageBytes, macBytes, charset);
+            case AES256GCM:
+                if (!cryptoAeadAES256GCMDecryptDetached(
+                        messageBytes,
+                        cipherBytes,
+                        cipherBytes.length,
+                        macBytes,
+                        additionalDataBytes,
+                        additionalBytesLen,
+                        nPub,
+                        keyBytes
+                )) {
+                    throw new AEADBadTagException();
+                }
+                return new DetachedDecrypt(messageBytes, macBytes, charset);
+            default:
+                throw new IllegalArgumentException("Unsupported AEAD method: " + method);
         }
     }
 
+    @Override
+    @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
+    @Deprecated(forRemoval = true)
+    public DetachedDecrypt decryptDetached(DetachedEncrypt detachedEncrypt, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
+        return decryptDetached(detachedEncrypt, additionalData, nPub, k, method);
+    }
 
     //// -------------------------------------------|
     //// Ristretto255

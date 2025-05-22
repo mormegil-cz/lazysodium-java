@@ -292,6 +292,7 @@ public interface Auth {
         SHA512,
         SHA512256;
 
+        @Deprecated
         public static final Type DEFAULT = SHA512256;
     }
 

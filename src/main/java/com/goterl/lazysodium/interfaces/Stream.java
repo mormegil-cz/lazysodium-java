@@ -53,6 +53,7 @@ public interface Stream {
         SALSA20,
         XSALSA20;
 
+        @Deprecated
         public static final Method DEFAULT = XSALSA20;
     }
 
