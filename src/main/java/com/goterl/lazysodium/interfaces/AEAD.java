@@ -105,7 +105,7 @@ public interface AEAD {
          * @return {@code true} if the encryption succeeded
          * @deprecated Use {@link #cryptoAeadChaCha20Poly1305Encrypt(byte[], long[], byte[], int, byte[], int, byte[], byte[])} instead.
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305Encrypt(
                 byte[] cipher,
                 long[] cipherLen,
@@ -129,7 +129,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305Decrypt(
                 byte[] message,
                 long[] messageLen,
@@ -154,7 +154,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305EncryptDetached(
                 byte[] cipher,
                 byte[] mac,
@@ -179,7 +179,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305DecryptDetached(
                 byte[] message,
                 byte[] nSec,
@@ -208,7 +208,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305IetfEncrypt(
                 byte[] cipher,
                 long[] cipherLen,
@@ -232,7 +232,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305IetfDecrypt(
                 byte[] message,
                 long[] messageLen,
@@ -257,7 +257,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305IetfEncryptDetached(
                 byte[] cipher,
                 byte[] mac,
@@ -282,7 +282,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadChaCha20Poly1305IetfDecryptDetached(
                 byte[] message,
                 byte[] nSec,
@@ -311,7 +311,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadXChaCha20Poly1305IetfEncrypt(
                 byte[] cipher,
                 long[] cipherLen,
@@ -335,7 +335,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadXChaCha20Poly1305IetfDecrypt(
                 byte[] message,
                 long[] messageLen,
@@ -360,7 +360,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadXChaCha20Poly1305IetfEncryptDetached(
                 byte[] cipher,
                 byte[] mac,
@@ -385,7 +385,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadXChaCha20Poly1305IetfDecryptDetached(
                 byte[] message,
                 byte[] nSec,
@@ -414,7 +414,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadAES256GCMEncrypt(
                 byte[] cipher,
                 long[] cipherLen,
@@ -438,7 +438,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadAES256GCMDecrypt(
                 byte[] message,
                 long[] messageLen,
@@ -463,7 +463,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadAES256GCMEncryptDetached(
                 byte[] cipher,
                 byte[] mac,
@@ -488,7 +488,7 @@ public interface AEAD {
                 byte[] key
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoAeadAES256GCMDecryptDetached(
                 byte[] message,
                 byte[] nSec,
@@ -516,7 +516,7 @@ public interface AEAD {
                        Key k,
                        AEAD.Method method);
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         String encrypt(
                 String m,
                 String additionalData,
@@ -534,7 +534,7 @@ public interface AEAD {
                 AEAD.Method method
         ) throws AEADBadTagException;
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         String decrypt(
                 String cipher,
                 String additionalData,
@@ -552,7 +552,7 @@ public interface AEAD {
                 Method method
         );
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         DetachedEncrypt encryptDetached(
                 String m,
                 String additionalData,
@@ -570,7 +570,7 @@ public interface AEAD {
                 Method method
         ) throws AEADBadTagException;
 
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         DetachedDecrypt decryptDetached(
                 DetachedEncrypt detachedEncrypt,
                 String additionalData,

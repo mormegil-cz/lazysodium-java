@@ -90,7 +90,7 @@ public interface Stream {
          * Backward-compatible method name.
          * @deprecated Use {@link #cryptoStreamChaCha20XorIc(byte[], byte[], int, byte[], long, byte[])} instead.
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoStreamChacha20XorIc(
                 byte[] cipher,
                 byte[] message,
@@ -132,7 +132,7 @@ public interface Stream {
          * Backward-compatible method name.
          * @deprecated Use {@link #cryptoStreamChaCha20XorIc(byte[], byte[], int, byte[], long, byte[])} instead.
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         boolean cryptoStreamChacha20IetfXorIc(
                 byte[] cipher,
                 byte[] message,
@@ -214,7 +214,7 @@ public interface Stream {
          * @return 20-byte keystream data
          * @deprecated Use {@link #cryptoStream(int, byte[], Key, Method)} instead.
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         byte[] cryptoStream(
                 byte[] nonce,
                 Key key,

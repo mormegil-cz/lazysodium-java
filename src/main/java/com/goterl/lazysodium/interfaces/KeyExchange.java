@@ -134,7 +134,7 @@ public interface KeyExchange {
          * of session keys failed.
          * @deprecated Client should not have the whole server keypair including the secret key!
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         SessionPair cryptoKxClientSessionKeys(
                 KeyPair clientKeyPair,
                 KeyPair serverKeyPair
@@ -179,7 +179,7 @@ public interface KeyExchange {
          * of session keys failed.
          * @deprecated Client should not have the whole server keypair including the secret key!
          */
-        @Deprecated(forRemoval = true)
+        @Deprecated(forRemoval = true, since = "6.0.0")
         SessionPair cryptoKxServerSessionKeys(
                 KeyPair serverKeyPair,
                 KeyPair clientKeyPair

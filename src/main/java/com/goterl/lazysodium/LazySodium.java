@@ -392,7 +392,7 @@ public abstract class LazySodium implements
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
     public SessionPair cryptoKxClientSessionKeys(KeyPair clientKeyPair, KeyPair serverKeyPair) throws SodiumException {
         return cryptoKxClientSessionKeys(clientKeyPair.getPublicKey(), clientKeyPair.getSecretKey(), serverKeyPair.getPublicKey());
@@ -428,7 +428,7 @@ public abstract class LazySodium implements
     }
 
     @Override
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
     public SessionPair cryptoKxServerSessionKeys(KeyPair serverKeyPair, KeyPair clientKeyPair) throws SodiumException {
         return cryptoKxServerSessionKeys(serverKeyPair.getPublicKey(), serverKeyPair.getSecretKey(), clientKeyPair.getPublicKey());
@@ -1630,7 +1630,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoStreamChacha20XorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
         return cryptoStreamChaCha20XorIc(cipher, message, messageLen, nonce, ic, key);
     }
@@ -1671,7 +1671,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoStreamChacha20IetfXorIc(byte[] cipher, byte[] message, int messageLen, byte[] nonce, long ic, byte[] key) {
         return cryptoStreamChaCha20IetfXorIc(cipher, message, messageLen, nonce, ic, key);
     }
@@ -1778,7 +1778,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public byte[] cryptoStream(byte[] nonce, Key key, Stream.Method method) {
         return cryptoStream(20, nonce, key, method);
     }
@@ -2386,7 +2386,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305Encrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305Encrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
     }
@@ -2404,7 +2404,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305Decrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305Decrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
@@ -2423,7 +2423,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305EncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305EncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
@@ -2441,7 +2441,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305DecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305DecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
@@ -2465,7 +2465,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305IetfEncrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
     }
@@ -2483,7 +2483,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305IetfDecrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
@@ -2502,7 +2502,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305IetfEncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
@@ -2520,7 +2520,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadChaCha20Poly1305IetfDecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
@@ -2544,7 +2544,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadXChaCha20Poly1305IetfEncrypt(byte[] c, long[] cLen, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadXChaCha20Poly1305IetfEncrypt(c, cLen, m, mLen, ad, adLen, nPub, k);
     }
@@ -2562,7 +2562,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadXChaCha20Poly1305IetfDecrypt(byte[] m, long[] mLen, byte[] nSec, byte[] c, int cLen, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadXChaCha20Poly1305IetfDecrypt(m, mLen, c, cLen, ad, adLen, nPub, k);
     }
@@ -2581,7 +2581,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadXChaCha20Poly1305IetfEncryptDetached(byte[] c, byte[] mac, long[] macLenAddress, byte[] m, int mLen, byte[] ad, int adLen, byte[] nSec, byte[] nPub, byte[] k) {
         return cryptoAeadXChaCha20Poly1305IetfEncryptDetached(c, mac, macLenAddress, m, mLen, ad, adLen, nPub, k);
     }
@@ -2599,7 +2599,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadXChaCha20Poly1305IetfDecryptDetached(byte[] m, byte[] nSec, byte[] c, int cLen, byte[] mac, byte[] ad, int adLen, byte[] nPub, byte[] k) {
         return cryptoAeadXChaCha20Poly1305IetfDecryptDetached(m, c, cLen, mac, ad, adLen, nPub, k);
     }
@@ -2623,7 +2623,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadAES256GCMEncrypt(byte[] cipher, long[] cipherLen, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nSec, byte[] nPub, byte[] key) {
         return cryptoAeadAES256GCMEncrypt(cipher, cipherLen, message, messageLen, additionalData, additionalDataLen, nPub, key);
     }
@@ -2641,7 +2641,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadAES256GCMDecrypt(byte[] message, long[] messageLen, byte[] nSec, byte[] cipher, int cipherLen, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
         return cryptoAeadAES256GCMDecrypt(message, messageLen, cipher, cipherLen, additionalData, additionalDataLen, nPub, key);
     }
@@ -2660,7 +2660,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadAES256GCMEncryptDetached(byte[] cipher, byte[] mac, long[] macLenAddress, byte[] message, int messageLen, byte[] additionalData, int additionalDataLen, byte[] nSec, byte[] nPub, byte[] key) {
         return cryptoAeadAES256GCMEncryptDetached(cipher, mac, macLenAddress, message, messageLen, additionalData, additionalDataLen, nPub, key);
     }
@@ -2678,7 +2678,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public boolean cryptoAeadAES256GCMDecryptDetached(byte[] message, byte[] nSec, byte[] cipher, int cipherLen, byte[] mac, byte[] additionalData, int additionalDataLen, byte[] nPub, byte[] key) {
         return cryptoAeadAES256GCMDecryptDetached(message, cipher, cipherLen, mac, additionalData, additionalDataLen, nPub, key);
     }
@@ -2789,7 +2789,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public String encrypt(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
         return encrypt(m, additionalData, nPub, k, method);
     }
@@ -2876,7 +2876,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public String decrypt(String cipher, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
         return decrypt(cipher, additionalData, nPub, k, method);
     }
@@ -2961,7 +2961,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public DetachedEncrypt encryptDetached(String m, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) {
         return encryptDetached(m, additionalData, nPub, k, method);
     }
@@ -3039,7 +3039,7 @@ public abstract class LazySodium implements
 
     @Override
     @SuppressWarnings("removal") // yep, we know, this is the backward-compatible implementation of the deprecated API
-    @Deprecated(forRemoval = true)
+    @Deprecated(forRemoval = true, since = "6.0.0")
     public DetachedDecrypt decryptDetached(DetachedEncrypt detachedEncrypt, String additionalData, byte[] nSec, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
         return decryptDetached(detachedEncrypt, additionalData, nPub, k, method);
     }
