@@ -42,7 +42,7 @@ public class BaseChecker {
     /**
      * Throw if provided value does not match an expected value.
      */
-    public static void checkEqual(String name, int expected, int actual) {
+    public static void checkEqual(String name, int actual, int expected) {
         if (actual != expected) {
             // Neither value is reported, in case this is passed sensitive
             // values, even though most uses are likely for header lengths and
@@ -52,15 +52,15 @@ public class BaseChecker {
         }
     }
 
-    public static void checkArrayLength(String name, char[] array, long length) {
+    public static void checkExpectedMemorySize(String name, int actual, int expected) {
+        checkEqual(name, expected, actual);
+    }
+
+    public static void checkArrayLength(String name, byte[] array, int length) {
         checkArrayLength(name, array.length, length);
     }
 
-    public static void checkArrayLength(String name, byte[] array, long length) {
-        checkArrayLength(name, array.length, length);
-    }
-
-    public static void checkOptionalArrayLength(String name, byte[] array, long length) {
+    public static void checkOptionalArrayLength(String name, byte[] array, int length) {
         if (array == null) {
             if (length != 0) {
                 throw new IllegalArgumentException("Provided non-zero length for null " + name);
@@ -70,7 +70,7 @@ public class BaseChecker {
         }
     }
 
-    private static void checkArrayLength(String name, int arrayLength, long length) {
+    private static void checkArrayLength(String name, int arrayLength, int length) {
         if (length > arrayLength) {
             throw new IllegalArgumentException("Provided " + name + " array length is larger than array");
         }

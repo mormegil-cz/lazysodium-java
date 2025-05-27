@@ -10,6 +10,7 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.sun.jna.Structure;
 
 import java.util.Arrays;
@@ -18,21 +19,21 @@ import java.util.List;
 public interface Hash {
 
     int SHA256_BYTES = 32,
-        SHA512_BYTES = 64,
-        BYTES = SHA512_BYTES;
+            SHA512_BYTES = 64,
+            BYTES = SHA512_BYTES;
 
     interface Native {
 
-        boolean cryptoHashSha256(byte[] out, byte[] in, long inLen);
+        boolean cryptoHashSha256(byte[] out, byte[] in, int inLen);
 
-        boolean cryptoHashSha512(byte[] out, byte[] in, long inLen);
+        boolean cryptoHashSha512(byte[] out, byte[] in, int inLen);
 
 
         boolean cryptoHashSha256Init(Hash.State256 state);
 
         boolean cryptoHashSha256Update(Hash.State256 state,
-                                                    byte[] in,
-                                                    long inLen);
+                                       byte[] in,
+                                       int inLen);
 
         boolean cryptoHashSha256Final(Hash.State256 state, byte[] out);
 
@@ -41,7 +42,7 @@ public interface Hash {
 
         boolean cryptoHashSha512Update(Hash.State512 state,
                                        byte[] in,
-                                       long inLen);
+                                       int inLen);
 
         boolean cryptoHashSha512Final(Hash.State512 state, byte[] out);
 
@@ -70,7 +71,8 @@ public interface Hash {
 
     class State256 extends Structure {
 
-        public static class ByReference extends State256 implements Structure.ByReference { }
+        public static class ByReference extends State256 implements Structure.ByReference {
+        }
 
         @Override
         protected List<String> getFieldOrder() {
@@ -85,7 +87,8 @@ public interface Hash {
 
     class State512 extends Structure {
 
-        public static class ByReference extends State512 implements Structure.ByReference { }
+        public static class ByReference extends State512 implements Structure.ByReference {
+        }
 
         @Override
         protected List<String> getFieldOrder() {
@@ -96,6 +99,20 @@ public interface Hash {
         public long[] count = new long[2];
         public byte[] buf = new byte[128];
 
+    }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {
+        }
+
+        public static void checkHashSha256(byte[] hash) {
+            checkExpectedMemorySize("hash length", hash.length, SHA256_BYTES);
+        }
+
+        public static void checkHashSha512(byte[] hash) {
+            checkExpectedMemorySize("hash length", hash.length, SHA512_BYTES);
+        }
     }
 
 }

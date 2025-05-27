@@ -75,7 +75,7 @@ public class Sodium {
     //// SECURE MEMORY
     //// -------------------------------------------|
 
-    public native int sodium_memzero(byte[] pnt, int len);
+    public native void sodium_memzero(byte[] pnt, int len);
     public native int sodium_mlock(byte[] addr, int len);
     public native int sodium_munlock(byte[] addr, int len);
     public native Pointer sodium_malloc(int size);
@@ -347,7 +347,7 @@ public class Sodium {
 
     public native int crypto_sign_update(Sign.StateCryptoSign state, byte[] chunk, long chunkLength);
 
-    public native int crypto_sign_final_create(Sign.StateCryptoSign state, byte[] sig, Pointer sigLen, byte[] sk);
+    public native int crypto_sign_final_create(Sign.StateCryptoSign state, byte[] sig, long[] sigLen, byte[] sk);
 
     public native int crypto_sign_final_verify(Sign.StateCryptoSign state, byte[] sig, byte[] pk);
 
@@ -414,7 +414,7 @@ public class Sodium {
     public native int crypto_secretstream_xchacha20poly1305_push(
             SecretStream.State state,
             byte[] cipher,
-            long[] cipherAddr,
+            long[] cipherLen,
             byte[] message,
             long messageLen,
             byte[] additionalData,
@@ -431,7 +431,7 @@ public class Sodium {
     public native int crypto_secretstream_xchacha20poly1305_pull(
             SecretStream.State state,
             byte[] message,
-            long[] messageAddress,
+            long[] messageLen,
             byte[] tagAddress,
             byte[] cipher,
             long cipherLen,
@@ -544,6 +544,34 @@ public class Sodium {
 
 
     // XSalsa20
+
+    public native void crypto_stream_xsalsa20_keygen(byte[] key);
+
+    public native int crypto_stream_xsalsa20(
+            byte[] c,
+            long cLen,
+            byte[] nonce,
+            byte[] key
+    );
+
+    public native int crypto_stream_xsalsa20_xor(
+            byte[] cipher,
+            byte[] message,
+            long messageLen,
+            byte[] nonce,
+            byte[] key
+    );
+
+    public native int crypto_stream_xsalsa20_xor_ic(
+            byte[] cipher,
+            byte[] message,
+            long messageLen,
+            byte[] nonce,
+            long ic,
+            byte[] key
+    );
+
+    // The XSalsa20 stream-default wrappers
 
     public native void crypto_stream_keygen(byte[] key);
 
@@ -712,16 +740,16 @@ public class Sodium {
             byte[] key, int keyLen
     );
 
-    public native int crypto_generichash_init(byte[] state,
+    public native int crypto_generichash_init(Pointer state,
                                        byte[] key,
                                        int keyLength,
                                        int outLen);
 
-    public native int crypto_generichash_update(byte[] state,
+    public native int crypto_generichash_update(Pointer state,
                                          byte[] in,
                                          long inLen);
 
-    public native int crypto_generichash_final(byte[] state, byte[] out, int outLen);
+    public native int crypto_generichash_final(Pointer state, byte[] out, int outLen);
 
     public native int crypto_generichash_statebytes();
 

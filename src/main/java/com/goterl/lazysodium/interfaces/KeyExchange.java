@@ -10,6 +10,7 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Key;
 import com.goterl.lazysodium.utils.KeyPair;
 import com.goterl.lazysodium.utils.SessionPair;
@@ -21,7 +22,6 @@ public interface KeyExchange {
     int SESSIONKEYBYTES = 32;
     int SEEDBYTES = 32;
     String PRIMITIVE = "x25519blake2b";
-
 
     interface Native {
 
@@ -97,7 +97,7 @@ public interface KeyExchange {
          * Generate a public and secret key.
          * @return A KeyPair containing a public and secret key.
          */
-        KeyPair cryptoKxKeypair();
+        KeyPair cryptoKxKeypair() throws SodiumException;
 
         /**
          * Deterministically generate a public and secret key.
@@ -106,7 +106,7 @@ public interface KeyExchange {
          * @param seed A random seed of size {@link #SEEDBYTES}.
          * @return The generated key pair.
          */
-        KeyPair cryptoKxKeypair(byte[] seed);
+        KeyPair cryptoKxKeypair(byte[] seed) throws SodiumException;
 
         /**
          * Generate a client's session keys. This should
@@ -132,12 +132,27 @@ public interface KeyExchange {
          * @return Session keys.
          * @throws SodiumException Not provided the correct keys, or generation
          * of session keys failed.
+         * @deprecated Client should not have the whole server keypair including the secret key!
          */
+        @Deprecated(forRemoval = true)
         SessionPair cryptoKxClientSessionKeys(
                 KeyPair clientKeyPair,
                 KeyPair serverKeyPair
         ) throws SodiumException;
 
+        /**
+         * Generate a client's session keys. This should
+         * be performed on the client.
+         * @param clientKeyPair Provide the client's public and private key.
+         * @param serverPublicKey Provide the server's public key.
+         * @return Session keys.
+         * @throws SodiumException Not provided the correct keys, or generation
+         * of session keys failed.
+         */
+        SessionPair cryptoKxClientSessionKeys(
+                KeyPair clientKeyPair,
+                Key serverPublicKey
+        ) throws SodiumException;
 
         /**
          * Computes a pair of shared keys (server-side)
@@ -162,12 +177,48 @@ public interface KeyExchange {
          * @return Session keys.
          * @throws SodiumException Not provided the correct keys, or generation
          * of session keys failed.
+         * @deprecated Client should not have the whole server keypair including the secret key!
          */
+        @Deprecated(forRemoval = true)
         SessionPair cryptoKxServerSessionKeys(
                 KeyPair serverKeyPair,
                 KeyPair clientKeyPair
         ) throws SodiumException;
+
+        /**
+         * Generate a server's session keys. This should
+         * be performed on the server.
+         * @param serverKeyPair Provide the server's public and private key.
+         * @param clientPublicKey Provide the client's public key.
+         * @return Session keys.
+         * @throws SodiumException Not provided the correct keys, or generation
+         * of session keys failed.
+         */
+        SessionPair cryptoKxServerSessionKeys(
+                KeyPair serverKeyPair,
+                Key clientPublicKey
+        ) throws SodiumException;
     }
 
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSessionKey(byte[] key) {
+            checkExpectedMemorySize("session key length", key.length, SESSIONKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
+        }
+    }
 
 }

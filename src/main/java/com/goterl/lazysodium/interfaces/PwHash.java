@@ -69,28 +69,6 @@ public interface PwHash {
 
 
 
-    class Checker extends BaseChecker {
-        public static void checkHash(byte[] hash) {
-            checkBetween("hash length", hash.length, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
-        }
-
-        public static void checkPassword(byte[] password) {
-            checkBetween("password length", password.length, PwHash.PASSWD_MIN, PwHash.PASSWD_MAX);
-        }
-
-        public static void checkSalt(byte[] salt) {
-            checkEqual("salt length", salt.length, SALTBYTES);
-        }
-
-        public static void checkOpsLimit(long opsLimit) {
-            checkBetween("opsLimit", opsLimit, PwHash.OPSLIMIT_MIN, PwHash.OPSLIMIT_MAX);
-        }
-
-        public static void checkMemLimit(NativeLong memLimit) {
-            checkBetween("memLimit", memLimit, PwHash.MEMLIMIT_MIN, PwHash.MEMLIMIT_MAX);
-        }
-    }
-
     interface Native {
 
         /**
@@ -158,9 +136,9 @@ public interface PwHash {
          * @param hash The hash.
          * @param opsLimit The operations limit used.
          * @param memLimit The memory limit used.
-         * @return True if the hash needs to be rehashed.
+         * @return Whether the hash should be rehashed.
          */
-        boolean cryptoPwHashStrNeedsRehash(byte[] hash, long opsLimit, NativeLong memLimit);
+        NeedsRehashResult cryptoPwHashStrNeedsRehash(byte[] hash, long opsLimit, NativeLong memLimit);
 
 
 
@@ -179,7 +157,7 @@ public interface PwHash {
          * @param memLimit The amount of memory to use.
          *                 Between {@link PwHash#MEMLIMIT_MIN} and {@link PwHash#MEMLIMIT_MAX}.
          * @param alg The algorithm to use. Defaults to {@link PwHash.Alg#PWHASH_ALG_ARGON2ID13}.
-         * @return A hash of the password in bytes.
+         * @return A hash of the password in bytes, encoded to string.
          * @throws SodiumException If the password is too short or the opsLimit is not correct.
          */
         String cryptoPwHash(String password,
@@ -191,9 +169,8 @@ public interface PwHash {
 
 
         /**
-         * The most minimal way of hashing a given password.
-         * We auto-generate the salt and use the default
-         * hashing algorithm {@link PwHash.Alg}.
+         * The most minimal way of hashing a given password to a standard-format string including all used parameters.
+         * We auto-generate the salt and use the default hashing algorithm {@link PwHash.Alg}.
          * @param password The password string to hash.
          * @param opsLimit The number of cycles to perform whilst hashing.
          *                 Between {@link PwHash#OPSLIMIT_MIN}
@@ -201,16 +178,40 @@ public interface PwHash {
          * @param memLimit The amount of memory to use.
          *                 Between {@link PwHash#MEMLIMIT_MIN}
          *                 and {@link PwHash#MEMLIMIT_MAX}.
-         * @return The hashed password
+         * @return The hashed password in a standard format, including all used parameters.
          * @throws SodiumException If the password could not be hashed.
+         * @see #cryptoPwHashStringVerify(String, String)
          */
+        String cryptoPwHashString(String password,
+                                  long opsLimit,
+                                  NativeLong memLimit) throws SodiumException;
+
+
+        /**
+         * The most minimal way of hashing a given password to a string including all used parameters.
+         * We auto-generate the salt and use the default hashing algorithm {@link PwHash.Alg}.
+         * @param password The password string to hash.
+         * @param opsLimit The number of cycles to perform whilst hashing.
+         *                 Between {@link PwHash#OPSLIMIT_MIN}
+         *                 and {@link PwHash#OPSLIMIT_MAX}.
+         * @param memLimit The amount of memory to use.
+         *                 Between {@link PwHash#MEMLIMIT_MIN}
+         *                 and {@link PwHash#MEMLIMIT_MAX}.
+         * @return The hashed password represented as a long encoded string, which includes useless null bytes.
+         * @throws SodiumException If the password could not be hashed.
+         * @see #cryptoPwHashStrRemoveNulls(String, long, NativeLong)
+         * @see #cryptoPwHashStrVerify(String, String)
+         * @deprecated Uses dumb result format; use {@link #cryptoPwHashString(String, long, NativeLong)} instead.
+         */
+        @Deprecated
         String cryptoPwHashStr(String password,
                                long opsLimit,
                                NativeLong memLimit) throws SodiumException;
 
+
         /**
-         * Hashes a string and removes all the null bytes. Uses the
-         * hashing algorithm {@link PwHash.Alg}.
+         * Hashes a string to a string representation including the used parameters, and removes all
+         * useless null bytes. Uses the hashing algorithm {@link PwHash.Alg}.
          * @param password The password string to hash.
          * @param opsLimit The number of cycles to perform whilst hashing.
          *                 Between {@link PwHash#OPSLIMIT_MIN}
@@ -218,25 +219,45 @@ public interface PwHash {
          * @param memLimit The amount of memory to use.
          *                 Between {@link PwHash#MEMLIMIT_MIN}
          *                 and {@link PwHash#MEMLIMIT_MAX}.
-         * @return The hash without null bytes at the end. WARNING: when
-         * verifying please remember to ADD a null byte to the end!
+         * @return The hash and all used parameters represented as a long hexadecimal string.
          * @throws SodiumException If the password could not be hashed.
+         * @see #cryptoPwHashStrVerify(String, String)
+         * @deprecated Uses dumb result format; use {@link #cryptoPwHashString(String, long, NativeLong)} instead.
          */
+        @Deprecated
         String cryptoPwHashStrRemoveNulls(String password,
                                           long opsLimit,
                                           NativeLong memLimit) throws SodiumException;
 
 
         /**
-         * Verifies a password. Good news: this function automatically adds a null
-         * byte to the end which is required for the native underlying function
-         * to work.
-         * @param hash The hash. Must be hexadecimal {@link Helpers.Lazy#sodiumBin2Hex(byte[])}.
+         * Verifies a password represented as a long encoded string generated by {@link #cryptoPwHashStr(String, long, NativeLong)}
+         * or {@link #cryptoPwHashStrRemoveNulls(String, long, NativeLong)}.
+         * @param hash The encoded hash generated by {@link #cryptoPwHashStr(String, long, NativeLong)} or {@link #cryptoPwHashStrRemoveNulls(String, long, NativeLong)}
          * @param password The password.
-         * @return True if the password 'unlocks' the hash.
+         * @return True if the password matches the hash, false otherwise.
+         * @deprecated Uses dumb hash format; use {@link #cryptoPwHashStringVerify(String, String)} instead.
          */
+        @Deprecated
         boolean cryptoPwHashStrVerify(String hash, String password);
 
+
+        /**
+         * Verifies a password represented as a standard-formatted hash, generated by {@link #cryptoPwHashString(String, long, NativeLong)}.
+         * @param hash Standard-formatted hash
+         * @param password The password.
+         * @return True if the password matches the hash, false otherwise.
+         */
+        boolean cryptoPwHashStringVerify(String hash, String password);
+
+        /**
+         * Checks whether the hash needs a rehash.
+         * @param hash Standard-formatted hash generated by {@link #cryptoPwHashString(String, long, NativeLong)}.
+         * @param opsLimit The operations limit which should be used.
+         * @param memLimit The memory limit which should be used.
+         * @return Whether the hash should be rehashed.
+         */
+        NeedsRehashResult cryptoPwHashStringNeedsRehash(String hash, long opsLimit, NativeLong memLimit);
     }
 
 
@@ -273,5 +294,96 @@ public interface PwHash {
         }
     }
 
+    /**
+     * Possible results of *NeedsRehash functions
+     */
+    enum NeedsRehashResult {
+        /**
+         * The parameters already match, no rehash is needed.
+         */
+        NO_REHASH_NEEDED(0),
+
+        /**
+         * The string appears to be a valid hash but does not match the requested parameters; a new hash should
+         * be computed the next time the user logs in.
+         */
+        NEEDS_REHASH(1),
+
+        /**
+         * The string does not appear to be a valid hash.
+         */
+        INVALID_HASH(-1);
+
+        private final int val;
+
+        NeedsRehashResult(int val) {
+            this.val = val;
+        }
+
+        public static NeedsRehashResult valueOf(int alg) {
+            NeedsRehashResult result = map.get(alg);
+            if (result == null) {
+                // should not happen
+                return INVALID_HASH;
+            }
+            return result;
+        }
+
+        private final static Map<Integer, NeedsRehashResult> map = getMap();
+
+        private static Map<Integer, NeedsRehashResult> getMap() {
+            Map<Integer, NeedsRehashResult> map = new HashMap<>();
+            for (NeedsRehashResult alg : NeedsRehashResult.values()) {
+                map.put(alg.val, alg);
+            }
+            return map;
+        }
+    }
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkLengthOfHash(int lengthOfHash) {
+            checkBetween("hash length", lengthOfHash, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
+        }
+
+        public static void checkHashStrOutput(byte[] outputStr) {
+            checkAtLeast("outputStr length", outputStr.length, PwHash.STR_BYTES);
+        }
+
+        public static void checkPassword(byte[] password) {
+            checkLengthOfPassword(password.length);
+        }
+
+        public static void checkLengthOfPassword(int lengthOfPassword) {
+            checkBetween("password length", lengthOfPassword, PwHash.PASSWD_MIN, PwHash.PASSWD_MAX);
+        }
+
+        public static void checkSalt(byte[] salt) {
+            checkExpectedMemorySize("salt length", salt.length, SALTBYTES);
+        }
+
+        public static void checkOpsLimit(long opsLimit) {
+            checkBetween("opsLimit", opsLimit, PwHash.OPSLIMIT_MIN, PwHash.OPSLIMIT_MAX);
+        }
+
+        public static void checkMemLimit(NativeLong memLimit) {
+            checkBetween("memLimit", memLimit, PwHash.MEMLIMIT_MIN, PwHash.MEMLIMIT_MAX);
+        }
+
+        public static void checkHashStrInput(byte[] hashStrBytes) {
+            int maxHashLen = Math.min(hashStrBytes.length, PwHash.STR_BYTES);
+            for (int i = 0; i < maxHashLen; ++i) {
+                if (hashStrBytes[i] == 0) {
+                    return;
+                }
+            }
+            if (maxHashLen == hashStrBytes.length) {
+                throw new IllegalArgumentException("Hash is not null terminated");
+            } else {
+                throw new IllegalArgumentException("Hash is too long or not null terminated");
+            }
+        }
+    }
 
 }

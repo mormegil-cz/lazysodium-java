@@ -2,6 +2,8 @@ package com.goterl.lazysodium.interfaces;
 
 import com.goterl.lazysodium.LazySodium;
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 
@@ -722,89 +724,6 @@ public interface Ristretto255 {
         BigInteger cryptoCoreRistretto255ScalarMul(byte[] x, byte[] y);
     }
 
-    class Checker {
-        private Checker() {}
-
-        public static void ensurePointFits(byte[] point) {
-            if (point == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as target arrays");
-            }
-
-            if (point.length < RISTRETTO255_BYTES) {
-                throw new IllegalArgumentException(
-                    "To hold a Ristretto255 point, the array must be "
-                        + RISTRETTO255_BYTES
-                        + " bytes in size");
-            }
-        }
-
-        public static void ensureScalarFits(byte[] scalar) {
-            if (scalar == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as target arrays");
-            }
-
-            if (scalar.length < RISTRETTO255_SCALAR_BYTES) {
-                throw new IllegalArgumentException(
-                    "To hold a Ristretto255 scalar, the array must be "
-                        + RISTRETTO255_SCALAR_BYTES
-                        + " bytes in size");
-            }
-        }
-
-        public static void checkPoint(byte[] point) {
-            if (point == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as Ristretto255 points");
-            }
-
-            if (point.length != RISTRETTO255_BYTES) {
-                throw new IllegalArgumentException("A Ristretto255 point must be "
-                                                       + RISTRETTO255_BYTES
-                                                       + " bytes in size");
-            }
-        }
-
-        public static void checkHash(byte[] hash) {
-            if (hash == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as Ristretto255 hashes");
-            }
-
-            if (hash.length != RISTRETTO255_HASH_BYTES) {
-                throw new IllegalArgumentException("A hash for use with Ristretto255 must be "
-                                                       + RISTRETTO255_HASH_BYTES
-                                                       + " bytes in size");
-            }
-        }
-
-        public static void checkScalar(byte[] scalar) {
-            if (scalar == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as Ristretto255 scalars");
-            }
-
-            if (scalar.length != RISTRETTO255_SCALAR_BYTES) {
-                throw new IllegalArgumentException("A Ristretto255 scalar must be "
-                                                       + RISTRETTO255_SCALAR_BYTES
-                                                       + " bytes in size");
-            }
-        }
-
-        public static void checkNonReducedScalar(byte[] scalar) {
-            if (scalar == null) {
-                throw new IllegalArgumentException(
-                    "Null pointers are not allowed as non-reduced Ristretto255 scalars");
-            }
-
-            if (scalar.length != RISTRETTO255_NON_REDUCED_SCALAR_BYTES) {
-                throw new IllegalArgumentException("A non-reduced Ristretto255 scalar must be "
-                                                       + RISTRETTO255_NON_REDUCED_SCALAR_BYTES
-                                                       + " bytes in size");
-            }
-        }
-    }
 
     final class RistrettoPoint {
 
@@ -1030,4 +949,26 @@ public interface Ristretto255 {
             return ls.cryptoCoreRistretto255FromHash(hash);
         }
     }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPoint(String name, byte[] point) {
+            checkExpectedMemorySize(name, point.length, RISTRETTO255_BYTES);
+        }
+
+        public static void checkHash(String name, byte[] hash) {
+            checkExpectedMemorySize(name, hash.length, RISTRETTO255_HASH_BYTES);
+        }
+
+        public static void checkScalar(String name, byte[] scalar) {
+            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_SCALAR_BYTES);
+        }
+
+        public static void checkNonReducedScalar(String name, byte[] scalar) {
+            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_NON_REDUCED_SCALAR_BYTES);
+        }
+    }
+
 }

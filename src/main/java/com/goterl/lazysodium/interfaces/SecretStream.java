@@ -42,32 +42,6 @@ public interface SecretStream {
     long MESSAGEBYTES_MAX = 34359738368L;
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkHeader(byte[] header) {
-            checkEqual("secret stream header length", HEADERBYTES, header.length);
-        }
-
-        public static void checkKey(byte[] key) {
-            checkEqual("secret stream key length", KEYBYTES, key.length);
-        }
-
-        public static void checkPush(byte[] message, long messageLen, byte[] cipher) {
-            checkArrayLength("message bytes", message, messageLen);
-            if (cipher.length < messageLen + ABYTES) {
-                throw new IllegalArgumentException("Cipher array too small for messageLen + header");
-            }
-        }
-
-        public static void checkPull(byte[] cipher, long cipherLen, byte[] message) {
-            checkArrayLength("message bytes", cipher, cipherLen);
-            if (message.length < cipherLen - ABYTES) {
-                throw new IllegalArgumentException("Message array too small for cipherLen - header");
-            }
-        }
-
-    }
-
 
 
     interface Native {
@@ -108,9 +82,9 @@ public interface SecretStream {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] additionalData,
-                long additionalDataLen,
+                int additionalDataLen,
                 byte tag
         );
 
@@ -130,7 +104,7 @@ public interface SecretStream {
                 byte[] cipher,
                 long[] cipherLen,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte tag
         );
 
@@ -148,7 +122,7 @@ public interface SecretStream {
                 State state,
                 byte[] cipher,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte tag
         );
 
@@ -185,9 +159,9 @@ public interface SecretStream {
                 long[] messageLen,
                 byte[] tag,
                 byte[] cipher,
-                long cipherLen,
+                int cipherLen,
                 byte[] additionalData,
-                long additionalDataLen
+                int additionalDataLen
         );
 
         /**
@@ -204,7 +178,7 @@ public interface SecretStream {
                 byte[] message,
                 byte[] tag,
                 byte[] cipher,
-                long cipherLen
+                int cipherLen
         );
 
 
@@ -287,6 +261,35 @@ public interface SecretStream {
         public byte[] k = new byte[KEYBYTES];
         public byte[] nonce = new byte[NONCEBYTES];
         public byte[] _pad = new byte[8];
+
+    }
+
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkHeader(byte[] header) {
+            checkExpectedMemorySize("secret stream header length", header.length, HEADERBYTES);
+        }
+
+        public static void checkKey(byte[] key) {
+            checkExpectedMemorySize("secret stream key length", key.length, KEYBYTES);
+        }
+
+        public static void checkPush(byte[] message, int messageLen, byte[] cipher) {
+            checkArrayLength("message bytes", message, messageLen);
+            if (cipher.length < messageLen + ABYTES) {
+                throw new IllegalArgumentException("Cipher array too small for messageLen + header");
+            }
+        }
+
+        public static void checkPull(byte[] cipher, int cipherLen, byte[] message) {
+            checkArrayLength("message bytes", cipher, cipherLen);
+            if (message.length < cipherLen - ABYTES) {
+                throw new IllegalArgumentException("Message array too small for cipherLen - header");
+            }
+        }
 
     }
 }

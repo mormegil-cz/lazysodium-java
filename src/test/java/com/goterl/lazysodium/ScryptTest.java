@@ -22,10 +22,10 @@ public class ScryptTest extends BaseTest {
 
     @Test
     public void scryptHash() throws SodiumException {
-        byte[] salt = new byte[LazySodium.longToInt(Scrypt.SCRYPTSALSA208SHA256_SALT_BYTES)];
+        byte[] salt = new byte[(int) Scrypt.SCRYPTSALSA208SHA256_SALT_BYTES];
         String scryptHash = scryptLazy.cryptoPwHashScryptSalsa208Sha256(
                 PASSWORD,
-                300L, // This can be anything up to Constants.SIZE_MAX
+                300, // This can be anything up to Constants.SIZE_MAX
                 salt,
                 Scrypt.SCRYPTSALSA208SHA256_OPSLIMIT_MIN,
                 Scrypt.SCRYPTSALSA208SHA256_MEMLIMIT_MIN

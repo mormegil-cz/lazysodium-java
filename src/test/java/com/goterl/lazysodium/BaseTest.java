@@ -17,6 +17,16 @@ public class BaseTest {
 
     public static LazySodiumJava lazySodium;
 
+    protected static int countZeros(byte[] buff) {
+        int zeroes = 0;
+        for (byte b : buff) {
+            if (b == 0) {
+                ++zeroes;
+            }
+        }
+        return zeroes;
+    }
+
     @BeforeAll
     public void doBeforeEverything() {
         lazySodium = SodiumHolder.lazySodium;

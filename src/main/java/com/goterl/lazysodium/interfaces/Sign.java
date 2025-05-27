@@ -10,10 +10,10 @@ package com.goterl.lazysodium.interfaces;
 
 
 import com.goterl.lazysodium.exceptions.SodiumException;
+import com.goterl.lazysodium.utils.BaseChecker;
 import com.goterl.lazysodium.utils.Constants;
 import com.goterl.lazysodium.utils.Key;
 import com.goterl.lazysodium.utils.KeyPair;
-import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import java.util.Arrays;
@@ -39,6 +39,7 @@ public interface Sign {
     long MESSAGEBYTES_MAX = ED25519_MESSAGEBYTES_MAX;
 
 
+
     interface Native {
 
         /**
@@ -59,20 +60,17 @@ public interface Sign {
          * @param chunkLength Message length.
          * @return True if this chunk was successfully signed.
          */
-        boolean cryptoSignUpdate(Sign.StateCryptoSign state, byte[] chunk, long chunkLength);
+        boolean cryptoSignUpdate(Sign.StateCryptoSign state, byte[] chunk, int chunkLength);
 
         /**
          * This function computes a signature for the previously supplied message,
          * using the secret key sk and puts it into sig.
-         * If sigLen is not NULL, the length of the signature is stored at this address.
-         * However this is kind of redundant as you can just do sig.length.
          * @param state The state.
          * @param sig Resultant signature.
-         * @param sigLen Signature length.
          * @param sk Secret key.
          * @return True if successfully signed completely.
          */
-        boolean cryptoSignFinalCreate(Sign.StateCryptoSign state, byte[] sig, Pointer sigLen, byte[] sk);
+        boolean cryptoSignFinalCreate(Sign.StateCryptoSign state, byte[] sig, byte[] sk);
 
         /**
          * Verifies that sig is a valid signature for the message whose
@@ -115,7 +113,7 @@ public interface Sign {
         boolean cryptoSign(
                 byte[] signedMessage,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] secretKey
         );
 
@@ -130,14 +128,14 @@ public interface Sign {
         boolean cryptoSignOpen(
                 byte[] message,
                 byte[] signedMessage,
-                long signedMessageLen,
+                int signedMessageLen,
                 byte[] publicKey
         );
 
         /**
          * Returns a signature for a message. This
          * does not prepend the signature to the message.
-         * See {@link #cryptoSign(byte[], byte[], long, byte[])} for that.
+         * See {@link #cryptoSign(byte[], byte[], int, byte[])} for that.
          * @param signature The signature will be added to this byte array.
          * @param message The message to sign.
          * @param messageLen The message length.
@@ -147,7 +145,7 @@ public interface Sign {
         boolean cryptoSignDetached(
                 byte[] signature,
                 byte[] message,
-                long messageLen,
+                int messageLen,
                 byte[] secretKey
         );
 
@@ -159,7 +157,7 @@ public interface Sign {
          * @param messageLen The message length.
          * @param publicKey The public key that signed the message.
          * @return Returns true if the signature is valid for the message.
-         * @see #cryptoSignDetached(byte[], byte[], long, byte[])
+         * @see #cryptoSignDetached(byte[], byte[], int, byte[])
          */
         boolean cryptoSignVerifyDetached(byte[] signature, byte[] message, int messageLen, byte[] publicKey);
 
@@ -273,6 +271,14 @@ public interface Sign {
          * @throws SodiumException If conversion was unsuccessful.
          * */
         KeyPair convertKeyPairEd25519ToCurve25519(KeyPair ed25519KeyPair) throws SodiumException;
+
+        /**
+         * Extracts the seed from an ed25519 secret key
+         * @param secretKey The secret key
+         * @return The extracted seed
+         * @throws SodiumException If conversion was unsuccessful.
+         */
+        byte[] cryptoSignEd25519SkToSeed(Key secretKey) throws SodiumException;
     }
 
 
@@ -294,4 +300,54 @@ public interface Sign {
         }
     }
 
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
+        }
+
+        public static void checkSignature(byte[] sig) {
+            checkExpectedMemorySize("signature length", sig.length, BYTES);
+        }
+
+        public static void checkSignedMessageLength(int signedMessageLength) {
+            checkAtLeast("signed message length", signedMessageLength, BYTES);
+        }
+
+        public static void checkSignedMessageLength(byte[] signedMessage, int messageLen) {
+            checkExpectedMemorySize("signed message length", signedMessage.length, messageLen + BYTES);
+        }
+
+        public static void checkMessageLength(byte[] message, int signedMessageLen) {
+            checkExpectedMemorySize("message length", message.length, signedMessageLen - BYTES);
+        }
+
+        public static void checkPublicKeyCurve25519(byte[] curve) {
+            checkExpectedMemorySize("curve25519 pk length", curve.length, CURVE25519_PUBLICKEYBYTES);
+        }
+
+        public static void checkPublicKeyEd25519(byte[] curve) {
+            checkExpectedMemorySize("ed25519 pk length", curve.length, ED25519_PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKeyCurve25519(byte[] curve) {
+            checkExpectedMemorySize("curve25519 sk length", curve.length, CURVE25519_SECRETKEYBYTES);
+        }
+
+        public static void checkSecretKeyEd25519(byte[] curve) {
+            checkExpectedMemorySize("ed25519 sk length", curve.length, ED25519_SECRETKEYBYTES);
+        }
+
+    }
 }
