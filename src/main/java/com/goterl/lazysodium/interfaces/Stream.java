@@ -51,10 +51,7 @@ public interface Stream {
         CHACHA20,
         CHACHA20_IETF,
         SALSA20,
-        XSALSA20;
-
-        @Deprecated
-        public static final Method DEFAULT = XSALSA20;
+        XSALSA20,
     }
 
 

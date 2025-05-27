@@ -255,10 +255,7 @@ public interface Auth {
     enum Type {
         SHA256,
         SHA512,
-        SHA512256;
-
-        @Deprecated
-        public static final Type DEFAULT = SHA512256;
+        SHA512256,
     }
 
     class StateHMAC256 extends Structure {

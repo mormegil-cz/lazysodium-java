@@ -125,22 +125,12 @@ public class StreamTest extends BaseTest {
     }
 
     @Test
-    public void lazyDefault() {
-        byte[] nonce = lazySodium.nonce(Stream.XSALSA20_NONCEBYTES);
-        Key key = streamLazy.cryptoStreamKeygen((Stream.Method) null);
-        String cipher = streamLazy.cryptoStreamXor(message1, nonce, key, (Stream.Method) null);
-        String finalMsg = streamLazy.cryptoStreamXorDecrypt(cipher, nonce, key, (Stream.Method) null);
-
-        assertEquals(message1, finalMsg);
-    }
-
-    @Test
     @SuppressWarnings("removal") // yep, we know
     public void cryptoStream() {
         byte[] nonce = lazySodium.nonce(Stream.XSALSA20_NONCEBYTES);
-        Key key = streamLazy.cryptoStreamKeygen((Stream.Method) null);
-        byte[] stream1 = streamLazy.cryptoStream(nonce, key, (Stream.Method) null);
-        byte[] stream2 = streamLazy.cryptoStream(nonce, key, (Stream.Method) null);
+        Key key = streamLazy.cryptoStreamKeygen(Stream.Method.XSALSA20);
+        byte[] stream1 = streamLazy.cryptoStream(nonce, key, Stream.Method.XSALSA20);
+        byte[] stream2 = streamLazy.cryptoStream(nonce, key, Stream.Method.XSALSA20);
         assertArrayEquals(stream1, stream2);
     }
 

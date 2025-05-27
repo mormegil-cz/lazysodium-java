@@ -55,10 +55,7 @@ public interface AEAD {
         CHACHA20_POLY1305,
         CHACHA20_POLY1305_IETF,
         XCHACHA20_POLY1305_IETF,
-        AES256GCM;
-
-        @Deprecated
-        public static final Method DEFAULT = AES256GCM;
+        AES256GCM,
     }
 
 

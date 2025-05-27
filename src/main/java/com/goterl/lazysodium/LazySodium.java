@@ -1761,9 +1761,7 @@ public abstract class LazySodium implements
 
     @Override
     public Key cryptoStreamKeygen(Stream.Method method) {
-        if (method == null) {
-            method = Stream.Method.DEFAULT;
-        }
+        BaseChecker.requireNonNull("method", method);
         switch (method) {
             case CHACHA20: {
                 byte[] k = new byte[Stream.CHACHA20_KEYBYTES];
@@ -1799,11 +1797,9 @@ public abstract class LazySodium implements
 
     @Override
     public byte[] cryptoStream(int bytes, byte[] nonce, Key key, Stream.Method method) {
+        BaseChecker.requireNonNull("method", method);
         byte[] c = new byte[bytes];
         int cLen = c.length;
-        if (method == null) {
-            method = Stream.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20:
                 cryptoStreamChaCha20(c, cLen, nonce, key.getAsBytes());
@@ -1849,11 +1845,9 @@ public abstract class LazySodium implements
 
 
     private byte[] cryptoStreamDefaultXor(byte[] messageBytes, byte[] nonce, Key key, Stream.Method method) {
+        BaseChecker.requireNonNull("method", method);
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
-        if (method == null) {
-            method = Stream.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20:
                 cryptoStreamChaCha20Xor(cipher, messageBytes, mLen, nonce, key.getAsBytes());
@@ -1874,11 +1868,9 @@ public abstract class LazySodium implements
     }
 
     private byte[] cryptoStreamDefaultXorIc(byte[] messageBytes, byte[] nonce, long ic, Key key, Stream.Method method) {
+        BaseChecker.requireNonNull("method", method);
         int mLen = messageBytes.length;
         byte[] cipher = new byte[mLen];
-        if (method == null) {
-            method = Stream.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20:
                 cryptoStreamChaCha20XorIc(cipher, messageBytes, mLen, nonce, ic, key.getAsBytes());
@@ -2081,9 +2073,8 @@ public abstract class LazySodium implements
 
     @Override
     public Key cryptoAuthHMACShaKeygen(Auth.Type type) {
-        if (type == null) {
-            type = Auth.Type.DEFAULT;
-        }
+        BaseChecker.requireNonNull("type", type);
+
         switch (type) {
             case SHA256: {
                 byte[] k = new byte[Auth.HMACSHA256_KEYBYTES];
@@ -2107,12 +2098,10 @@ public abstract class LazySodium implements
 
     @Override
     public String cryptoAuthHMACSha(Auth.Type type, String in, Key key) {
+        BaseChecker.requireNonNull("type", type);
         byte[] inBytes = bytes(in);
         byte[] keyBytes = key.getAsBytes();
         int inByteLen = inBytes.length;
-        if (type == null) {
-            type = Auth.Type.DEFAULT;
-        }
         switch (type) {
             case SHA256: {
                 byte[] out = new byte[Auth.HMACSHA256_BYTES];
@@ -2136,13 +2125,11 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoAuthHMACShaVerify(Auth.Type type, String h, String in, Key key) {
+        BaseChecker.requireNonNull("type", type);
         byte[] authBytes = messageEncoder.decode(h);
         byte[] inBytes = bytes(in);
         byte[] keyBytes = key.getAsBytes();
         int inByteLen = inBytes.length;
-        if (type == null) {
-            type = Auth.Type.DEFAULT;
-        }
         switch (type) {
             case SHA256:
                 return cryptoAuthHMACSha256Verify(authBytes, inBytes, inByteLen, keyBytes);
@@ -2730,14 +2717,13 @@ public abstract class LazySodium implements
 
     @Override
     public String encrypt(String m, String additionalData, byte[] nPub, Key k, AEAD.Method method) {
+        BaseChecker.requireNonNull("method", method);
+
         byte[] messageBytes = bytes(m);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
 
-        if (method == null) {
-            method = AEAD.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20_POLY1305: {
                 byte[] cipherBytes;
@@ -2810,14 +2796,13 @@ public abstract class LazySodium implements
 
     @Override
     public String decrypt(String cipher, String additionalData, byte[] nPub, Key k, AEAD.Method method) throws AEADBadTagException {
+        BaseChecker.requireNonNull("method", method);
+
         byte[] cipherBytes = messageEncoder.decode(cipher);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
 
-        if (method == null) {
-            method = AEAD.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20_POLY1305: {
                 byte[] messageBytes = new byte[cipherBytes.length - AEAD.CHACHA20POLY1305_ABYTES];
@@ -2897,15 +2882,14 @@ public abstract class LazySodium implements
 
     @Override
     public DetachedEncrypt encryptDetached(String m, String additionalData, byte[] nPub, Key k, AEAD.Method method) {
+        BaseChecker.requireNonNull("method", method);
+
         byte[] messageBytes = bytes(m);
         byte[] additionalDataBytes = additionalData == null ? null : bytes(additionalData);
         int additionalBytesLen = additionalData == null ? 0 : additionalDataBytes.length;
         byte[] keyBytes = k.getAsBytes();
         byte[] cipherBytes = new byte[messageBytes.length];
 
-        if (method == null) {
-            method = AEAD.Method.DEFAULT;
-        }
         switch (method) {
             case CHACHA20_POLY1305: {
                 byte[] macBytes = new byte[AEAD.CHACHA20POLY1305_ABYTES];
