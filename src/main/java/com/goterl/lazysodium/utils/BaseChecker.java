@@ -90,4 +90,10 @@ public class BaseChecker {
             throw new IllegalArgumentException("Provided " + name + " must be either null or non-empty");
         }
     }
+
+    public static void requireNonNull(String name, Object state) {
+        if (state == null) {
+            throw new IllegalArgumentException("Provided " + name + " must not be null");
+        }
+    }
 }

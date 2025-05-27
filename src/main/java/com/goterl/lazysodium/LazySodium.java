@@ -619,17 +619,20 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoHashSha256Init(Hash.State256 state) {
+        BaseChecker.requireNonNull("state", state);
         return successful(getSodium().crypto_hash_sha256_init(state));
     }
 
     @Override
     public boolean cryptoHashSha256Update(Hash.State256 state, byte[] in, int inLen) {
+        BaseChecker.requireNonNull("state", state);
         BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha256_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoHashSha256Final(Hash.State256 state, byte[] out) {
+        BaseChecker.requireNonNull("state", state);
         Hash.Checker.checkHashSha256(out);
         return successful(getSodium().crypto_hash_sha256_final(state, out));
     }
@@ -643,17 +646,20 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoHashSha512Init(Hash.State512 state) {
+        BaseChecker.requireNonNull("state", state);
         return successful(getSodium().crypto_hash_sha512_init(state));
     }
 
     @Override
     public boolean cryptoHashSha512Update(Hash.State512 state, byte[] in, int inLen) {
+        BaseChecker.requireNonNull("state", state);
         BaseChecker.checkArrayLength("in", in, inLen);
         return successful(getSodium().crypto_hash_sha512_update(state, in, inLen));
     }
 
     @Override
     public boolean cryptoHashSha512Final(Hash.State512 state, byte[] out) {
+        BaseChecker.requireNonNull("state", state);
         Hash.Checker.checkHashSha512(out);
         return successful(getSodium().crypto_hash_sha512_final(state, out));
     }
@@ -1400,6 +1406,7 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoSecretStreamInitPush(SecretStream.State state, byte[] header, byte[] key) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkHeader(header);
         SecretStream.Checker.checkKey(key);
         return successful(getSodium().crypto_secretstream_xchacha20poly1305_init_push(state, header, key));
@@ -1407,6 +1414,7 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoSecretStreamPush(SecretStream.State state, byte[] cipher, long[] cipherLen, byte[] message, int messageLen, byte tag) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkPush(message, messageLen, cipher);
         BaseChecker.checkOptionalOutPointer("cipherLen", cipherLen);
         return successful(getSodium().crypto_secretstream_xchacha20poly1305_push(
@@ -1427,6 +1435,7 @@ public abstract class LazySodium implements
                                           byte[] message,
                                           int messageLen,
                                           byte tag) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkPush(message, messageLen, cipher);
         return successful(getSodium().crypto_secretstream_xchacha20poly1305_push(
                 state,
@@ -1449,6 +1458,7 @@ public abstract class LazySodium implements
                                           byte[] additionalData,
                                           int additionalDataLen,
                                           byte tag) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkPush(message, messageLen, cipher);
         BaseChecker.checkOptionalOutPointer("cipherLen", cipherLen);
         BaseChecker.checkOptionalArrayLength("additional data", additionalData, additionalDataLen);
@@ -1466,6 +1476,7 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoSecretStreamInitPull(SecretStream.State state, byte[] header, byte[] key) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkHeader(header);
         SecretStream.Checker.checkKey(key);
         return successful(getSodium().crypto_secretstream_xchacha20poly1305_init_pull(state, header, key));
@@ -1480,6 +1491,7 @@ public abstract class LazySodium implements
                                           int cipherLen,
                                           byte[] additionalData,
                                           int additionalDataLen) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkPull(cipher, cipherLen, message);
         BaseChecker.checkOptionalOutPointer("messageLen", messageLen);
         BaseChecker.checkOptionalOutPointer("tag", tag);
@@ -1491,6 +1503,7 @@ public abstract class LazySodium implements
 
     @Override
     public boolean cryptoSecretStreamPull(SecretStream.State state, byte[] message, byte[] tag, byte[] cipher, int cipherLen) {
+        BaseChecker.requireNonNull("state", state);
         SecretStream.Checker.checkPull(cipher, cipherLen, message);
         BaseChecker.checkOptionalOutPointer("tag", tag);
         return successful(getSodium().crypto_secretstream_xchacha20poly1305_pull(
@@ -1588,6 +1601,7 @@ public abstract class LazySodium implements
 
     @Override
     public void cryptoSecretStreamRekey(SecretStream.State state) {
+        BaseChecker.requireNonNull("state", state);
         getSodium().crypto_secretstream_xchacha20poly1305_rekey(state);
     }
 
