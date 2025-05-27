@@ -25,24 +25,22 @@ public interface AEAD {
     // REGULAR CHACHA
 
     int CHACHA20POLY1305_KEYBYTES = 32,
-        CHACHA20POLY1305_NPUBBYTES = 8,
-        CHACHA20POLY1305_ABYTES = 16;
-
+            CHACHA20POLY1305_NPUBBYTES = 8,
+            CHACHA20POLY1305_ABYTES = 16;
 
 
     // IETF CHACHA
 
     int CHACHA20POLY1305_IETF_ABYTES = 16,
-        CHACHA20POLY1305_IETF_KEYBYTES = 32,
-        CHACHA20POLY1305_IETF_NPUBBYTES = 12;
-
+            CHACHA20POLY1305_IETF_KEYBYTES = 32,
+            CHACHA20POLY1305_IETF_NPUBBYTES = 12;
 
 
     // This is XCHACHA not CHACHA.
 
     int XCHACHA20POLY1305_IETF_KEYBYTES = 32,
-        XCHACHA20POLY1305_IETF_ABYTES = 16,
-        XCHACHA20POLY1305_IETF_NPUBBYTES = 24;
+            XCHACHA20POLY1305_IETF_ABYTES = 16,
+            XCHACHA20POLY1305_IETF_NPUBBYTES = 24;
 
 
     // AES256
@@ -51,7 +49,6 @@ public interface AEAD {
     int AES256GCM_NSECBYTES = 0;
     int AES256GCM_NPUBBYTES = 12;
     int AES256GCM_ABYTES = 16;
-
 
 
     enum Method {
@@ -65,149 +62,13 @@ public interface AEAD {
     }
 
 
-    class Checker extends BaseChecker {
-        public static void checkChaCha20Poly1305Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, CHACHA20POLY1305_KEYBYTES);
-        }
-
-        public static void checkChaCha20Poly1305Nonce(byte[] nPub) {
-            checkExpectedMemorySize("nPub length", nPub.length, CHACHA20POLY1305_NPUBBYTES);
-        }
-
-        public static void checkChaCha20Poly1305CipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
-            if (receivesCipherLen) {
-                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_ABYTES);
-            } else {
-                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_ABYTES);
-            }
-        }
-
-        public static void checkChaCha20Poly1305DecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
-            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.CHACHA20POLY1305_ABYTES);
-            if (receivesMessageLen) {
-                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_ABYTES);
-            } else {
-                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_ABYTES);
-            }
-        }
-
-        public static void checkChaCha20Poly1305Mac(byte[] mac, boolean receivesMacLen) {
-            if (receivesMacLen) {
-                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.CHACHA20POLY1305_ABYTES);
-            } else {
-                checkExpectedMemorySize("mac length", mac.length, AEAD.CHACHA20POLY1305_ABYTES);
-            }
-        }
-
-
-        public static void checkChaCha20Poly1305IetfKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, CHACHA20POLY1305_IETF_KEYBYTES);
-        }
-
-        public static void checkChaCha20Poly1305IetfNonce(byte[] nPub) {
-            checkExpectedMemorySize("nPub length", nPub.length, CHACHA20POLY1305_IETF_NPUBBYTES);
-        }
-
-        public static void checkChaCha20Poly1305IetfCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
-            if (receivesCipherLen) {
-                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkChaCha20Poly1305IetfDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
-            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            if (receivesMessageLen) {
-                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkChaCha20Poly1305IetfMac(byte[] mac, boolean receivesMacLen) {
-            if (receivesMacLen) {
-                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("mac length", mac.length, AEAD.CHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkXChaCha20Poly1305IetfKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, XCHACHA20POLY1305_IETF_KEYBYTES);
-        }
-
-        public static void checkXChaCha20Poly1305IetfNonce(byte[] nPub) {
-            checkExpectedMemorySize("nPub length", nPub.length, XCHACHA20POLY1305_IETF_NPUBBYTES);
-        }
-
-        public static void checkXChaCha20Poly1305IetfCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
-            if (receivesCipherLen) {
-                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkXChaCha20Poly1305IetfDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
-            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            if (receivesMessageLen) {
-                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkXChaCha20Poly1305IetfMac(byte[] mac, boolean receivesMacLen) {
-            if (receivesMacLen) {
-                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            } else {
-                checkExpectedMemorySize("mac length", mac.length, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
-            }
-        }
-
-        public static void checkAes256GcmKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, AES256GCM_KEYBYTES);
-        }
-
-        public static void checkAes256GcmNonce(byte[] nPub) {
-            checkExpectedMemorySize("nPub length", nPub.length, AES256GCM_NPUBBYTES);
-        }
-
-        public static void checkAes256GcmCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
-            if (receivesCipherLen) {
-                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.AES256GCM_ABYTES);
-            } else {
-                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.AES256GCM_ABYTES);
-            }
-        }
-
-        public static void checkAes256GcmDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
-            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.AES256GCM_ABYTES);
-            if (receivesMessageLen) {
-                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.AES256GCM_ABYTES);
-            } else {
-                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.AES256GCM_ABYTES);
-            }
-        }
-
-        public static void checkAes256GcmMac(byte[] mac, boolean receivesMacLen) {
-            if (receivesMacLen) {
-                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.AES256GCM_ABYTES);
-            } else {
-                checkExpectedMemorySize("mac length", mac.length, AEAD.AES256GCM_ABYTES);
-            }
-        }
-
-    }
-
-
     interface Native {
 
         void cryptoAeadChaCha20Poly1305Keygen(byte[] key);
 
         /**
          * Encrypt a message
+         *
          * @param cipher            Buffer for the cipher text
          * @param cipherLen         Output buffer into which the real length of the cipher text is stored (it can be {@code null} if not interested)
          * @param message           The message to encrypt
@@ -231,6 +92,7 @@ public interface AEAD {
 
         /**
          * Encrypt a message (a deprecated overload)
+         *
          * @param cipher            Buffer for the cipher text
          * @param cipherLen         Output buffer into which the real length of the cipher text is stored (it can be {@code null} if not interested)
          * @param message           The message to encrypt
@@ -329,8 +191,6 @@ public interface AEAD {
                 byte[] nPub,
                 byte[] key
         );
-
-
 
 
         // ietf
@@ -434,8 +294,6 @@ public interface AEAD {
                 byte[] nPub,
                 byte[] key
         );
-
-
 
 
         // xchacha
@@ -648,16 +506,15 @@ public interface AEAD {
     }
 
 
-
     interface Lazy {
 
         Key keygen(Method method);
 
         String encrypt(String m,
-                      String additionalData,
-                      byte[] nPub,
-                      Key k,
-                      AEAD.Method method);
+                       String additionalData,
+                       byte[] nPub,
+                       Key k,
+                       AEAD.Method method);
 
         @Deprecated(forRemoval = true)
         String encrypt(
@@ -730,7 +587,6 @@ public interface AEAD {
     }
 
 
-
     class StateAES extends Structure {
 
         public static class ByReference extends StateAES implements Structure.ByReference {
@@ -746,5 +602,144 @@ public interface AEAD {
 
     }
 
+
+    final class Checker extends BaseChecker {
+        private Checker() {
+        }
+
+        public static void checkChaCha20Poly1305Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20POLY1305_KEYBYTES);
+        }
+
+        public static void checkChaCha20Poly1305Nonce(byte[] nPub) {
+            checkExpectedMemorySize("nPub length", nPub.length, CHACHA20POLY1305_NPUBBYTES);
+        }
+
+        public static void checkChaCha20Poly1305CipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
+            if (receivesCipherLen) {
+                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_ABYTES);
+            } else {
+                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_ABYTES);
+            }
+        }
+
+        public static void checkChaCha20Poly1305DecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
+            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.CHACHA20POLY1305_ABYTES);
+            if (receivesMessageLen) {
+                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_ABYTES);
+            } else {
+                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_ABYTES);
+            }
+        }
+
+        public static void checkChaCha20Poly1305Mac(byte[] mac, boolean receivesMacLen) {
+            if (receivesMacLen) {
+                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.CHACHA20POLY1305_ABYTES);
+            } else {
+                checkExpectedMemorySize("mac length", mac.length, AEAD.CHACHA20POLY1305_ABYTES);
+            }
+        }
+
+
+        public static void checkChaCha20Poly1305IetfKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20POLY1305_IETF_KEYBYTES);
+        }
+
+        public static void checkChaCha20Poly1305IetfNonce(byte[] nPub) {
+            checkExpectedMemorySize("nPub length", nPub.length, CHACHA20POLY1305_IETF_NPUBBYTES);
+        }
+
+        public static void checkChaCha20Poly1305IetfCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
+            if (receivesCipherLen) {
+                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkChaCha20Poly1305IetfDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
+            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            if (receivesMessageLen) {
+                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkChaCha20Poly1305IetfMac(byte[] mac, boolean receivesMacLen) {
+            if (receivesMacLen) {
+                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("mac length", mac.length, AEAD.CHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkXChaCha20Poly1305IetfKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, XCHACHA20POLY1305_IETF_KEYBYTES);
+        }
+
+        public static void checkXChaCha20Poly1305IetfNonce(byte[] nPub) {
+            checkExpectedMemorySize("nPub length", nPub.length, XCHACHA20POLY1305_IETF_NPUBBYTES);
+        }
+
+        public static void checkXChaCha20Poly1305IetfCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
+            if (receivesCipherLen) {
+                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkXChaCha20Poly1305IetfDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
+            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            if (receivesMessageLen) {
+                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkXChaCha20Poly1305IetfMac(byte[] mac, boolean receivesMacLen) {
+            if (receivesMacLen) {
+                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            } else {
+                checkExpectedMemorySize("mac length", mac.length, AEAD.XCHACHA20POLY1305_IETF_ABYTES);
+            }
+        }
+
+        public static void checkAes256GcmKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, AES256GCM_KEYBYTES);
+        }
+
+        public static void checkAes256GcmNonce(byte[] nPub) {
+            checkExpectedMemorySize("nPub length", nPub.length, AES256GCM_NPUBBYTES);
+        }
+
+        public static void checkAes256GcmCipherLength(byte[] cipher, int messageLength, boolean receivesCipherLen) {
+            if (receivesCipherLen) {
+                BaseChecker.checkAtLeast("cipher length", cipher.length, messageLength + AEAD.AES256GCM_ABYTES);
+            } else {
+                checkExpectedMemorySize("cipher length", cipher.length, messageLength + AEAD.AES256GCM_ABYTES);
+            }
+        }
+
+        public static void checkAes256GcmDecryptedMessageLength(byte[] message, int cipherLength, boolean receivesMessageLen) {
+            BaseChecker.checkAtLeast("cipherLength", cipherLength, AEAD.AES256GCM_ABYTES);
+            if (receivesMessageLen) {
+                BaseChecker.checkAtLeast("message length", message.length, cipherLength - AEAD.AES256GCM_ABYTES);
+            } else {
+                checkExpectedMemorySize("message length", message.length, cipherLength - AEAD.AES256GCM_ABYTES);
+            }
+        }
+
+        public static void checkAes256GcmMac(byte[] mac, boolean receivesMacLen) {
+            if (receivesMacLen) {
+                BaseChecker.checkAtLeast("mac length", mac.length, AEAD.AES256GCM_ABYTES);
+            } else {
+                checkExpectedMemorySize("mac length", mac.length, AEAD.AES256GCM_ABYTES);
+            }
+        }
+
+    }
 
 }

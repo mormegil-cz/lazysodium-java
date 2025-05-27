@@ -69,7 +69,7 @@ public interface KeyDerivation {
 
     }
 
-    class Checker extends BaseChecker {
+    final class Checker extends BaseChecker {
         private Checker() {
         }
 

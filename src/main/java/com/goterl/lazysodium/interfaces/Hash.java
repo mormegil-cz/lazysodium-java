@@ -19,18 +19,8 @@ import java.util.List;
 public interface Hash {
 
     int SHA256_BYTES = 32,
-        SHA512_BYTES = 64,
-        BYTES = SHA512_BYTES;
-
-    class Checker extends BaseChecker {
-        public static void checkHashSha256(byte[] hash) {
-            checkExpectedMemorySize("hash length", hash.length, SHA256_BYTES);
-        }
-
-        public static void checkHashSha512(byte[] hash) {
-            checkExpectedMemorySize("hash length", hash.length, SHA512_BYTES);
-        }
-    }
+            SHA512_BYTES = 64,
+            BYTES = SHA512_BYTES;
 
     interface Native {
 
@@ -42,8 +32,8 @@ public interface Hash {
         boolean cryptoHashSha256Init(Hash.State256 state);
 
         boolean cryptoHashSha256Update(Hash.State256 state,
-                                                    byte[] in,
-                                                    int inLen);
+                                       byte[] in,
+                                       int inLen);
 
         boolean cryptoHashSha256Final(Hash.State256 state, byte[] out);
 
@@ -81,7 +71,8 @@ public interface Hash {
 
     class State256 extends Structure {
 
-        public static class ByReference extends State256 implements Structure.ByReference { }
+        public static class ByReference extends State256 implements Structure.ByReference {
+        }
 
         @Override
         protected List<String> getFieldOrder() {
@@ -96,7 +87,8 @@ public interface Hash {
 
     class State512 extends Structure {
 
-        public static class ByReference extends State512 implements Structure.ByReference { }
+        public static class ByReference extends State512 implements Structure.ByReference {
+        }
 
         @Override
         protected List<String> getFieldOrder() {
@@ -107,6 +99,20 @@ public interface Hash {
         public long[] count = new long[2];
         public byte[] buf = new byte[128];
 
+    }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {
+        }
+
+        public static void checkHashSha256(byte[] hash) {
+            checkExpectedMemorySize("hash length", hash.length, SHA256_BYTES);
+        }
+
+        public static void checkHashSha512(byte[] hash) {
+            checkExpectedMemorySize("hash length", hash.length, SHA512_BYTES);
+        }
     }
 
 }

@@ -39,54 +39,6 @@ public interface Sign {
     long MESSAGEBYTES_MAX = ED25519_MESSAGEBYTES_MAX;
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkPublicKey(byte[] key) {
-            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
-        }
-
-        public static void checkSecretKey(byte[] key) {
-            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
-        }
-
-        public static void checkSeed(byte[] seed) {
-            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
-        }
-
-        public static void checkSignature(byte[] sig) {
-            checkExpectedMemorySize("signature length", sig.length, BYTES);
-        }
-
-        public static void checkSignedMessageLength(int signedMessageLength) {
-            checkAtLeast("signed message length", signedMessageLength, BYTES);
-        }
-
-        public static void checkSignedMessageLength(byte[] signedMessage, int messageLen) {
-            checkExpectedMemorySize("signed message length", signedMessage.length, messageLen + BYTES);
-        }
-
-        public static void checkMessageLength(byte[] message, int signedMessageLen) {
-            checkExpectedMemorySize("message length", message.length, signedMessageLen - BYTES);
-        }
-
-        public static void checkPublicKeyCurve25519(byte[] curve) {
-            checkExpectedMemorySize("curve25519 pk length", curve.length, CURVE25519_PUBLICKEYBYTES);
-        }
-
-        public static void checkPublicKeyEd25519(byte[] curve) {
-            checkExpectedMemorySize("ed25519 pk length", curve.length, ED25519_PUBLICKEYBYTES);
-        }
-
-        public static void checkSecretKeyCurve25519(byte[] curve) {
-            checkExpectedMemorySize("curve25519 sk length", curve.length, CURVE25519_SECRETKEYBYTES);
-        }
-
-        public static void checkSecretKeyEd25519(byte[] curve) {
-            checkExpectedMemorySize("ed25519 sk length", curve.length, ED25519_SECRETKEYBYTES);
-        }
-
-    }
-
 
     interface Native {
 
@@ -348,4 +300,54 @@ public interface Sign {
         }
     }
 
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
+        }
+
+        public static void checkSignature(byte[] sig) {
+            checkExpectedMemorySize("signature length", sig.length, BYTES);
+        }
+
+        public static void checkSignedMessageLength(int signedMessageLength) {
+            checkAtLeast("signed message length", signedMessageLength, BYTES);
+        }
+
+        public static void checkSignedMessageLength(byte[] signedMessage, int messageLen) {
+            checkExpectedMemorySize("signed message length", signedMessage.length, messageLen + BYTES);
+        }
+
+        public static void checkMessageLength(byte[] message, int signedMessageLen) {
+            checkExpectedMemorySize("message length", message.length, signedMessageLen - BYTES);
+        }
+
+        public static void checkPublicKeyCurve25519(byte[] curve) {
+            checkExpectedMemorySize("curve25519 pk length", curve.length, CURVE25519_PUBLICKEYBYTES);
+        }
+
+        public static void checkPublicKeyEd25519(byte[] curve) {
+            checkExpectedMemorySize("ed25519 pk length", curve.length, ED25519_PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKeyCurve25519(byte[] curve) {
+            checkExpectedMemorySize("curve25519 sk length", curve.length, CURVE25519_SECRETKEYBYTES);
+        }
+
+        public static void checkSecretKeyEd25519(byte[] curve) {
+            checkExpectedMemorySize("ed25519 sk length", curve.length, ED25519_SECRETKEYBYTES);
+        }
+
+    }
 }

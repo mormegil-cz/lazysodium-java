@@ -58,43 +58,6 @@ public interface Stream {
     }
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkChaCha20Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, CHACHA20_KEYBYTES);
-        }
-
-        public static void checkChaCha20Nonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_NONCEBYTES);
-        }
-
-        public static void checkChaCha20IetfKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, CHACHA20_IETF_KEYBYTES);
-        }
-
-        public static void checkChaCha20IetfNonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_IETF_NONCEBYTES);
-        }
-
-        public static void checkSalsa20Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, SALSA20_KEYBYTES);
-        }
-
-        public static void checkSalsa20Nonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, SALSA20_NONCEBYTES);
-        }
-
-        public static void checkXSalsa20Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, XSALSA20_KEYBYTES);
-        }
-
-        public static void checkXSalsa20Nonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, XSALSA20_NONCEBYTES);
-        }
-
-    }
-
-
     interface Native {
 
         void cryptoStreamChaCha20Keygen(byte[] key);
@@ -294,6 +257,44 @@ public interface Stream {
                 Key key,
                 Method method
         );
+
+    }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkChaCha20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20_KEYBYTES);
+        }
+
+        public static void checkChaCha20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_NONCEBYTES);
+        }
+
+        public static void checkChaCha20IetfKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, CHACHA20_IETF_KEYBYTES);
+        }
+
+        public static void checkChaCha20IetfNonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, CHACHA20_IETF_NONCEBYTES);
+        }
+
+        public static void checkSalsa20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, SALSA20_KEYBYTES);
+        }
+
+        public static void checkSalsa20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, SALSA20_NONCEBYTES);
+        }
+
+        public static void checkXSalsa20Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, XSALSA20_KEYBYTES);
+        }
+
+        public static void checkXSalsa20Nonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, XSALSA20_NONCEBYTES);
+        }
 
     }
 

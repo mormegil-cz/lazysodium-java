@@ -69,50 +69,6 @@ public interface PwHash {
 
 
 
-    class Checker extends BaseChecker {
-        public static void checkLengthOfHash(int lengthOfHash) {
-            checkBetween("hash length", lengthOfHash, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
-        }
-
-        public static void checkHashStrOutput(byte[] outputStr) {
-            checkAtLeast("outputStr length", outputStr.length, PwHash.STR_BYTES);
-        }
-
-        public static void checkPassword(byte[] password) {
-            checkLengthOfPassword(password.length);
-        }
-
-        public static void checkLengthOfPassword(int lengthOfPassword) {
-            checkBetween("password length", lengthOfPassword, PwHash.PASSWD_MIN, PwHash.PASSWD_MAX);
-        }
-
-        public static void checkSalt(byte[] salt) {
-            checkExpectedMemorySize("salt length", salt.length, SALTBYTES);
-        }
-
-        public static void checkOpsLimit(long opsLimit) {
-            checkBetween("opsLimit", opsLimit, PwHash.OPSLIMIT_MIN, PwHash.OPSLIMIT_MAX);
-        }
-
-        public static void checkMemLimit(NativeLong memLimit) {
-            checkBetween("memLimit", memLimit, PwHash.MEMLIMIT_MIN, PwHash.MEMLIMIT_MAX);
-        }
-
-        public static void checkHashStrInput(byte[] hashStrBytes) {
-            int maxHashLen = Math.min(hashStrBytes.length, PwHash.STR_BYTES);
-            for (int i = 0; i < maxHashLen; ++i) {
-                if (hashStrBytes[i] == 0) {
-                    return;
-                }
-            }
-            if (maxHashLen == hashStrBytes.length) {
-                throw new IllegalArgumentException("Hash is not null terminated");
-            } else {
-                throw new IllegalArgumentException("Hash is too long or not null terminated");
-            }
-        }
-    }
-
     interface Native {
 
         /**
@@ -381,6 +337,52 @@ public interface PwHash {
                 map.put(alg.val, alg);
             }
             return map;
+        }
+    }
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkLengthOfHash(int lengthOfHash) {
+            checkBetween("hash length", lengthOfHash, PwHash.BYTES_MIN, PwHash.BYTES_MAX);
+        }
+
+        public static void checkHashStrOutput(byte[] outputStr) {
+            checkAtLeast("outputStr length", outputStr.length, PwHash.STR_BYTES);
+        }
+
+        public static void checkPassword(byte[] password) {
+            checkLengthOfPassword(password.length);
+        }
+
+        public static void checkLengthOfPassword(int lengthOfPassword) {
+            checkBetween("password length", lengthOfPassword, PwHash.PASSWD_MIN, PwHash.PASSWD_MAX);
+        }
+
+        public static void checkSalt(byte[] salt) {
+            checkExpectedMemorySize("salt length", salt.length, SALTBYTES);
+        }
+
+        public static void checkOpsLimit(long opsLimit) {
+            checkBetween("opsLimit", opsLimit, PwHash.OPSLIMIT_MIN, PwHash.OPSLIMIT_MAX);
+        }
+
+        public static void checkMemLimit(NativeLong memLimit) {
+            checkBetween("memLimit", memLimit, PwHash.MEMLIMIT_MIN, PwHash.MEMLIMIT_MAX);
+        }
+
+        public static void checkHashStrInput(byte[] hashStrBytes) {
+            int maxHashLen = Math.min(hashStrBytes.length, PwHash.STR_BYTES);
+            for (int i = 0; i < maxHashLen; ++i) {
+                if (hashStrBytes[i] == 0) {
+                    return;
+                }
+            }
+            if (maxHashLen == hashStrBytes.length) {
+                throw new IllegalArgumentException("Hash is not null terminated");
+            } else {
+                throw new IllegalArgumentException("Hash is too long or not null terminated");
+            }
         }
     }
 

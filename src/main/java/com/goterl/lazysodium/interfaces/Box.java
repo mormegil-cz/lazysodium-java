@@ -37,59 +37,6 @@ public interface Box {
 
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkPublicKey(byte[] key) {
-            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
-        }
-
-        public static void checkSecretKey(byte[] key) {
-            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
-        }
-
-        public static void checkSeed(byte[] seed) {
-            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
-        }
-
-        public static void checkNonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
-        }
-
-        public static void checkMac(byte[] mac) {
-            checkExpectedMemorySize("mac length", mac.length, MACBYTES);
-        }
-
-        public static void checkSharedKey(byte[] sharedKey) {
-            checkExpectedMemorySize("key length", sharedKey.length, BEFORENMBYTES);
-        }
-
-        public static void checkCipherText(byte[] cipherText, int messageLen) {
-            checkExpectedMemorySize("cipherText length", cipherText.length, MACBYTES + messageLen);
-        }
-
-        public static void checkSealCipherText(byte[] cipherText, int messageLen) {
-            checkExpectedMemorySize("cipherText length", cipherText.length, SEALBYTES + messageLen);
-        }
-
-        public static void checkMessage(byte[] message, int cipherTextLen) {
-            checkExpectedMemorySize("message length", message.length, cipherTextLen - MACBYTES);
-        }
-
-        public static void checkSealMessage(byte[] message, int cipherTextLen) {
-            checkExpectedMemorySize("message length", message.length, cipherTextLen - SEALBYTES);
-        }
-
-        public static void checkCipherTextLength(long cipherTextLen) {
-            checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
-        }
-
-        public static void checkSealCipherTextLength(long cipherTextLen) {
-            checkAtLeast("cipher text length", cipherTextLen, SEALBYTES);
-        }
-
-    }
-
-
 
 
     interface Native {
@@ -304,6 +251,61 @@ public interface Box {
          */
         String cryptoBoxSealOpenEasy(String cipherText, KeyPair keyPair) throws SodiumException;
     }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
+        }
+
+        public static void checkNonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
+        }
+
+        public static void checkMac(byte[] mac) {
+            checkExpectedMemorySize("mac length", mac.length, MACBYTES);
+        }
+
+        public static void checkSharedKey(byte[] sharedKey) {
+            checkExpectedMemorySize("key length", sharedKey.length, BEFORENMBYTES);
+        }
+
+        public static void checkCipherText(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, MACBYTES + messageLen);
+        }
+
+        public static void checkSealCipherText(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, SEALBYTES + messageLen);
+        }
+
+        public static void checkMessage(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - MACBYTES);
+        }
+
+        public static void checkSealMessage(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - SEALBYTES);
+        }
+
+        public static void checkCipherTextLength(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
+        }
+
+        public static void checkSealCipherTextLength(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, SEALBYTES);
+        }
+
+    }
+
 
 
 }

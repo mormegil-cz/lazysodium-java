@@ -40,25 +40,6 @@ public interface GenericHash {
         KEYBYTES_MAX = BLAKE2B_KEYBYTES_MAX;
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, KEYBYTES);
-        }
-
-        public static void checkOutputLength(int outLen) {
-            BaseChecker.checkBetween("outLen", outLen, 1, BYTES_MAX);
-        }
-
-        public static void checkKey(byte[] key, int keyLen) {
-            BaseChecker.checkOptionalArrayLength("key", key, keyLen);
-            if (key != null) {
-                BaseChecker.checkBetween("keyLen", keyLen, 1, KEYBYTES_MAX);
-            }
-        }
-
-    }
-
     interface Native {
 
         /**
@@ -257,4 +238,27 @@ public interface GenericHash {
             allocatedMemory.close();
         }
     }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
+        }
+
+        public static void checkOutputLength(int outLen) {
+            BaseChecker.checkBetween("outLen", outLen, 1, BYTES_MAX);
+        }
+
+        public static void checkKey(byte[] key, int keyLen) {
+            BaseChecker.checkOptionalArrayLength("key", key, keyLen);
+            if (key != null) {
+                BaseChecker.checkBetween("keyLen", keyLen, 1, KEYBYTES_MAX);
+            }
+        }
+
+    }
+
+
 }

@@ -26,34 +26,6 @@ public interface SecretBox {
         NONCEBYTES = XSALSA20POLY1305_NONCEBYTES;
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, KEYBYTES);
-        }
-
-        public static void checkMac(byte[] mac) {
-            checkExpectedMemorySize("mac length", mac.length, MACBYTES);
-        }
-
-        public static void checkNonce(byte[] nonce) {
-            checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
-        }
-
-        public static void checkCipherText(byte[] cipherText, int messageLen) {
-            checkExpectedMemorySize("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
-        }
-
-        public static void checkMessage(byte[] message, int cipherTextLen) {
-            checkExpectedMemorySize("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
-        }
-
-        public static void checkCipherTextLength(long cipherTextLen) {
-            checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
-        }
-
-    }
-
 
     interface Native {
 
@@ -186,5 +158,35 @@ public interface SecretBox {
 
     }
 
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
+        }
+
+        public static void checkMac(byte[] mac) {
+            checkExpectedMemorySize("mac length", mac.length, MACBYTES);
+        }
+
+        public static void checkNonce(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
+        }
+
+        public static void checkCipherText(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, SecretBox.MACBYTES + messageLen);
+        }
+
+        public static void checkMessage(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - SecretBox.MACBYTES);
+        }
+
+        public static void checkCipherTextLength(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
+        }
+
+    }
 
 }

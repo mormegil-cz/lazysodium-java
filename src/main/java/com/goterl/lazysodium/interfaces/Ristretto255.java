@@ -724,25 +724,6 @@ public interface Ristretto255 {
         BigInteger cryptoCoreRistretto255ScalarMul(byte[] x, byte[] y);
     }
 
-    class Checker extends BaseChecker {
-        private Checker() {}
-
-        public static void checkPoint(String name, byte[] point) {
-            checkExpectedMemorySize(name, point.length, RISTRETTO255_BYTES);
-        }
-
-        public static void checkHash(String name, byte[] hash) {
-            checkExpectedMemorySize(name, hash.length, RISTRETTO255_HASH_BYTES);
-        }
-
-        public static void checkScalar(String name, byte[] scalar) {
-            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_SCALAR_BYTES);
-        }
-
-        public static void checkNonReducedScalar(String name, byte[] scalar) {
-            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_NON_REDUCED_SCALAR_BYTES);
-        }
-    }
 
     final class RistrettoPoint {
 
@@ -968,4 +949,26 @@ public interface Ristretto255 {
             return ls.cryptoCoreRistretto255FromHash(hash);
         }
     }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPoint(String name, byte[] point) {
+            checkExpectedMemorySize(name, point.length, RISTRETTO255_BYTES);
+        }
+
+        public static void checkHash(String name, byte[] hash) {
+            checkExpectedMemorySize(name, hash.length, RISTRETTO255_HASH_BYTES);
+        }
+
+        public static void checkScalar(String name, byte[] scalar) {
+            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_SCALAR_BYTES);
+        }
+
+        public static void checkNonReducedScalar(String name, byte[] scalar) {
+            checkExpectedMemorySize(name, scalar.length, RISTRETTO255_NON_REDUCED_SCALAR_BYTES);
+        }
+    }
+
 }

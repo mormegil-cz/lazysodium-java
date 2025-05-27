@@ -23,24 +23,6 @@ public interface KeyExchange {
     int SEEDBYTES = 32;
     String PRIMITIVE = "x25519blake2b";
 
-    class Checker extends BaseChecker {
-        public static void checkPublicKey(byte[] key) {
-            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
-        }
-
-        public static void checkSecretKey(byte[] key) {
-            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
-        }
-
-        public static void checkSessionKey(byte[] key) {
-            checkExpectedMemorySize("session key length", key.length, SESSIONKEYBYTES);
-        }
-
-        public static void checkSeed(byte[] seed) {
-            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
-        }
-    }
-
     interface Native {
 
         /**
@@ -218,5 +200,25 @@ public interface KeyExchange {
         ) throws SodiumException;
     }
 
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
+        }
+
+        public static void checkSecretKey(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSessionKey(byte[] key) {
+            checkExpectedMemorySize("session key length", key.length, SESSIONKEYBYTES);
+        }
+
+        public static void checkSeed(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
+        }
+    }
 
 }

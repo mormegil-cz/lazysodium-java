@@ -30,41 +30,6 @@ public interface Auth {
         KEYBYTES = HMACSHA512256_KEYBYTES;
 
 
-    class Checker extends BaseChecker {
-
-        public static void checkTag(byte[] tag) {
-            checkExpectedMemorySize("tag length", tag.length, BYTES);
-        }
-
-        public static void checkKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, KEYBYTES);
-        }
-
-        public static void checkHMACSha256Tag(byte[] tag) {
-            checkExpectedMemorySize("tag length", tag.length, HMACSHA256_BYTES);
-        }
-
-        public static void checkHMACSha256Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, HMACSHA256_KEYBYTES);
-        }
-
-        public static void checkHMACSha512Tag(byte[] tag) {
-            checkExpectedMemorySize("tag length", tag.length, HMACSHA512_BYTES);
-        }
-
-        public static void checkHMACSha512Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, HMACSHA512_KEYBYTES);
-        }
-
-        public static void checkHMACSha512256Tag(byte[] tag) {
-            checkExpectedMemorySize("tag length", tag.length, HMACSHA512256_BYTES);
-        }
-
-        public static void checkHMACSha512256Key(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, HMACSHA512256_KEYBYTES);
-        }
-
-    }
 
     interface Native {
 
@@ -327,5 +292,42 @@ public interface Auth {
         }
     }
 
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkTag(byte[] tag) {
+            checkExpectedMemorySize("tag length", tag.length, BYTES);
+        }
+
+        public static void checkKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
+        }
+
+        public static void checkHMACSha256Tag(byte[] tag) {
+            checkExpectedMemorySize("tag length", tag.length, HMACSHA256_BYTES);
+        }
+
+        public static void checkHMACSha256Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, HMACSHA256_KEYBYTES);
+        }
+
+        public static void checkHMACSha512Tag(byte[] tag) {
+            checkExpectedMemorySize("tag length", tag.length, HMACSHA512_BYTES);
+        }
+
+        public static void checkHMACSha512Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, HMACSHA512_KEYBYTES);
+        }
+
+        public static void checkHMACSha512256Tag(byte[] tag) {
+            checkExpectedMemorySize("tag length", tag.length, HMACSHA512256_BYTES);
+        }
+
+        public static void checkHMACSha512256Key(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, HMACSHA512256_KEYBYTES);
+        }
+
+    }
 
 }

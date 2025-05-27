@@ -24,16 +24,6 @@ public interface ShortHash {
         KEYBYTES = SIPHASH24_KEYBYTES;
 
 
-    class Checker extends BaseChecker {
-        public static void checkHash(byte[] hash) {
-            checkExpectedMemorySize("hash length", hash.length, BYTES);
-        }
-
-        public static void checkKey(byte[] key) {
-            checkExpectedMemorySize("key length", key.length, KEYBYTES);
-        }
-    }
-
 
     interface Native {
 
@@ -92,5 +82,17 @@ public interface ShortHash {
 
     }
 
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkHash(byte[] hash) {
+            checkExpectedMemorySize("hash length", hash.length, BYTES);
+        }
+
+        public static void checkKey(byte[] key) {
+            checkExpectedMemorySize("key length", key.length, KEYBYTES);
+        }
+    }
 
 }

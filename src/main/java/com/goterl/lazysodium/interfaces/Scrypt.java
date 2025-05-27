@@ -33,51 +33,6 @@ public interface Scrypt {
 
 
 
-    class Checker extends BaseChecker {
-
-        public static boolean checkOpsLimitScrypt(long opsLimit) {
-            return isBetween(opsLimit, SCRYPTSALSA208SHA256_OPSLIMIT_MIN, SCRYPTSALSA208SHA256_OPSLIMIT_MAX);
-        }
-
-        public static boolean checkMemLimitScrypt(long memLimit) {
-            return isBetween(memLimit, SCRYPTSALSA208SHA256_MEMLIMIT_MIN, SCRYPTSALSA208SHA256_MEMLIMIT_MAX);
-        }
-
-        public static boolean checkAllScrypt(int passwordBytesLen,
-                                             int saltBytesLen,
-                                             int hashLen,
-                                             long opsLimit,
-                                             long memLimit)
-                throws SodiumException {
-            if (!isBetween(passwordBytesLen, SCRYPTSALSA208SHA256_PASSWD_MIN, SCRYPTSALSA208SHA256_PASSWD_MAX)) {
-                throw new SodiumException("The password provided is not the correct size.");
-            }
-
-            if (!isBetween(hashLen, SCRYPTSALSA208SHA256_BYTES_MIN, SCRYPTSALSA208SHA256_BYTES_MAX)) {
-                throw new SodiumException(
-                        "Please supply a hashLen greater " +
-                        "than SCRYPTSALSA208SHA256_PASSWD_MIN " +
-                        "but less than SCRYPTSALSA208SHA256_PASSWD_MAX");
-            }
-
-            if (!correctLen(saltBytesLen, SCRYPTSALSA208SHA256_SALT_BYTES)) {
-                throw new SodiumException("The password provided is not the correct size.");
-            }
-
-            if (!checkOpsLimitScrypt(opsLimit)) {
-                throw new SodiumException("The ops limit provided is not between the correct values.");
-            }
-
-            if (!checkMemLimitScrypt(memLimit)) {
-                throw new SodiumException("The mem limit provided is not between the correct values.");
-            }
-
-            return true;
-        }
-    }
-
-
-
     interface Native {
 
         boolean cryptoPwHashScryptSalsa208Sha256(
@@ -179,5 +134,51 @@ public interface Scrypt {
          * @return True if the password 'unlocks' the hash.
          */
         boolean cryptoPwHashScryptSalsa208Sha256StrVerify(String hash, String password);
+    }
+
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static boolean checkOpsLimitScrypt(long opsLimit) {
+            return isBetween(opsLimit, SCRYPTSALSA208SHA256_OPSLIMIT_MIN, SCRYPTSALSA208SHA256_OPSLIMIT_MAX);
+        }
+
+        public static boolean checkMemLimitScrypt(long memLimit) {
+            return isBetween(memLimit, SCRYPTSALSA208SHA256_MEMLIMIT_MIN, SCRYPTSALSA208SHA256_MEMLIMIT_MAX);
+        }
+
+        public static boolean checkAllScrypt(int passwordBytesLen,
+                                             int saltBytesLen,
+                                             int hashLen,
+                                             long opsLimit,
+                                             long memLimit)
+                throws SodiumException {
+            if (!isBetween(passwordBytesLen, SCRYPTSALSA208SHA256_PASSWD_MIN, SCRYPTSALSA208SHA256_PASSWD_MAX)) {
+                throw new SodiumException("The password provided is not the correct size.");
+            }
+
+            if (!isBetween(hashLen, SCRYPTSALSA208SHA256_BYTES_MIN, SCRYPTSALSA208SHA256_BYTES_MAX)) {
+                throw new SodiumException(
+                        "Please supply a hashLen greater " +
+                                "than SCRYPTSALSA208SHA256_PASSWD_MIN " +
+                                "but less than SCRYPTSALSA208SHA256_PASSWD_MAX");
+            }
+
+            if (!correctLen(saltBytesLen, SCRYPTSALSA208SHA256_SALT_BYTES)) {
+                throw new SodiumException("The password provided is not the correct size.");
+            }
+
+            if (!checkOpsLimitScrypt(opsLimit)) {
+                throw new SodiumException("The ops limit provided is not between the correct values.");
+            }
+
+            if (!checkMemLimitScrypt(memLimit)) {
+                throw new SodiumException("The mem limit provided is not between the correct values.");
+            }
+
+            return true;
+        }
     }
 }

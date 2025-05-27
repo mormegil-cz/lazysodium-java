@@ -21,21 +21,6 @@ public interface DiffieHellman {
     int SCALARMULT_SCALARBYTES = SCALARMULT_CURVE25519_SCALARBYTES;
 
 
-    class Checker extends BaseChecker {
-        public static void checkPublicKey(byte[] publicKey) {
-            checkExpectedMemorySize("publicKey", publicKey.length, SCALARMULT_BYTES);
-        }
-
-        public static void checkSecretKey(byte[] secretKey) {
-            checkExpectedMemorySize("secretKey", secretKey.length, SCALARMULT_SCALARBYTES);
-        }
-
-        public static void checkSharedKey(byte[] sharedKey) {
-            checkExpectedMemorySize("sharedKey", sharedKey.length, SCALARMULT_BYTES);
-        }
-
-    }
-
 
     interface Native {
 
@@ -64,6 +49,24 @@ public interface DiffieHellman {
          * @return Shared secret key.
          */
         Key cryptoScalarMult(Key secretKey, Key publicKey);
+
+    }
+
+
+    final class Checker extends BaseChecker {
+        private Checker() {}
+
+        public static void checkPublicKey(byte[] publicKey) {
+            checkExpectedMemorySize("publicKey", publicKey.length, SCALARMULT_BYTES);
+        }
+
+        public static void checkSecretKey(byte[] secretKey) {
+            checkExpectedMemorySize("secretKey", secretKey.length, SCALARMULT_SCALARBYTES);
+        }
+
+        public static void checkSharedKey(byte[] sharedKey) {
+            checkExpectedMemorySize("sharedKey", sharedKey.length, SCALARMULT_BYTES);
+        }
 
     }
 
