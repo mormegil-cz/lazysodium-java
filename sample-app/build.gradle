@@ -18,6 +18,6 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "net.java.dev.jna:jna:5.5.0"
-    implementation 'cz.mormegil:lazysodium-java:5.1.5.1'
+    implementation "net.java.dev.jna:jna:5.12.1"
+    implementation 'cz.mormegil:lazysodium-java:6.0.0'
 }
