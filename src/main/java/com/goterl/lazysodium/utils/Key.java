@@ -9,7 +9,6 @@
 package com.goterl.lazysodium.utils;
 
 import com.goterl.lazysodium.LazySodium;
-import com.goterl.lazysodium.Sodium;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -65,13 +64,7 @@ public class Key {
      * @return A new Key.
      */
     public static Key fromBase64String(String base64String) {
-        if (Sodium.base64Facade == null) {
-            throw new IllegalStateException(
-                    "Sodium.base64Facade not initialised. " +
-                    "Call LazySodiumJava() or LazySodiumAndroid().");
-        } else {
-            return fromBase64String(base64String, Sodium.base64Facade);
-        }
+        return fromBase64String(base64String, Base64FacadeHolder.getBase64Facade());
     }
 
     /**

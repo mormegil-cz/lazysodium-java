@@ -10,14 +10,20 @@ package com.goterl.lazysodium;
 
 import com.goterl.lazysodium.interfaces.*;
 import com.goterl.lazysodium.utils.Base64Facade;
-import com.goterl.lazysodium.utils.Base64Java;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
-public class Sodium {
+public abstract class Sodium {
 
-    public static Base64Facade base64Facade = new Base64Java();
+    /**
+     * Base64 facade. Do not use directly, use {@link com.goterl.lazysodium.utils.Base64FacadeHolder#getBase64Facade()} instead.
+     *
+     * @deprecated Use {@link com.goterl.lazysodium.utils.Base64FacadeHolder#getBase64Facade()} instead.
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(forRemoval = true)
+    public static Base64Facade base64Facade;
 
     protected Sodium() {
     }
@@ -26,6 +32,13 @@ public class Sodium {
         if (sodium_init() == -1) {
             throw new IllegalStateException("Sodium library could not be initialised properly.");
         }
+    }
+
+    /**
+     * Temporary internal method. Do not use.
+     */
+    protected static void setBase64Facade(Base64Facade base64Facade) {
+        Sodium.base64Facade = base64Facade;
     }
 
     //// -------------------------------------------|

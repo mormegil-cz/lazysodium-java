@@ -33,13 +33,13 @@ public class SodiumJava extends Sodium {
      */
     public SodiumJava(LibraryLoader.Mode loadingMode) {
         new LibraryLoader(getClassesToRegister()).loadLibrary(loadingMode, "sodium");
-        base64Facade = new Base64Java();
+        setBase64Facade(new Base64Java());
         onRegistered();
     }
 
     public SodiumJava(String absolutePath) {
         new LibraryLoader(getClassesToRegister()).loadAbsolutePath(absolutePath);
-        base64Facade = new Base64Java();
+        setBase64Facade(new Base64Java());
         onRegistered();
     }
 
