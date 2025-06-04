@@ -43,7 +43,7 @@ java {
 
 // Dependencies
 dependencies {
-    implementation 'net.java.dev.jna:jna:5.12.1'
+    implementation 'net.java.dev.jna:jna:5.17.0'
     implementation 'com.goterl:resource-loader:2.0.2'
     implementation 'org.slf4j:slf4j-api:2.0.3'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
