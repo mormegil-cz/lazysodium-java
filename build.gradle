@@ -9,15 +9,15 @@
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
     id 'signing'
+    id 'com.vanniktech.maven.publish' version '0.34.0'
     id 'biz.aQute.bnd.builder'
 }
 
 def mavenProps = [
     artifactId: "lazysodium-java",
     groupId: "cz.mormegil",
-    version: '6.0.0',
+    version: '6.0.0-SNAPSHOT',
     description: "Lazysodium (Java) makes it effortless for Java " +
         "developers to get started with Libsodium's cryptography. " +
         "(fork of the original library)"
@@ -37,9 +37,6 @@ java {
     manifest {
         attributes('Automatic-Module-Name': 'com.goterl.lazysodium')
     }
-
-    withSourcesJar()
-    withJavadocJar()
 }
 
 // Dependencies
@@ -51,28 +48,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-// Tasks
 signing {
-    // This will use the GPG Agent
-    // to sign the jar
     useGpgCmd()
-    sign publishing.publications
-}
-
-
-tasks.register('signPom', Sign) {
-    sign file(layout.buildDirectory.file("publications/mavenJava/pom-default.xml"))
-
-    // The signing plugin does not seem to notice
-    // it when the publications folder with the
-    // signature has been deleted. So we always
-    // create a new signature
-    outputs.upToDateWhen { false }
-}
-
-
-artifacts {
-    archives sourcesJar, javadocJar
+    sign configurations.runtimeElements
 }
 
 void loadProps() {
@@ -90,79 +68,37 @@ void loadProps() {
 
 loadProps()
 
-String getSonatypeUserName() {
-    return findProperty("ossrhUsername")
-}
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 
-String getSonatypePassword() {
-    return findProperty("ossrhPassword")
-}
+    coordinates(mavenProps.groupId, mavenProps.artifactId, mavenProps.version)
 
-Closure createPomClosure = {
-    def root = asNode()
-    root.appendNode('description', mavenProps.description)
-    root.appendNode('name', mavenProps.artifactId)
-    root.appendNode('url', 'https://github.com/mormegil-cz/lazysodium-java')
-
-    def scm = root.appendNode('scm')
-    scm.appendNode("connection", "scm:git:git://github.com/mormegil-cz/lazysodium-java.git")
-    scm.appendNode("developerConnection", "scm:git:ssh://github.com/mormegil-cz/lazysodium-java")
-    scm.appendNode("url", "https://github.com/mormegil-cz/lazysodium-java")
-
-    def license = root.appendNode('licenses').appendNode('license')
-    license.appendNode('name', 'Mozilla Public License, Version 2.0')
-    license.appendNode('url', 'https://www.mozilla.org/MPL/2.0/index.txt')
-    license.appendNode('distribution', 'repo')
-
-    def developers = root.appendNode('developers')
-    def developer1 = developers.appendNode('developer')
-    developer1.appendNode('name', 'Terl Tech Ltd')
-    developer1.appendNode('email', 'hello@terl.co')
-    def developer2 = developers.appendNode('developer')
-    developer2.appendNode('name', 'mormegil-cz')
-    developer2.appendNode('email', 'mormegil@centrum.cz')
-}
-
-publishing {
-    publications {
-        snapshot(MavenPublication) {
-            from components.java
-            groupId = mavenProps.groupId
-            artifactId = mavenProps.artifactId
-            version = mavenProps.version + "-SNAPSHOT"
-            artifact sourcesJar
-            artifact javadocJar
-
-            pom.withXml createPomClosure
-        }
-        release(MavenPublication) {
-            from components.java
-            groupId = mavenProps.groupId
-            artifactId = mavenProps.artifactId
-            version = mavenProps.version
-            artifact sourcesJar
-            artifact javadocJar
-
-            pom.withXml createPomClosure
-        }
-    }
-
-    repositories {
-        maven {
-            name = "release"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = getSonatypeUserName()
-                password = getSonatypePassword()
+    pom {
+        name = mavenProps.artifactId
+        description = mavenProps.description
+        url = 'https://github.com/mormegil-cz/lazysodium-java'
+        licenses {
+            license {
+                name = 'Mozilla Public License, Version 2.0'
+                url = 'https://www.mozilla.org/MPL/2.0/index.txt'
+                distribution = 'repo'
             }
         }
-        maven {
-            name = "snapshot"
-            url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            credentials {
-                username = getSonatypeUserName()
-                password = getSonatypePassword()
+        developers {
+            developer {
+                name = 'Terl Tech Ltd'
+                email = 'hello@terl.co'
             }
+            developer {
+                name = 'mormegil-cz'
+                email = 'mormegil@centrum.cz'
+            }
+        }
+        scm {
+            connection = 'scm:git:git://github.com/mormegil-cz/lazysodium-java.git'
+            developerConnection = 'scm:git:ssh://github.com/mormegil-cz/lazysodium-java'
+            url = 'https://github.com/mormegil-cz/lazysodium-java'
         }
     }
 }
