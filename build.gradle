@@ -19,7 +19,8 @@ def mavenProps = [
     groupId: "cz.mormegil",
     version: '6.0.0',
     description: "Lazysodium (Java) makes it effortless for Java " +
-        "developers to get started with Libsodium's cryptography."
+        "developers to get started with Libsodium's cryptography. " +
+        "(fork of the original library)"
 ]
 
 repositories {
@@ -59,8 +60,7 @@ signing {
 }
 
 
-
-task signPom(type: Sign) {
+tasks.register('signPom', Sign) {
     sign file(layout.buildDirectory.file("publications/mavenJava/pom-default.xml"))
 
     // The signing plugin does not seem to notice
@@ -83,7 +83,7 @@ void loadProps() {
             p.load(is)
         }
         p.each { name, value ->
-            ext[name] = value
+            ext[(String) name] = value
         }
     }
 }
@@ -168,11 +168,11 @@ publishing {
 }
 
 // Force character encoding in case the workspace was not set up correctly
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
 
     // a collection to track failedTests
