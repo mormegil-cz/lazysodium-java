@@ -17,7 +17,7 @@ plugins {
 def mavenProps = [
     artifactId: "lazysodium-java",
     groupId: "cz.mormegil",
-    version: '6.0.0',
+    version: '6.0.1-SNAPSHOT',
     description: "Lazysodium (Java) makes it effortless for Java " +
         "developers to get started with Libsodium's cryptography. " +
         "(fork of the original library)"
