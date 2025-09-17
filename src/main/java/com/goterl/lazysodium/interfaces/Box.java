@@ -26,6 +26,13 @@ public interface Box {
         CURVE25519XSALSA20POLY1305_BEFORENMBYTES = 32,
         CURVE25519XSALSA20POLY1305_NONCEBYTES = 24;
 
+    int CURVE25519XCHACHA20POLY1305_PUBLICKEYBYTES = 32,
+        CURVE25519XCHACHA20POLY1305_SECRETKEYBYTES = 32,
+        CURVE25519XCHACHA20POLY1305_MACBYTES = 16,
+        CURVE25519XCHACHA20POLY1305_SEEDBYTES = 32,
+        CURVE25519XCHACHA20POLY1305_BEFORENMBYTES = 32,
+        CURVE25519XCHACHA20POLY1305_NONCEBYTES = 24;
+
     int PUBLICKEYBYTES = CURVE25519XSALSA20POLY1305_PUBLICKEYBYTES,
         SECRETKEYBYTES = CURVE25519XSALSA20POLY1305_SECRETKEYBYTES,
         MACBYTES = CURVE25519XSALSA20POLY1305_MACBYTES,
@@ -34,6 +41,7 @@ public interface Box {
         NONCEBYTES = CURVE25519XSALSA20POLY1305_NONCEBYTES,
         SEALBYTES = PUBLICKEYBYTES + MACBYTES;
 
+    int CURVE25519XCHACHA20POLY1305_SEALBYTES = CURVE25519XCHACHA20POLY1305_PUBLICKEYBYTES + CURVE25519XCHACHA20POLY1305_MACBYTES;
 
 
 
@@ -121,6 +129,90 @@ public interface Box {
                                     int cipherLen,
                                     byte[] publicKey,
                                     byte[] secretKey);
+
+        // XChaCha20Poly1305
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305Keypair(byte[] publicKey, byte[] secretKey);
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305SeedKeypair(byte[] publicKey, byte[] secretKey, byte[] seed);
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305Easy(
+                byte[] cipherText,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                byte[] publicKey,
+                byte[] secretKey
+        );
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305OpenEasy(
+                byte[] message,
+                byte[] cipherText,
+                int cipherTextLen,
+                byte[] nonce,
+                byte[] publicKey,
+                byte[] secretKey
+        );
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305Detached(byte[] cipherText,
+                                  byte[] mac,
+                                  byte[] message,
+                                  int messageLen,
+                                  byte[] nonce,
+                                  byte[] publicKey,
+                                  byte[] secretKey);
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305OpenDetached(byte[] message,
+                                      byte[] cipherText,
+                                      byte[] mac,
+                                      int cipherTextLen,
+                                      byte[] nonce,
+                                      byte[] publicKey,
+                                      byte[] secretKey);
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305BeforeNm(byte[] k, byte[] publicKey, byte[] secretKey);
+
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305EasyAfterNm(
+                byte[] cipherText,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                byte[] key
+        );
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305OpenEasyAfterNm(
+                byte[] message, byte[] cipher,
+                int cLen, byte[] nonce,
+                byte[] key
+        );
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305DetachedAfterNm(
+                byte[] cipherText,
+                byte[] mac,
+                byte[] message,
+                int messageLen,
+                byte[] nonce,
+                byte[] key
+        );
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305OpenDetachedAfterNm(byte[] message,
+                                             byte[] cipherText,
+                                             byte[] mac,
+                                             int cipherTextLen,
+                                             byte[] nonce,
+                                             byte[] key);
+
+
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305Seal(byte[] cipher, byte[] message, int messageLen, byte[] publicKey);
+
+        boolean cryptoBoxCurve25519XChaCha20Poly1305SealOpen(byte[] m,
+                                  byte[] cipher,
+                                  int cipherLen,
+                                  byte[] publicKey,
+                                  byte[] secretKey);
+
 
     }
 
@@ -260,48 +352,96 @@ public interface Box {
             checkExpectedMemorySize("public key length", key.length, PUBLICKEYBYTES);
         }
 
+        public static void checkPublicKeyCurve25519XChaCha20Poly1305(byte[] key) {
+            checkExpectedMemorySize("public key length", key.length, CURVE25519XCHACHA20POLY1305_PUBLICKEYBYTES);
+        }
+
         public static void checkSecretKey(byte[] key) {
             checkExpectedMemorySize("secret key length", key.length, SECRETKEYBYTES);
+        }
+
+        public static void checkSecretKeyCurve25519XChaCha20Poly1305(byte[] key) {
+            checkExpectedMemorySize("secret key length", key.length, CURVE25519XCHACHA20POLY1305_SECRETKEYBYTES);
         }
 
         public static void checkSeed(byte[] seed) {
             checkExpectedMemorySize("seed length", seed.length, SEEDBYTES);
         }
 
+        public static void checkSeedCurve25519XChaCha20Poly1305(byte[] seed) {
+            checkExpectedMemorySize("seed length", seed.length, CURVE25519XCHACHA20POLY1305_SEEDBYTES);
+        }
+
         public static void checkNonce(byte[] nonce) {
             checkExpectedMemorySize("nonce length", nonce.length, NONCEBYTES);
+        }
+
+        public static void checkNonceCurve25519XChaCha20Poly1305(byte[] nonce) {
+            checkExpectedMemorySize("nonce length", nonce.length, CURVE25519XCHACHA20POLY1305_NONCEBYTES);
         }
 
         public static void checkMac(byte[] mac) {
             checkExpectedMemorySize("mac length", mac.length, MACBYTES);
         }
 
+        public static void checkMacCurve25519XChaCha20Poly1305(byte[] mac) {
+            checkExpectedMemorySize("mac length", mac.length, CURVE25519XCHACHA20POLY1305_MACBYTES);
+        }
+
         public static void checkSharedKey(byte[] sharedKey) {
             checkExpectedMemorySize("key length", sharedKey.length, BEFORENMBYTES);
+        }
+
+        public static void checkSharedKeyCurve25519XChaCha20Poly1305(byte[] sharedKey) {
+            checkExpectedMemorySize("key length", sharedKey.length, CURVE25519XCHACHA20POLY1305_BEFORENMBYTES);
         }
 
         public static void checkCipherText(byte[] cipherText, int messageLen) {
             checkExpectedMemorySize("cipherText length", cipherText.length, MACBYTES + messageLen);
         }
 
+        public static void checkCipherTextCurve25519XChaCha20Poly1305(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, CURVE25519XCHACHA20POLY1305_MACBYTES + messageLen);
+        }
+
         public static void checkSealCipherText(byte[] cipherText, int messageLen) {
             checkExpectedMemorySize("cipherText length", cipherText.length, SEALBYTES + messageLen);
+        }
+
+        public static void checkSealCipherTextCurve25519XChaCha20Poly1305(byte[] cipherText, int messageLen) {
+            checkExpectedMemorySize("cipherText length", cipherText.length, CURVE25519XCHACHA20POLY1305_SEALBYTES + messageLen);
         }
 
         public static void checkMessage(byte[] message, int cipherTextLen) {
             checkExpectedMemorySize("message length", message.length, cipherTextLen - MACBYTES);
         }
 
+        public static void checkMessageCurve25519XChaCha20Poly1305(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - CURVE25519XCHACHA20POLY1305_MACBYTES);
+        }
+
         public static void checkSealMessage(byte[] message, int cipherTextLen) {
             checkExpectedMemorySize("message length", message.length, cipherTextLen - SEALBYTES);
+        }
+
+        public static void checkSealMessageCurve25519XChaCha20Poly1305(byte[] message, int cipherTextLen) {
+            checkExpectedMemorySize("message length", message.length, cipherTextLen - CURVE25519XCHACHA20POLY1305_SEALBYTES);
         }
 
         public static void checkCipherTextLength(long cipherTextLen) {
             checkAtLeast("cipher text length", cipherTextLen, MACBYTES);
         }
 
+        public static void checkCipherTextLengthCurve25519XChaCha20Poly1305(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, CURVE25519XCHACHA20POLY1305_MACBYTES);
+        }
+
         public static void checkSealCipherTextLength(long cipherTextLen) {
             checkAtLeast("cipher text length", cipherTextLen, SEALBYTES);
+        }
+
+        public static void checkSealCipherTextLengthCurve25519XChaCha20Poly1305(long cipherTextLen) {
+            checkAtLeast("cipher text length", cipherTextLen, CURVE25519XCHACHA20POLY1305_SEALBYTES);
         }
 
     }

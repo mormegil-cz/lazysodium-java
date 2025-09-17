@@ -349,6 +349,89 @@ public abstract class Sodium {
                                     byte[] publicKey,
                                     byte[] secretKey);
 
+    // curve25519xchacha20poly1305
+
+    public native int crypto_box_curve25519xchacha20poly1305_keypair(byte[] publicKey, byte[] secretKey);
+
+    public native int crypto_box_curve25519xchacha20poly1305_seed_keypair(byte[] publicKey, byte[] secretKey, byte[] seed);
+
+
+    public native int crypto_box_curve25519xchacha20poly1305_easy(
+        byte[] cipherText,
+        byte[] message,
+        long messageLen,
+        byte[] nonce,
+        byte[] publicKey,
+        byte[] secretKey
+    );
+
+    public native int crypto_box_curve25519xchacha20poly1305_open_easy(
+            byte[] message,
+            byte[] cipherText,
+            long cipherTextLen,
+            byte[] nonce,
+            byte[] publicKey,
+            byte[] secretKey
+    );
+
+    public native int crypto_box_curve25519xchacha20poly1305_detached(byte[] cipherText,
+                                   byte[] mac,
+                                   byte[] message,
+                                   long messageLen,
+                                   byte[] nonce,
+                                   byte[] publicKey,
+                                   byte[] secretKey);
+
+    public native int crypto_box_curve25519xchacha20poly1305_open_detached(byte[] message,
+                                        byte[] cipherText,
+                                        byte[] mac,
+                                        long cipherTextLen,
+                                        byte[] nonce,
+                                        byte[] publicKey,
+                                        byte[] secretKey);
+
+    public native int crypto_box_curve25519xchacha20poly1305_beforenm(byte[] k, byte[] publicKey, byte[] secretKey);
+
+
+    public native int crypto_box_curve25519xchacha20poly1305_easy_afternm(
+        byte[] cipherText,
+        byte[] message,
+        long messageLen,
+        byte[] nonce,
+        byte[] key
+    );
+
+    public native int crypto_box_curve25519xchacha20poly1305_open_easy_afternm(
+            byte[] message, byte[] cipher,
+            long cLen, byte[] nonce,
+            byte[] key
+    );
+
+    public native int crypto_box_curve25519xchacha20poly1305_detached_afternm(
+            byte[] cipherText,
+            byte[] mac,
+            byte[] message,
+            long messageLen,
+            byte[] nonce,
+            byte[] key
+    );
+
+    public native int crypto_box_curve25519xchacha20poly1305_open_detached_afternm(byte[] message,
+                                        byte[] cipherText,
+                                        byte[] mac,
+                                        long cipherTextLen,
+                                        byte[] nonce,
+                                        byte[] key);
+
+
+    public native int crypto_box_curve25519xchacha20poly1305_seal(byte[] cipher, byte[] message, long messageLen, byte[] publicKey);
+
+    public native int crypto_box_curve25519xchacha20poly1305_seal_open(byte[] m,
+                                    byte[] cipher,
+                                    long cipherLen,
+                                    byte[] publicKey,
+                                    byte[] secretKey);
+
 
 
 

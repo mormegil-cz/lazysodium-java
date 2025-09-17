@@ -1001,6 +1001,132 @@ public abstract class LazySodium implements
         return successful(getSodium().crypto_box_seal_open(message, cipher, cipherLen, publicKey, secretKey));
     }
 
+    // XChaCha20Poly1305
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305Keypair(byte[] publicKey, byte[] secretKey) {
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_keypair(publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305SeedKeypair(byte[] publicKey, byte[] secretKey, byte[] seed) {
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        Box.Checker.checkSeedCurve25519XChaCha20Poly1305(seed);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_seed_keypair(publicKey, secretKey, seed));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305Easy(byte[] cipherText, byte[] message, int messageLen, byte[] nonce, byte[] publicKey, byte[] secretKey) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Box.Checker.checkCipherTextCurve25519XChaCha20Poly1305(cipherText, messageLen);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_easy(cipherText, message, messageLen, nonce, publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305OpenEasy(byte[] message, byte[] cipherText, int cipherTextLen, byte[] nonce, byte[] publicKey, byte[] secretKey) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        Box.Checker.checkCipherTextLengthCurve25519XChaCha20Poly1305(cipherTextLen);
+        Box.Checker.checkMessageCurve25519XChaCha20Poly1305(message, cipherTextLen);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_open_easy(message, cipherText, cipherTextLen, nonce, publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305Detached(byte[] cipherText, byte[] mac, byte[] message, int messageLen, byte[] nonce, byte[] publicKey, byte[] secretKey) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipherText length", cipherText.length, messageLen);
+        Box.Checker.checkMacCurve25519XChaCha20Poly1305(mac);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_detached(cipherText, mac, message, messageLen, nonce, publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305OpenDetached(byte[] message, byte[] cipherText, byte[] mac, int cipherTextLen, byte[] nonce, byte[] publicKey, byte[] secretKey) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkExpectedMemorySize("message length", message.length, cipherTextLen);
+        Box.Checker.checkMacCurve25519XChaCha20Poly1305(mac);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_open_detached(message, cipherText, mac, cipherTextLen, nonce, publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305BeforeNm(byte[] k, byte[] publicKey, byte[] secretKey) {
+        Box.Checker.checkSharedKeyCurve25519XChaCha20Poly1305(k);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_beforenm(k, publicKey, secretKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305EasyAfterNm(byte[] cipherText, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Box.Checker.checkCipherTextCurve25519XChaCha20Poly1305(cipherText, messageLen);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkSharedKeyCurve25519XChaCha20Poly1305(key);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_easy_afternm(cipherText, message, messageLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305OpenEasyAfterNm(byte[] message, byte[] cipherText, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        Box.Checker.checkCipherTextLengthCurve25519XChaCha20Poly1305(cipherTextLen);
+        Box.Checker.checkMessageCurve25519XChaCha20Poly1305(message, cipherTextLen);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkSharedKeyCurve25519XChaCha20Poly1305(key);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_open_easy_afternm(message, cipherText, cipherTextLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305DetachedAfterNm(byte[] cipherText, byte[] mac, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipherText length", cipherText.length, messageLen);
+        Box.Checker.checkMacCurve25519XChaCha20Poly1305(mac);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkSharedKeyCurve25519XChaCha20Poly1305(key);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_detached_afternm(cipherText, mac, message, messageLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305OpenDetachedAfterNm(byte[] message, byte[] cipherText, byte[] mac, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkExpectedMemorySize("message length", message.length, cipherTextLen);
+        Box.Checker.checkMacCurve25519XChaCha20Poly1305(mac);
+        Box.Checker.checkNonceCurve25519XChaCha20Poly1305(nonce);
+        Box.Checker.checkSharedKeyCurve25519XChaCha20Poly1305(key);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_open_detached_afternm(message, cipherText, mac, cipherTextLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305Seal(byte[] cipher, byte[] message, int messageLen, byte[] publicKey) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        Box.Checker.checkSealCipherTextCurve25519XChaCha20Poly1305(cipher, messageLen);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_seal(cipher, message, messageLen, publicKey));
+    }
+
+    @Override
+    public boolean cryptoBoxCurve25519XChaCha20Poly1305SealOpen(byte[] message, byte[] cipher, int cipherLen, byte[] publicKey, byte[] secretKey) {
+        BaseChecker.checkArrayLength("cipher", cipher, cipherLen);
+        Box.Checker.checkSealCipherTextLengthCurve25519XChaCha20Poly1305(cipherLen);
+        Box.Checker.checkSealMessageCurve25519XChaCha20Poly1305(message, cipherLen);
+        Box.Checker.checkPublicKeyCurve25519XChaCha20Poly1305(publicKey);
+        Box.Checker.checkSecretKeyCurve25519XChaCha20Poly1305(secretKey);
+        return successful(getSodium().crypto_box_curve25519xchacha20poly1305_seal_open(message, cipher, cipherLen, publicKey, secretKey));
+    }
+
+
     // -- lazy
 
     @Override
