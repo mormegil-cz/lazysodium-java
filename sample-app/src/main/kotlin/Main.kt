@@ -60,7 +60,7 @@ class Main(private val parsed: Int) {
         val messageBytes: ByteArray = lazySodium.bytes(msg)
         val skBytes: ByteArray = sk.asBytes
         val signatureBytes = ByteArray(Sign.BYTES)
-        lazySodium.cryptoSignDetached(signatureBytes, messageBytes, messageBytes.size.toLong(), skBytes)
+        lazySodium.cryptoSignDetached(signatureBytes, messageBytes, messageBytes.size, skBytes)
         val v: Boolean =
             lazySodium.cryptoSignVerifyDetached(signatureBytes, messageBytes, messageBytes.size, pk.getAsBytes())
         log()
@@ -71,7 +71,7 @@ class Main(private val parsed: Int) {
     @Throws(SodiumException::class)
     private fun signWithNonRandomKeys() {
         val msg = "Sign this"
-        val pk: Key = Key.fromPlainString("edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav8888888888")
+        val pk: Key = Key.fromPlainString("edpkuBknW28nW72KG6RoHtYW7p12T6GK")
         val sk: Key = Key.fromPlainString("edsk3gUfUPyBSfrS9CCgmCiQsTCHGkviBDusMxDJstFtojtc1zcpsh8888888888")
         log()
         printStep(
@@ -232,9 +232,9 @@ class Main(private val parsed: Int) {
         val hash: ByteArray = lazySodium.randomBytesBuf(GenericHash.BYTES)
         val hash2: ByteArray = lazySodium.randomBytesBuf(GenericHash.BYTES)
         val res: Boolean =
-            nativeGH.cryptoGenericHash(hash, hash.size, message, message.size.toLong(), randomKey, randomKey.size)
+            nativeGH.cryptoGenericHash(hash, hash.size, message, message.size, randomKey, randomKey.size)
         val res2: Boolean =
-            nativeGH.cryptoGenericHash(hash2, hash2.size, message, message.size.toLong(), randomKey, randomKey.size)
+            nativeGH.cryptoGenericHash(hash2, hash2.size, message, message.size, randomKey, randomKey.size)
         if (!res || !res2) {
             throw SodiumException("Could not hash the message.")
         }
@@ -272,7 +272,7 @@ class Main(private val parsed: Int) {
             "Attempting to hash a password '$pw' using Argon 2."
         )
         try {
-            val hash: String = lazySodium.cryptoPwHashStr(pw, 2L, NativeLong(65536))
+            val hash: String = lazySodium.cryptoPwHashString(pw, 2L, NativeLong(65536))
             log()
             logt("Password hashing successful: $hash")
             log()
@@ -334,12 +334,12 @@ class Main(private val parsed: Int) {
                 // cryptoPwHashStr, but that is not recommended
                 // as Argon2 needs at least one null byte
                 // at the end.
-                val hash: String = lazySodium.cryptoPwHashStr(pw, 2, PwHash.MEMLIMIT_MIN)
+                val hash: String = lazySodium.cryptoPwHashString(pw, 2, PwHash.MEMLIMIT_MIN)
 
                 // To get an Argon2 hash instead of a hex hash,
                 // lazySodium.str(lazySodium.toBinary(hash)) is one way to do that.
                 logt("Password hashing successful: $hash")
-                val result: Boolean = lazySodium.cryptoPwHashStrVerify(hash, pw)
+                val result: Boolean = lazySodium.cryptoPwHashStringVerify(hash, pw)
                 logt("Password hashing verification: $result")
             } catch (e: SodiumException) {
                 logt("Password hashing unsuccessful: " + e.message)
