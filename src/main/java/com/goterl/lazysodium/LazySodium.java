@@ -774,6 +774,59 @@ public abstract class LazySodium implements
         return successful(getSodium().crypto_secretbox_open_detached(message, cipherText, mac, cipherTextLen, nonce, key));
     }
 
+    // XChaCha20Poly1305
+
+    @Override
+    public void cryptoSecretBoxXChaCha20Poly1305Keygen(byte[] key) {
+        SecretBox.Checker.checkKeyXChaCha20Poly1305(key);
+
+        // there does not seem to be a specific crypto_secretbox_xchacha20poly1305_keygen in libsodium
+        getSodium().crypto_secretbox_keygen(key);
+    }
+
+    @Override
+    public boolean cryptoSecretBoxXChaCha20Poly1305Easy(byte[] cipherText, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        SecretBox.Checker.checkCipherTextXChaCha20Poly1305(cipherText, messageLen);
+        SecretBox.Checker.checkNonceXChaCha20Poly1305(nonce);
+        SecretBox.Checker.checkKeyXChaCha20Poly1305(key);
+
+        return successful(getSodium().crypto_secretbox_xchacha20poly1305_easy(cipherText, message, messageLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoSecretBoxXChaCha20Poly1305OpenEasy(byte[] message, byte[] cipherText, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        SecretBox.Checker.checkCipherTextLengthXChaCha20Poly1305(cipherTextLen);
+        SecretBox.Checker.checkMessageXChaCha20Poly1305(message, cipherTextLen);
+        SecretBox.Checker.checkNonceXChaCha20Poly1305(nonce);
+        SecretBox.Checker.checkKeyXChaCha20Poly1305(key);
+
+        return successful(getSodium().crypto_secretbox_xchacha20poly1305_open_easy(message, cipherText, cipherTextLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoSecretBoxXChaCha20Poly1305Detached(byte[] cipherText, byte[] mac, byte[] message, int messageLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("message", message, messageLen);
+        BaseChecker.checkExpectedMemorySize("cipherText length", cipherText.length, messageLen);
+        SecretBox.Checker.checkMacXChaCha20Poly1305(mac);
+        SecretBox.Checker.checkNonceXChaCha20Poly1305(nonce);
+        SecretBox.Checker.checkKeyXChaCha20Poly1305(key);
+
+        return successful(getSodium().crypto_secretbox_xchacha20poly1305_detached(cipherText, mac, message, messageLen, nonce, key));
+    }
+
+    @Override
+    public boolean cryptoSecretBoxXChaCha20Poly1305OpenDetached(byte[] message, byte[] cipherText, byte[] mac, int cipherTextLen, byte[] nonce, byte[] key) {
+        BaseChecker.checkArrayLength("cipherText", cipherText, cipherTextLen);
+        BaseChecker.checkExpectedMemorySize("message length", message.length, cipherTextLen);
+        SecretBox.Checker.checkMacXChaCha20Poly1305(mac);
+        SecretBox.Checker.checkNonceXChaCha20Poly1305(nonce);
+        SecretBox.Checker.checkKeyXChaCha20Poly1305(key);
+
+        return successful(getSodium().crypto_secretbox_xchacha20poly1305_open_detached(message, cipherText, mac, cipherTextLen, nonce, key));
+    }
+
 
     /// --- Lazy
 

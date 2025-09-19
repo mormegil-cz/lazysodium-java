@@ -263,6 +263,33 @@ public abstract class Sodium {
                                               byte[] key);
 
 
+    public native int crypto_secretbox_xchacha20poly1305_easy(byte[] cipherText,
+                                     byte[] message,
+                                     long messageLen,
+                                     byte[] nonce,
+                                     byte[] key);
+
+    public native int crypto_secretbox_xchacha20poly1305_open_easy(byte[] message,
+                                          byte[] cipherText,
+                                          long cipherTextLen,
+                                          byte[] nonce,
+                                          byte[] key);
+
+    public native int crypto_secretbox_xchacha20poly1305_detached(byte[] cipherText,
+                                         byte[] mac,
+                                         byte[] message,
+                                         long messageLen,
+                                         byte[] nonce,
+                                         byte[] key);
+
+    public native int crypto_secretbox_xchacha20poly1305_open_detached(byte[] message,
+                                              byte[] cipherText,
+                                              byte[] mac,
+                                              long cipherTextLen,
+                                              byte[] nonce,
+                                              byte[] key);
+
+
 
     //// -------------------------------------------|
     //// CRYPTO BOX
