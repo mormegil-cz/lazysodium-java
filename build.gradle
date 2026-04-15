@@ -41,10 +41,10 @@ java {
 
 // Dependencies
 dependencies {
-    implementation 'net.java.dev.jna:jna:5.17.0'
+    implementation 'net.java.dev.jna:jna:5.18.1'
     implementation 'com.goterl:resource-loader:2.0.2'
-    implementation 'org.slf4j:slf4j-api:2.0.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -110,27 +110,4 @@ tasks.withType(Javadoc).configureEach {
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-
-    // a collection to track failedTests
-    ext.failedTests = []
-
-    afterTest { descriptor, result ->
-        if (result.resultType == TestResult.ResultType.FAILURE) {
-            String failedTest = "${descriptor.className}::${descriptor.name}"
-            logger.debug("Adding " + failedTest + " to failedTests...")
-            failedTests << [failedTest]
-        }
-    }
-
-    afterSuite { suite, result ->
-        if (!suite.parent) { // will match the outermost suite
-            // logs each failed test
-            if (!failedTests.empty) {
-                logger.lifecycle("Failed tests:")
-                failedTests.each { failedTest ->
-                    logger.lifecycle("${failedTest}")
-                }
-            }
-        }
-    }
 }
