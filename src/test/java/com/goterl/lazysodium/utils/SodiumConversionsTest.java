@@ -28,6 +28,7 @@ public class SodiumConversionsTest {
     public void doBefore() {
         sodium = new SodiumJava(LibraryLoader.Mode.BUNDLED_ONLY);
     }
+
     @Test
     public void base64Conversion() {
         IntByReference binLenReference = new IntByReference(0);
@@ -63,12 +64,13 @@ public class SodiumConversionsTest {
         byte[] bin = {1, 2, 3, 4, 5, 32, 64, -128, -1, -128};
         int hexLen = (bin.length * 2) + 1; // +1 for terminator char
         byte[] hex = new byte[hexLen];
-        sodium.sodium_bin2hex(
+        String hexReturn = sodium.sodium_bin2hex(
                 hex,
                 hexLen,
                 bin,
                 bin.length
         );
+        assertEquals("0102030405204080ff80", hexReturn);
         //Drop the last char which is C \0 terminator character
         String hexString = new String(Arrays.copyOfRange(hex, 0, hex.length - 1));
         assertEquals("0102030405204080ff80", hexString);

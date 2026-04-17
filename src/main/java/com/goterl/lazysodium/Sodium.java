@@ -47,6 +47,12 @@ public abstract class Sodium {
 
 
     public native int sodium_init();
+
+    public native String sodium_version_string();
+    public native int sodium_library_version_major();
+    public native int sodium_library_version_minor();
+    public native boolean sodium_library_minimal();
+
     public native void sodium_increment(byte[] n, int nLen);
     public native void sodium_add(byte[] a, byte[] b, int len);
     public native int sodium_is_zero(byte[] n, int nLen);

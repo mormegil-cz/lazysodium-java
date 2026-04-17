@@ -75,6 +75,26 @@ public abstract class LazySodium implements
     }
 
     @Override
+    public String sodiumVersionString() {
+        return getSodium().sodium_version_string();
+    }
+
+    @Override
+    public int sodiumVersionMinor() {
+        return getSodium().sodium_library_version_minor();
+    }
+
+    @Override
+    public int sodiumVersionMajor() {
+        return getSodium().sodium_library_version_major();
+    }
+
+    @Override
+    public boolean sodiumLibraryMinimal() {
+        return getSodium().sodium_library_minimal();
+    }
+
+    @Override
     public String sodiumBin2Hex(byte[] bin) {
         return bytesToHex(bin);
     }

@@ -13,6 +13,11 @@ public interface Helpers {
 
     interface Native {
         int sodiumInit();
+
+        String sodiumVersionString();
+        int sodiumVersionMajor();
+        int sodiumVersionMinor();
+        boolean sodiumLibraryMinimal();
     }
 
     interface Lazy {
